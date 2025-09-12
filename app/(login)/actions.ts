@@ -20,7 +20,7 @@ import {
   invitations,
   roleEnum,
 } from '@/lib/db/schema';
-import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
+import { comparePasswords, hashPassword } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -79,20 +79,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
       return { error: 'Invalid email or password. Please try again.' };
     }
 
-    // Set session
-    await setSession({
-      id: foundUser.id,
-      email: foundUser.email,
-      name: foundUser.name,
-      role: foundUser.role,
-      createdAt: foundUser.created_at,
-      updatedAt: foundUser.updated_at,
-      deletedAt: foundUser.deleted_at,
-      passwordHash: foundUser.password_hash,
-    });
-
-    // Skip team lookup and activity logging for now to avoid DB issues
-    // await logActivity(foundTeam?.id, foundUser.id, ActivityType.SIGN_IN);
+    // Session is managed by NextAuth credentials; UI uses signIn('credentials')
 
     const redirectTo = formData.get('redirect') as string | null;
     if (redirectTo === 'checkout') {
@@ -252,7 +239,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       await Promise.all([
         db.insert(teamMembers).values(newTeamMember),
         logActivity(teamId, createdUser.id, ActivityType.SIGN_UP),
-        setSession(createdUser),
+        // setSession(createdUser), // Removed setSession
       ]);
     } catch (error) {
       console.error('Failed to complete signup process:', error);
@@ -291,7 +278,7 @@ export async function signOut() {
   const user = (await getUser()) as User;
   const userWithTeam = await getUserWithTeam(user.id);
   await logActivity(userWithTeam?.teamId, user.id, ActivityType.SIGN_OUT);
-  (await cookies()).delete('session');
+  // NextAuth signOut is handled client-side; no cookie deletion here
 }
 
 const updatePasswordSchema = z
@@ -382,7 +369,7 @@ export const deleteAccount = validatedActionWithUser(
         );
     }
 
-    (await cookies()).delete('session');
+    // (await cookies()).delete('session'); // Removed cookie deletion
     redirect('/sign-in');
   }
 );
@@ -573,19 +560,7 @@ export async function signInAction(formData: FormData) {
     redirect('/sign-in?error=invalid-credentials');
   }
 
-  // Set session
-  await setSession({
-    id: foundUser.id,
-    email: foundUser.email,
-    name: foundUser.name,
-    role: foundUser.role,
-    createdAt: foundUser.created_at,
-    updatedAt: foundUser.updated_at,
-    deletedAt: foundUser.deleted_at,
-    passwordHash: foundUser.password_hash,
-  });
-
-  // Redirect based on user role
+  // Session is managed by NextAuth credentials; UI uses signIn('credentials')
   const dashboardPath = foundUser.role === 'ADMIN' ? '/dashboard' : 
                        foundUser.role === 'MENTOR' ? '/dashboard' : 
                        '/dashboard';
@@ -596,7 +571,7 @@ export async function signInAction(formData: FormData) {
 export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const role = formData.get('role') as string || 'STUDENT';
+  const role = 'STUDENT';
   
   if (!email || !password) {
     throw new Error('Email and password are required');
@@ -629,16 +604,16 @@ export async function signUpAction(formData: FormData) {
 
     const [createdUser] = await db.insert(users).values(newUser).returning();
     if (!createdUser) {
-      throw new Error('Failed to create user account. Please try again later.');
+      console.error('Sign up error: insert returned no row');
+      redirect('/sign-up?error=server-error');
+      return;
     }
 
-    // Set session
-    await setSession(createdUser);
-
-    // Redirect to onboarding
-    redirect('/onboarding');
+    // Do not auto-login; redirect to sign-in with success message
+    redirect('/sign-in?success=1');
   } catch (error) {
     console.error('Sign up error:', error);
-    throw new Error('An error occurred during sign up. Please try again.');
+    redirect('/sign-up?error=server-error');
+    return;
   }
 }
