@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from './lib/auth/session';
+import { getToken } from 'next-auth/jwt';
 
 // Define protected paths by role
 const adminOnlyPaths = [
@@ -71,15 +71,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // For all other paths, check authentication
-  const session = await getSession();
-  
-  if (!session) {
+  // For all other paths, check authentication (edge-safe)
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  if (!token) {
     // Redirect to sign-in if not authenticated
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
   
-  const userRole = session.user.role || 'STUDENT';
+  const userRole = (token as any).role || 'STUDENT';
   
   // Role-based access control
   if (isAdminOnlyPath(pathname) && userRole !== 'ADMIN') {
@@ -98,5 +97,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|api/auth).*)'],
 };

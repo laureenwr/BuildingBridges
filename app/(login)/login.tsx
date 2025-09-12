@@ -8,7 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap, Users, AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
-import { signInAction, signUpAction } from './actions';
+import { signUpAction } from './actions';
+import { signIn as nextAuthSignIn } from 'next-auth/react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 
@@ -81,7 +82,29 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               </p>
             </div>
 
-            <form className="space-y-6" action={mode === 'signin' ? signInAction : signUpAction}>
+            <form
+              className="space-y-6"
+              action={mode === 'signin' ? undefined : signUpAction}
+              onSubmit={async (e) => {
+                if (mode !== 'signin') return; // handled by action for signup
+                e.preventDefault();
+                const form = e.currentTarget as HTMLFormElement;
+                const email = (form.querySelector('#email') as HTMLInputElement)?.value;
+                const password = (form.querySelector('#password') as HTMLInputElement)?.value;
+                const callbackUrl = (form.querySelector('input[name="redirect"]') as HTMLInputElement)?.value || '/dashboard';
+                const result = await nextAuthSignIn('credentials', {
+                  redirect: false,
+                  email,
+                  password,
+                  callbackUrl,
+                });
+                if (result?.ok) {
+                  window.location.href = result.url || callbackUrl;
+                } else {
+                  window.location.href = '/sign-in?error=invalid-credentials';
+                }
+              }}
+            >
               <input type="hidden" name="redirect" value={redirect || ''} />
               <input type="hidden" name="priceId" value={priceId || ''} />
               <input type="hidden" name="inviteId" value={inviteId || ''} />

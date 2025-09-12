@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from '@/app/(login)/actions';
+import { signOut } from 'next-auth/react';
 
 const navItems = [
   { name: 'Workshops', href: '/workshops' },
@@ -134,8 +134,7 @@ export function Navbar() {
                     <DropdownMenuItem 
                       className="cursor-pointer"
                       onClick={async () => {
-                        await signOut();
-                        window.location.href = '/';
+                        await signOut({ callbackUrl: '/' });
                       }}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
