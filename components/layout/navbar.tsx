@@ -23,6 +23,8 @@ const navItems = [
   { name: 'Workshops', href: '/workshops' },
   { name: 'Activity', href: '/activity' },
   { name: 'Mentors', href: '/mentors' },
+  { name: 'Partner', href: '/partners' },
+  { name: 'Team', href: '/team' },
   { name: 'Contact', href: '/contact' },
 ];
 

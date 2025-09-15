@@ -24,6 +24,8 @@ const publicPaths = [
   '/mentors',
   '/contact',
   '/about',
+  '/partners',
+  '/team',
   '/api/webhooks/stripe',
   '/onboarding',
   '/design-system'

@@ -1,23 +1,9 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { teamMembers } from '@/lib/content/team';
 
-const placeholder = '/logo_round.svg';
-
-type Member = {
-  name: string;
-  role: string;
-  org: string;
-  bio?: string;
-};
-
-const members: Member[] = [
-  { name: 'Prof. Dr. Claudia Calvano', role: 'Projektleitung', org: 'Freie Universität Berlin' },
-  { name: 'M.Sc. Susanne Birnkammer', role: 'Wissenschaftliche Mitarbeiterin', org: 'Freie Universität Berlin' },
-  { name: 'Dr. rer. medic. Felicia Boma Lazaridou', role: 'Wissenschaftliche Mitarbeiterin (Drittmittelprojekt)', org: 'Freie Universität Berlin' },
-  { name: 'B.Sc. Esther Kipnis', role: 'Studentische Hilfskraft (Drittmittelprojekt)', org: 'Freie Universität Berlin' },
-  { name: 'Prof. Dr. Hannes Rothe', role: 'Projektleitung Digitale Plattform', org: 'Universität Duisburg-Essen' },
-  { name: 'M.Sc. Elias Jelinek', role: 'Wissenschaftlicher Mitarbeiter', org: 'Universität Duisburg-Essen' },
-];
+const placeholder = '/images/placeholder-user.svg';
 
 export default function TeamPage() {
   return (
@@ -29,18 +15,29 @@ export default function TeamPage() {
           und Organisationspraxis. Porträts werden sukzessive ergänzt.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {members.map((m) => (
-            <Card key={m.name} className="p-6">
-              <div className="w-full aspect-square relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                <Image src={placeholder} alt={m.name} fill className="object-contain p-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">{m.name}</h3>
-              <p className="text-sm text-purple-700 font-medium">{m.role}</p>
-              <p className="text-sm text-gray-600">{m.org}</p>
-            </Card>
-          ))}
-        </div>
+        {[
+          { title: 'Freie Universität Berlin', key: 'Freie Universität Berlin' },
+          { title: 'Stiftung SPI / Mädea', key: 'Stiftung SPI / Mädea' },
+          { title: 'Universität Duisburg-Essen', key: 'Universität Duisburg-Essen' },
+        ].map((section) => (
+          <section key={section.key} className="mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{section.title}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {teamMembers.filter((tm) => tm.org === section.key).map((m) => (
+              <Card key={m.slug} className="p-6">
+                <div className="w-full aspect-square relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                  <Image src={placeholder} alt={m.name} fill className="object-contain p-6" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  <Link href={`/team/${m.slug}`} className="hover:underline">{m.name}</Link>
+                </h3>
+                <p className="text-sm text-purple-700 font-medium">{m.role}</p>
+                <p className="text-sm text-gray-600">{m.org}</p>
+              </Card>
+            ))}
+            </div>
+          </section>
+        ))}
       </div>
     </main>
   );

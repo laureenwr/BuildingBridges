@@ -8,6 +8,7 @@ const footerLinks = [
     links: [
       { label: 'Vision', href: '/vision' },
       { label: 'Team', href: '/team' },
+      { label: 'Partner', href: '/partners' },
       { label: 'Contact', href: '/contact' },
     ],
   },
