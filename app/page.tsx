@@ -357,8 +357,10 @@ export default function HomePage() {
       <FundingBanner
         heading="Gefördert durch"
         logos={[
-          { src: '/BMBF/image.png', alt: 'BMBF – Bundesministerium für Bildung und Forschung', width: 200, height: 70 },
-          { src: '/BMBF/image copy.png', alt: 'ESF Plus – Europäischer Sozialfonds', width: 200, height: 70 },
+          { src: '/BMBF/image copy.png', alt: 'ESF Plus – Kombilogos (BMBF und EU)', width: 220, height: 70, scale: 0.95 },
+          { src: '/BMBF/image copy 2.png', alt: 'ESF Plus – Programmlogo', width: 220, height: 70, scale: 0.85 },
+          { src: '/BMBF/image copy 3.png', alt: 'BMBF – Wortmarke', width: 220, height: 70, scale: 0.65 },
+          { src: '/BMBF/image.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.9 },
         ]}
       />
 
