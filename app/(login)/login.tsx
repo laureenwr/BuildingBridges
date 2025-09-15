@@ -8,7 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap, Users, AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
-import { signInAction, signUpAction } from './actions';
+import { signUpAction } from './actions';
+import { signIn as nextAuthSignIn } from 'next-auth/react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 
@@ -18,6 +19,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const priceId = searchParams.get('priceId');
   const inviteId = searchParams.get('inviteId');
   const error = searchParams.get('error');
+  const success = searchParams.get('success');
   
   // Add client-side validation state
   const [validationErrors, setValidationErrors] = useState<{
@@ -31,6 +33,8 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
         return 'Bitte geben Sie E-Mail und Passwort ein.';
       case 'invalid-credentials':
         return 'Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.';
+      case 'exists':
+        return 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.';
       case 'server-error':
         return 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.';
       default:
@@ -81,7 +85,32 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               </p>
             </div>
 
-            <form className="space-y-6" action={mode === 'signin' ? signInAction : signUpAction}>
+            <form
+              className="space-y-6"
+              action={mode === 'signin' ? undefined : signUpAction}
+              onSubmit={async (e) => {
+                if (mode !== 'signin') return; // handled by action for signup
+                e.preventDefault();
+                const form = e.currentTarget as HTMLFormElement;
+                const email = (form.querySelector('#email') as HTMLInputElement)?.value;
+                const password = (form.querySelector('#password') as HTMLInputElement)?.value;
+                const rawCallback = (form.querySelector('input[name="redirect"]') as HTMLInputElement)?.value || '/dashboard';
+                // allow only internal paths to prevent open redirects; block protocol-relative (//)
+                const isInternal = rawCallback.startsWith('/') && !rawCallback.startsWith('//');
+                const callbackUrl = isInternal ? rawCallback : '/dashboard';
+                const result = await nextAuthSignIn('credentials', {
+                  redirect: false,
+                  email,
+                  password,
+                  callbackUrl,
+                });
+                if (result?.ok) {
+                  window.location.href = result.url || callbackUrl;
+                } else {
+                  window.location.href = '/sign-in?error=invalid-credentials';
+                }
+              }}
+            >
               <input type="hidden" name="redirect" value={redirect || ''} />
               <input type="hidden" name="priceId" value={priceId || ''} />
               <input type="hidden" name="inviteId" value={inviteId || ''} />
@@ -94,6 +123,15 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 >
                   <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
                   {getErrorMessage(error)}
+                </motion.div>
+              )}
+              {!error && mode === 'signin' && success === '1' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"
+                >
+                  Konto erstellt. Bitte melden Sie sich an.
                 </motion.div>
               )}
               
@@ -158,42 +196,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 )}
               </div>
 
-              {/* Enhanced role selection for sign-up only */}
-              {mode === 'signup' && (
-                <div>
-                  <Label htmlFor="role" className="text-gray-700 font-medium block mb-3">Ich trete bei als</Label>
-                  <RadioGroup defaultValue="STUDENT" name="role" className="space-y-3">
-                    <div className="flex items-center p-4 border-2 border-gray-200 rounded-xl transition-all hover:bg-purple-50 hover:border-purple-300 cursor-pointer">
-                      <RadioGroupItem 
-                        value="STUDENT" 
-                        id="role-student" 
-                        className="mr-3 text-purple-600 border-purple-300" 
-                      />
-                      <div className="flex items-center">
-                        <GraduationCap className="mr-3 h-6 w-6 text-purple-600" />
-                        <Label htmlFor="role-student" className="cursor-pointer">
-                          <span className="block text-gray-800 font-semibold">Studentin / Schülerin</span>
-                          <span className="block text-sm text-gray-500 mt-0.5">Ich möchte lernen und mich weiterentwickeln</span>
-                        </Label>
-                      </div>
-                    </div>
-                    <div className="flex items-center p-4 border-2 border-gray-200 rounded-xl transition-all hover:bg-blue-50 hover:border-blue-300 cursor-pointer">
-                      <RadioGroupItem 
-                        value="MENTOR" 
-                        id="role-mentor" 
-                        className="mr-3 text-blue-600 border-blue-300" 
-                      />
-                      <div className="flex items-center">
-                        <Users className="mr-3 h-6 w-6 text-blue-600" />
-                        <Label htmlFor="role-mentor" className="cursor-pointer">
-                          <span className="block text-gray-800 font-semibold">Mentorin</span>
-                          <span className="block text-sm text-gray-500 mt-0.5">Ich möchte andere unterstützen und begleiten</span>
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-              )}
+              {/* Role selection removed; server defaults sign-ups to STUDENT */}
 
               <Button
                 type="submit"

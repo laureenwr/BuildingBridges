@@ -5,6 +5,7 @@ import { UserProvider } from '@/lib/auth/index';
 import { getUser } from '@/lib/db/queries';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import Script from 'next/script';
 
 // Configure Inter font
 const inter = Inter({
@@ -42,6 +43,23 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
       <body className="font-primary antialiased min-h-[100dvh]">
+        {/* Auto-reload on chunk load failure to avoid blank screen after deployments */}
+        <Script id="chunk-error-reload" strategy="beforeInteractive">
+          {`
+          (function(){
+            var refreshOnceKey='__bb_chunk_refresh_done__';
+            window.addEventListener('error', function(e){
+              var m=e && e.message || '';
+              if(m.includes('Loading chunk') || m.includes('ChunkLoadError')){
+                if(!sessionStorage.getItem(refreshOnceKey)){
+                  sessionStorage.setItem(refreshOnceKey,'1');
+                  location.reload();
+                }
+              }
+            }, true);
+          })();
+          `}
+        </Script>
         <UserProvider userPromise={userPromise}>
           <div className="min-h-screen flex flex-col">
             <Navbar />

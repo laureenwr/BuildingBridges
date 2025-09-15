@@ -8,6 +8,8 @@ export function NavigationLinks({ mobile }: { mobile?: boolean }) {
     { href: '/workshops', label: 'Workshops' },
     { href: '/activity', label: 'Activity' },
     { href: '/roadmap', label: 'Roadmap' },
+    { href: '/partners', label: 'Partner' },
+    { href: '/team', label: 'Team' },
   ];
 
   return (

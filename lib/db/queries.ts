@@ -1,39 +1,21 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
+import { activityLogs, teamMembers, teams, users, workshops, workshopEnrollments, workshopStatusEnum } from './schema';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function getUser() {
-  const sessionCookie = (await cookies()).get('session');
-  if (!sessionCookie || !sessionCookie.value) {
-    return null;
-  }
+  const session = await getServerSession(authOptions);
+  const id = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  if (!id || Number.isNaN(id)) return null;
 
-  const sessionData = await verifyToken(sessionCookie.value);
-  if (
-    !sessionData ||
-    !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
-  ) {
-    return null;
-  }
-
-  if (new Date(sessionData.expires) < new Date()) {
-    return null;
-  }
-
-  const user = await db
+  const result = await db
     .select()
     .from(users)
-    .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
+    .where(and(eq(users.id, id), isNull(users.deletedAt)))
     .limit(1);
 
-  if (user.length === 0) {
-    return null;
-  }
-
-  return user[0];
+  return result[0] ?? null;
 }
 
 export async function getTeamByStripeCustomerId(customerId: string) {
@@ -143,4 +125,33 @@ export async function getTeamForUser(userId: number) {
     ...team,
     teamMembers: membersWithUsers,
   };
+}
+
+// Workshops
+export async function listPublishedWorkshops() {
+  const result = await db
+    .select()
+    .from(workshops)
+    .where(eq(workshops.status, 'PUBLISHED'))
+    .orderBy(desc(workshops.startsAt));
+  return result;
+}
+
+export async function getWorkshopBySlug(slug: string) {
+  const result = await db
+    .select()
+    .from(workshops)
+    .where(eq(workshops.slug, slug))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function enrollInWorkshop(userId: number, workshopId: number) {
+  // naive insert with unique constraint handling; improve with capacity checks later
+  try {
+    await db.insert(workshopEnrollments).values({ workshopId, userId });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: 'Already enrolled or invalid.' };
+  }
 }

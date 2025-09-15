@@ -1,10 +1,22 @@
-'use client';
+"use client";
 
+import { useEffect, useState } from 'react';
+// Client page (fetches via API)
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Users, MapPin, Star, ArrowRight, BookOpen, Code, Lightbulb, Target, GraduationCap, Heart, Globe, Award } from 'lucide-react';
 import Link from 'next/link';
+async function fetchWorkshopsClient() {
+  try {
+    const res = await fetch(`/api/workshops`, { cache: 'no-store' });
+    if (!res.ok) return [] as any[];
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [] as any[];
+  }
+}
 
 const mepPrograms = [
   {
@@ -88,6 +100,11 @@ const researchActivities = [
 ];
 
 export default function WorkshopsPage() {
+  const [dbWorkshops, setDbWorkshops] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchWorkshopsClient().then(setDbWorkshops).catch(() => setDbWorkshops([]));
+  }, []);
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-24">
@@ -108,7 +125,7 @@ export default function WorkshopsPage() {
             </p>
           </motion.div>
 
-          {/* MEP Programs */}
+          {/* Workshops (DB-backed only) */}
           <section className="mb-20">
             <motion.div 
               className="text-center mb-16"
@@ -117,16 +134,15 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Mentoring & Empowerment Programme
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Speziell entwickelte Programme zur Potentialentfaltung und Stärkung von M*oC
-              </p>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Workshops</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">Aus der Datenbank – oder Hinweis, wenn noch keine veröffentlicht sind.</p>
             </motion.div>
 
+            {(!dbWorkshops || dbWorkshops.length === 0) ? (
+              <div className="text-center text-gray-600">Aktuell sind keine Workshops verfügbar.</div>
+            ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {mepPrograms.map((program, index) => (
+              {dbWorkshops.map((program: any, index: number) => (
                 <motion.div
                   key={program.id}
                   initial={{ opacity: 0, y: 40 }}
@@ -135,26 +151,16 @@ export default function WorkshopsPage() {
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className={`h-full hover:shadow-xl transition-all duration-300 border-0 shadow-lg ${
-                    program.type === 'empowerment' ? 'bg-gradient-to-br from-purple-50 to-purple-100' :
-                    program.type === 'digital' ? 'bg-gradient-to-br from-blue-50 to-blue-100' :
-                    'bg-gradient-to-br from-green-50 to-green-100'
-                  }`}>
+                  <Card className={`h-full hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50`}>
                     <CardHeader className="pb-4">
-                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${
-                        program.type === 'empowerment' ? 'bg-purple-200' :
-                        program.type === 'digital' ? 'bg-blue-200' :
-                        'bg-green-200'
-                      }`}>
-                        {program.type === 'empowerment' ? <GraduationCap className="h-8 w-8 text-purple-600" /> :
-                         program.type === 'digital' ? <Globe className="h-8 w-8 text-blue-600" /> :
-                         <BookOpen className="h-8 w-8 text-green-600" />}
+                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-purple-100">
+                        <GraduationCap className="h-8 w-8 text-purple-600" />
                       </div>
                       <CardTitle className="text-xl font-bold text-gray-900 mb-3">
-                        {program.title}
+                        {program.title || program.name}
                       </CardTitle>
                       <p className="text-gray-700 text-sm leading-relaxed">
-                        {program.description}
+                        {program.description || 'Details folgen in Kürze.'}
                       </p>
                     </CardHeader>
                     
@@ -162,32 +168,20 @@ export default function WorkshopsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="h-4 w-4 mr-2 text-purple-600" />
-                          <span>{program.startDate}</span>
+                          <span>{program.startDate || (program.startsAt ? new Date(program.startsAt).toLocaleDateString('de-DE') : 'tba')}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Clock className="h-4 w-4 mr-2 text-blue-600" />
-                          <span>{program.duration}</span>
+                          <span>{program.duration || (program.endsAt && program.startsAt ? '—' : 'tba')}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="h-4 w-4 mr-2 text-green-600" />
-                          <span>{program.participants}</span>
+                          <span>{program.participants || (program.capacity ? `${program.capacity} Plätze` : 'Kapazität tba')}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-                          <span>{program.location}</span>
+                          <span>{program.location || 'Ort tba'}</span>
                         </div>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Schwerpunkte:</h4>
-                        <ul className="space-y-1">
-                          {program.highlights.map((highlight, idx) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-center">
-                              <Star className="h-3 w-3 mr-2 text-yellow-500 flex-shrink-0" />
-                              {highlight}
-                            </li>
-                          ))}
-                        </ul>
                       </div>
 
                       <div className="pt-4">
@@ -203,6 +197,7 @@ export default function WorkshopsPage() {
                 </motion.div>
               ))}
             </div>
+            )}
           </section>
 
           {/* Research Activities */}
@@ -339,7 +334,7 @@ export default function WorkshopsPage() {
                     </Button>
                   </Link>
                   <Link href="/contact">
-                    <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold">
+                    <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
                       Kontakt aufnehmen
                     </Button>
                   </Link>

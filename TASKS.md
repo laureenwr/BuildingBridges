@@ -2,6 +2,12 @@
 
 A comprehensive mentorship platform connecting mentors with mentees, built with Next.js App Router and modern web development practices.
 
+## Brownfield Planning Artifacts
+
+- PRD index: [PLAN.md](mdc:.ai/plans/PLAN.md)
+- Feature PRD: [brownfield-landing-dashboard.md](mdc:.ai/plans/features/brownfield-landing-dashboard.md)
+- Architecture: [brownfield-architecture.md](mdc:docs/brownfield-architecture.md)
+
 ## Current Focus: Corporate Design System
 
 ### In Progress Tasks - Design System Foundation
