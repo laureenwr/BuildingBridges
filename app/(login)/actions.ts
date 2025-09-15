@@ -586,7 +586,8 @@ export async function signUpAction(formData: FormData) {
       .limit(1);
 
     if (existingUser.length > 0) {
-      throw new Error('An account with this email already exists. Please sign in instead.');
+      redirect('/sign-up?error=exists');
+      return;
     }
 
     // Validate password

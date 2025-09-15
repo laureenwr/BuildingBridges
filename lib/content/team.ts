@@ -58,7 +58,6 @@ export const teamMembers: TeamMember[] = [
     org: 'Freie Universität Berlin',
     image: '/images/placeholder-user.svg',
     email: 'e.kipnis@fu-berlin.de',
-    phone: '+49 30 838 60184',
     address: 'Habelschwerdter Allee 45, 14195 Berlin',
     room: 'JK27/227',
     links: [
@@ -98,7 +97,6 @@ export const teamMembers: TeamMember[] = [
     role: 'Projektleitung Digitale Plattform (TP3), Lehrstuhlinhaber',
     org: 'Universität Duisburg-Essen',
     image: '/images/placeholder-user.svg',
-    phone: '+49 201 18-32604',
     address: 'Universitätsstraße 9, 45151 Essen',
     links: [
       { label: 'Profil', url: 'https://sust.ris.uni-due.de/team/hannes-rothe/' },

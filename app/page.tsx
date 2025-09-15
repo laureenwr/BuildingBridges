@@ -117,12 +117,10 @@ export default function HomePage() {
             </Link>
             <Link href="/sign-up">
               <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 text-lg font-semibold shadow-2xl backdrop-blur-sm"
+                size="lg"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl border-2 border-white/20"
                 style={{
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(147,51,234,0.3)'
                 }}
               >
                 Jetzt anmelden
@@ -238,9 +236,10 @@ export default function HomePage() {
                   className="w-full h-full object-cover"
                   controls
                   preload="metadata"
+                  playsInline
                   poster="/coverimage.png"
                 >
-                  <source src="/3D Explainer Video Toolkit_free (1).mp4" type="video/mp4" />
+                  <source src="/media/intro.mp4" type="video/mp4" />
                   Ihr Browser unterstützt das Video-Element nicht.
                 </video>
               </div>
@@ -388,19 +387,25 @@ export default function HomePage() {
                 name: "Freie Universität Berlin",
                 role: "Projektleitung & Forschung",
                 description: "Gesamtkoordination, wissenschaftliche Leitung und Evaluation des Projekts unter Prof. Dr. Claudia Calvano.",
-                color: "purple"
+                color: "purple",
+                logo: "/Projektpartner Logos/FU Berlin logo.png",
+                alt: "Freie Universität Berlin Logo"
               },
               {
                 name: "Stiftung SPI",
                 role: "MEP-Entwicklung",
                 description: "Praxisorientierte Entwicklung und Umsetzung des Mentoring- und Empowerment-Programms.",
-                color: "blue"
+                color: "blue",
+                logo: "/Projektpartner Logos/Stiftung SPI Logo.png",
+                alt: "Stiftung SPI Logo"
               },
               {
                 name: "Universität Duisburg-Essen",
                 role: "Digitale Plattform",
                 description: "Partizipative Entwicklung der digitalen Storytelling-Plattform unter Prof. Dr. Hannes Rothe.",
-                color: "green"
+                color: "green",
+                logo: "/Projektpartner Logos/UDE_Logo.png",
+                alt: "Universität Duisburg-Essen Logo"
               }
             ].map((partner, index) => (
               <motion.div
@@ -412,8 +417,10 @@ export default function HomePage() {
                 whileHover={{ y: -5 }}
               >
                 <Card className="p-8 h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white">
-                  <div className={`bg-${partner.color}-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto`}>
-                    <BookOpen className={`h-8 w-8 text-${partner.color}-600`} />
+                  <div className="w-full flex items-center justify-center mb-6">
+                    <div className="relative w-48 h-16">
+                      <Image src={partner.logo} alt={partner.alt} fill className="object-contain" />
+                    </div>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
                     {partner.name}
@@ -455,7 +462,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 px-10 py-5 text-xl font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-10 py-5 text-xl font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                   Kontakt aufnehmen
                 </Button>
               </Link>

@@ -26,6 +26,11 @@ const publicPaths = [
   '/about',
   '/partners',
   '/team',
+  '/workshops',
+  '/activity',
+  '/vision',
+  '/roadmap',
+  '/imprint',
   '/api/webhooks/stripe',
   '/onboarding',
   '/design-system'
