@@ -13,11 +13,11 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/dashboard/personal', icon: UserCircle, label: 'Personal' },
-    { href: '/dashboard/mentors', icon: Users, label: 'Mentors' },
+    { href: '/dashboard/workshops', icon: Users, label: 'Workshops' },
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+    <div className="flex flex-col min-h-[calc(100dvh-68px)] w-full">
       {/* Mobile header */}
       <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
         <div className="flex items-center">
@@ -33,7 +33,7 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
         </Button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden h-full">
+      <div className="flex flex-1 overflow-hidden h-full w-full">
         {/* Sidebar */}
         <aside
           className={`w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${

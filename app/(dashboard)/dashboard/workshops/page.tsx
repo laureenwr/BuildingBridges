@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import { WorkshopCard } from '@/components/dashboard/WorkshopCard';
@@ -14,7 +14,7 @@ async function fetchWorkshops() {
   }
 }
 
-export function MentorDashboard() {
+export default function DashboardWorkshopsPage() {
   const [workshops, setWorkshops] = useState<any[]>([]);
   useEffect(() => {
     fetchWorkshops().then(setWorkshops).catch(() => setWorkshops([]));
@@ -23,10 +23,10 @@ export function MentorDashboard() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Meine Workshops</h1>
+        <h1 className="text-2xl font-bold">Workshops</h1>
       </div>
       {workshops.length === 0 ? (
-        <div className="text-gray-600">Noch keine Workshops verfügbar.</div>
+        <div className="text-gray-600">Noch keine Workshops. Bitte legen Sie einen an.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {workshops.map((w) => (
@@ -37,3 +37,5 @@ export function MentorDashboard() {
     </div>
   );
 }
+
+

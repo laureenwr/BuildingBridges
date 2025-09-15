@@ -573,6 +573,7 @@ export async function signUpAction(formData: FormData) {
   const password = formData.get('password') as string;
   const role = 'STUDENT';
   
+  // Hard block duplicate sign-ups with a user-friendly error page redirect
   if (!email || !password) {
     throw new Error('Email and password are required');
   }
@@ -586,8 +587,7 @@ export async function signUpAction(formData: FormData) {
       .limit(1);
 
     if (existingUser.length > 0) {
-      redirect('/sign-up?error=exists');
-      return;
+      return { error: 'An account with this email already exists. Please sign in instead.' } as any;
     }
 
     // Validate password
@@ -614,7 +614,6 @@ export async function signUpAction(formData: FormData) {
     redirect('/sign-in?success=1');
   } catch (error) {
     console.error('Sign up error:', error);
-    redirect('/sign-up?error=server-error');
-    return;
+    return { error: 'Registration failed. Please try again.' } as any;
   }
 }

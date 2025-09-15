@@ -1,6 +1,6 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
+import { activityLogs, teamMembers, teams, users, workshops, workshopEnrollments, workshopStatusEnum } from './schema';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -125,4 +125,33 @@ export async function getTeamForUser(userId: number) {
     ...team,
     teamMembers: membersWithUsers,
   };
+}
+
+// Workshops
+export async function listPublishedWorkshops() {
+  const result = await db
+    .select()
+    .from(workshops)
+    .where(eq(workshops.status, 'PUBLISHED'))
+    .orderBy(desc(workshops.startsAt));
+  return result;
+}
+
+export async function getWorkshopBySlug(slug: string) {
+  const result = await db
+    .select()
+    .from(workshops)
+    .where(eq(workshops.slug, slug))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function enrollInWorkshop(userId: number, workshopId: number) {
+  // naive insert with unique constraint handling; improve with capacity checks later
+  try {
+    await db.insert(workshopEnrollments).values({ workshopId, userId });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: 'Already enrolled or invalid.' };
+  }
 }

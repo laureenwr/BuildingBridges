@@ -126,6 +126,61 @@ export const onboardingData = pgTable('onboarding_data', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Workshops
+export const workshopStatusEnum = pgEnum('workshop_status', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+export const enrollmentStatusEnum = pgEnum('enrollment_status', ['ENROLLED', 'CANCELLED', 'WAITLIST']);
+
+export const workshops = pgTable('workshops', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 200 }).notNull(),
+  slug: varchar('slug', { length: 200 }).notNull().unique(),
+  description: text('description'),
+  startsAt: timestamp('starts_at'),
+  endsAt: timestamp('ends_at'),
+  location: varchar('location', { length: 200 }),
+  capacity: integer('capacity'),
+  status: workshopStatusEnum('status').notNull().default('DRAFT'),
+  createdBy: integer('created_by').references(() => users.id),
+  meetingUrl: text('meeting_url'),
+  materialsUrl: text('materials_url'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const workshopMentors = pgTable('workshop_mentors', {
+  workshopId: integer('workshop_id').references(() => workshops.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+}, (t) => ({
+  pk: [t.workshopId, t.userId],
+}));
+
+export const workshopEnrollments = pgTable('workshop_enrollments', {
+  id: serial('id').primaryKey(),
+  workshopId: integer('workshop_id').references(() => workshops.id, { onDelete: 'cascade' }).notNull(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  status: enrollmentStatusEnum('status').notNull().default('ENROLLED'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const workshopsRelations = relations(workshops, ({ many, one }) => ({
+  mentors: many(workshopMentors),
+  enrollments: many(workshopEnrollments),
+  creator: one(users, {
+    fields: [workshops.createdBy],
+    references: [users.id],
+  }),
+}));
+
+export const workshopMentorsRelations = relations(workshopMentors, ({ one }) => ({
+  workshop: one(workshops, { fields: [workshopMentors.workshopId], references: [workshops.id] }),
+  user: one(users, { fields: [workshopMentors.userId], references: [users.id] }),
+}));
+
+export const workshopEnrollmentsRelations = relations(workshopEnrollments, ({ one }) => ({
+  workshop: one(workshops, { fields: [workshopEnrollments.workshopId], references: [workshops.id] }),
+  user: one(users, { fields: [workshopEnrollments.userId], references: [users.id] }),
+}));
+
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
   activityLogs: many(activityLogs),
