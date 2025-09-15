@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Play, ArrowDown, Users, Target, Lightbulb, Award, Calendar, BookOpen, Heart, Globe, Zap, GraduationCap, Star, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FundingBanner } from '@/components/partners/FundingBanner';
 
 export default function HomePage() {
   const [videoVisible, setVideoVisible] = useState(false);
@@ -351,6 +352,15 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Funding Banner per Leitfaden */}
+      <FundingBanner
+        heading="Gefördert durch"
+        logos={[
+          { src: '/BMBF/image.png', alt: 'BMBF – Bundesministerium für Bildung und Forschung', width: 200, height: 70 },
+          { src: '/BMBF/image copy.png', alt: 'ESF Plus – Europäischer Sozialfonds', width: 200, height: 70 },
+        ]}
+      />
 
       {/* Partners Section */}
       <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
