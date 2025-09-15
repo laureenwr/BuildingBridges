@@ -6,7 +6,6 @@ export type TeamMember = {
   image: string;
   bio?: string;
   email?: string;
-  phone?: string;
   address?: string;
   room?: string;
   links?: { label: string; url: string }[];
@@ -20,7 +19,6 @@ export const teamMembers: TeamMember[] = [
     org: 'Freie Universität Berlin',
     image: '/images/placeholder-user.svg',
     email: 'claudia.calvano@fu-berlin.de',
-    phone: '+49 30 838 585 70',
     address: 'Habelschwerdter Allee 45, 14195 Berlin',
     room: 'JK27/229',
     links: [
@@ -34,7 +32,6 @@ export const teamMembers: TeamMember[] = [
     org: 'Freie Universität Berlin',
     image: '/images/placeholder-user.svg',
     email: 'susanne.birnkammer@fu-berlin.de',
-    phone: '+49 30 838 75634',
     address: 'Habelschwerdter Allee 45, 14195 Berlin',
     room: 'JK27/228',
     links: [

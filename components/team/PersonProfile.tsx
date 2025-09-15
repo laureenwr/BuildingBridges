@@ -17,18 +17,19 @@ export function PersonProfile({ m }: { m: TeamMember }) {
           </Card>
 
           <div className="md:col-span-2 space-y-6">
-            {m.bio && (
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-3">Kurzprofil</h2>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">{m.bio}</p>
-              </Card>
-            )}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-3">Kurzprofil</h2>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{m.bio || '—'}</p>
+            </Card>
 
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-3">Kontakt</h2>
               <ul className="text-gray-700 space-y-1">
-                {m.email && <li>E-Mail: <a className="text-blue-700 hover:underline" href={`mailto:${m.email}`}>{m.email}</a></li>}
-                {m.phone && <li>Telefon: {m.phone}</li>}
+                <li>
+                  E-Mail: {m.email ? (
+                    <a className="text-blue-700 hover:underline" href={`mailto:${m.email}`}>{m.email}</a>
+                  ) : '—'}
+                </li>
                 {m.room && <li>Raum: {m.room}</li>}
                 {m.address && <li>Adresse: {m.address}</li>}
                 {m.links?.length ? (
