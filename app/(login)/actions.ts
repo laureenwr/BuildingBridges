@@ -27,6 +27,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
+import { buildAbsoluteUrl, sendPasswordResetEmail } from '@/lib/email';
 import {
   validatedAction,
   validatedActionWithUser,
@@ -521,13 +522,20 @@ export async function resetPassword(formData: FormData) {
         await db.insert(verificationTokens).values({ identifier: email, token: resetToken, expires });
 
         const relativeUrl = `/reset-password?token=${resetToken}`;
-        const canEmail = !!(process.env.SMTP_HOST || process.env.RESEND_API_KEY || process.env.SENDGRID_API_KEY);
+        const absoluteUrl = buildAbsoluteUrl(relativeUrl);
+        const canEmail = !!(process.env.SMTP_HOST || process.env.RESEND_API_KEY);
 
         // If no email provider configured, include the reset link so the user can proceed
         if (!canEmail) {
           genericResponse.resetUrl = relativeUrl;
+        } else {
+          try {
+            await sendPasswordResetEmail(email, absoluteUrl);
+          } catch (e) {
+            console.error('Failed to send reset email:', e);
+            // still return generic success without leaking errors
+          }
         }
-        // TODO: Hook up email provider here if available, using canEmail
       }
 
       return genericResponse;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +23,16 @@ export default function ResetPasswordPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetUrl, setResetUrl] = useState<string | null>(null);
+  const [prefilledToken, setPrefilledToken] = useState('');
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get('token');
+    if (token) {
+      setPrefilledToken(token);
+      setStep('reset');
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -133,7 +143,7 @@ export default function ResetPasswordPage() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="token">Reset Token</Label>
-                  <Input id="token" name="token" type="text" required placeholder="Paste reset token" />
+                  <Input id="token" name="token" type="text" required placeholder="Paste reset token" defaultValue={prefilledToken} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
