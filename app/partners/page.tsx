@@ -45,7 +45,7 @@ export default function PartnersPage() {
               <Image src={'/Projektpartner%20Logos/Stiftung%20SPI%20Logo.png'} alt="Stiftung SPI" width={220} height={70} className="object-contain" />
               <div className="text-gray-700">
                 <p className="font-semibold">Stiftung SPI</p>
-                <p>Leitung TP2; Entwicklung und Umsetzung Mentoring‑ & Empowerment‑Programm.</p>
+                <p>Teilprojektleitung TP2; Entwicklung und Umsetzung Mentoring‑ & Empowerment‑Programm.</p>
                 <Link className="text-blue-700 hover:underline" href="https://stiftung-spi.de" target="_blank">Website</Link>
               </div>
             </article>

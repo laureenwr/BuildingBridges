@@ -93,7 +93,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
           >
-            Ein interdisziplinäres Forschungs- und Entwicklungsprojekt zur Stärkung von Mädchen und FLINTA* of Colour 
+            Ein interdisziplinäres Forschungs‑Praxis‑Projekt zur Stärkung von Mädchen und FLINTA* of Colour 
             für ihre Teilhabe an Hochschulbildung und akademischen Laufbahnen im psychosozialen Bereich.
           </motion.p>
           
@@ -174,7 +174,7 @@ export default function HomePage() {
               Über das Projekt
             </h2>
             <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-12">
-              "Building Bridges" ist ein 36-monatiges interdisziplinäres Forschungs- und Entwicklungsprojekt, 
+              "Building Bridges" ist ein 36‑monatiges interdisziplinäres Forschungs‑Praxis‑Projekt, 
               das darauf abzielt, Mädchen und FLINTA* of Colour ab der 10. Klasse zu stärken und zu mentorieren. 
               Das Projekt wird von der Freien Universität Berlin, der Stiftung SPI und der Universität Duisburg-Essen durchgeführt.
             </p>

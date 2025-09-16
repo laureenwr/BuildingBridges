@@ -17,7 +17,7 @@ export default function TeamPage() {
 
         {[
           { title: 'Freie Universität Berlin', key: 'Freie Universität Berlin' },
-          { title: 'Stiftung SPI / Mädea', key: 'Stiftung SPI / Mädea' },
+          { title: 'Stiftung SPI', key: 'Stiftung SPI' },
           { title: 'Universität Duisburg-Essen', key: 'Universität Duisburg-Essen' },
         ].map((section) => (
           <section key={section.key} className="mb-10">
