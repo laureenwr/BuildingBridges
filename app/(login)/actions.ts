@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, gt, sql } from 'drizzle-orm';
 import { db, client } from '@/lib/db/drizzle';
 
 // @ts-ignore - Suppress Drizzle ORM version conflicts
@@ -19,8 +19,10 @@ import {
   ActivityType,
   invitations,
   roleEnum,
+  verificationTokens,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
+import crypto from 'crypto';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -495,37 +497,82 @@ export const inviteTeamMember = validatedActionWithUser(
 );
 
 export async function resetPassword(formData: FormData) {
-  const email = formData.get('email') as string;
-  const token = formData.get('token') as string;
-  const newPassword = formData.get('newPassword') as string;
+  const email = (formData.get('email') as string) || '';
+  const token = (formData.get('token') as string) || '';
+  const newPassword = (formData.get('newPassword') as string) || '';
 
   try {
+    // Request reset link
     if (!token && email) {
-      // Step 1: Send reset password email
-      // Implement your email sending logic here
+      // Always return success message to avoid email enumeration
+      const genericResponse = {
+        error: '',
+        success:
+          'If an account exists with this email, you will receive a password reset link.',
+      } as { error: string; success: string; resetUrl?: string };
+
+      // Check if user exists; if so, create a reset token
+      const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      if (existing.length > 0) {
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+        // Clean old tokens for this identifier
+        await db.delete(verificationTokens).where(eq(verificationTokens.identifier, email));
+        await db.insert(verificationTokens).values({ identifier: email, token: resetToken, expires });
+
+        const relativeUrl = `/reset-password?token=${resetToken}`;
+        const canEmail = !!(process.env.SMTP_HOST || process.env.RESEND_API_KEY || process.env.SENDGRID_API_KEY);
+
+        // If no email provider configured, include the reset link so the user can proceed
+        if (!canEmail) {
+          genericResponse.resetUrl = relativeUrl;
+        }
+        // TODO: Hook up email provider here if available, using canEmail
+      }
+
+      return genericResponse;
+    }
+
+    // Perform password reset
+    if (token && newPassword) {
+      if (newPassword.length < 8) {
+        return { error: 'Password must be at least 8 characters long.', success: '' };
+      }
+
+      const now = new Date();
+      const rows = await db
+        .select()
+        .from(verificationTokens)
+        .where(and(eq(verificationTokens.token, token), gt(verificationTokens.expires, now)))
+        .limit(1);
+
+      if (rows.length === 0) {
+        return { error: 'Invalid or expired reset link.', success: '' };
+      }
+
+      const identifierEmail = rows[0].identifier;
+      const userRows = await db.select().from(users).where(eq(users.email, identifierEmail)).limit(1);
+      if (userRows.length === 0) {
+        // Cleanup token anyway
+        await db.delete(verificationTokens).where(eq(verificationTokens.token, token));
+        return { error: 'Invalid or expired reset link.', success: '' };
+      }
+
+      const hashed = await hashPassword(newPassword);
+      await db.update(users).set({ passwordHash: hashed }).where(eq(users.email, identifierEmail));
+      // Cleanup token
+      await db.delete(verificationTokens).where(eq(verificationTokens.token, token));
+
       return {
         error: '',
-        success: 'If an account exists with this email, you will receive a password reset link.'
-      };
-    } else if (token && newPassword) {
-      // Step 2: Reset password with token
-      // Implement your password reset logic here
-      // Verify token and update password in database
-      return {
-        error: '',
-        success: 'Password has been reset successfully. You can now login with your new password.'
+        success: 'Password has been reset successfully. You can now sign in with your new password.',
       };
     }
 
-    return {
-      error: 'Invalid request',
-      success: ''
-    };
+    return { error: 'Invalid request', success: '' };
   } catch (error) {
-    return {
-      error: 'Failed to reset password. Please try again.',
-      success: ''
-    };
+    console.error('Reset password error:', error);
+    return { error: 'Failed to reset password. Please try again.', success: '' };
   }
 }
 

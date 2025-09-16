@@ -215,6 +215,13 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   ? 'Bereits ein Konto? Anmelden'
                   : 'Noch kein Konto? Registrieren'}
               </Link>
+              {mode === 'signin' && (
+                <div className="mt-3">
+                  <Link href="/reset-password" className="text-sm text-gray-600 hover:text-gray-800">
+                    Passwort vergessen?
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Project Information */}

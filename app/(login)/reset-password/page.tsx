@@ -22,6 +22,7 @@ export default function ResetPasswordPage() {
     success: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resetUrl, setResetUrl] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,6 +40,9 @@ export default function ResetPasswordPage() {
             error: '', 
             success: result.success // Use the success message directly from the response
           });
+          if ((result as any).resetUrl) {
+            setResetUrl((result as any).resetUrl as string);
+          }
           
           // If successful and we have a success message, show it
           // No redirectTo handling needed as the action doesn't return that property
@@ -82,6 +86,12 @@ export default function ResetPasswordPage() {
               {formState.success}
             </div>
           )}
+          {resetUrl && step === 'request' && (
+            <div className="mb-4 p-3 bg-yellow-50 text-yellow-700 rounded-md text-sm">
+              Kein E-Mail-Dienst konfiguriert. Verwenden Sie diesen Link, um fortzufahren:{' '}
+              <a href={resetUrl} className="underline text-purple-700">{resetUrl}</a>
+            </div>
+          )}
           
           {formState.error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
@@ -113,7 +123,7 @@ export default function ResetPasswordPage() {
                   <Button
                     type="button"
                     variant="link"
-                    onClick={() => startTransition(() => router.push('/login'))}
+                    onClick={() => startTransition(() => router.push('/sign-in'))}
                   >
                     Back to Login
                   </Button>
@@ -121,7 +131,10 @@ export default function ResetPasswordPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <input type="hidden" name="token" value="" />
+                <div className="space-y-2">
+                  <Label htmlFor="token">Reset Token</Label>
+                  <Input id="token" name="token" type="text" required placeholder="Paste reset token" />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
                   <Input
@@ -153,7 +166,7 @@ export default function ResetPasswordPage() {
                   <Button
                     type="button"
                     variant="link"
-                    onClick={() => startTransition(() => router.push('/login'))}
+                    onClick={() => startTransition(() => router.push('/sign-in'))}
                   >
                     Back to Login
                   </Button>
@@ -163,6 +176,11 @@ export default function ResetPasswordPage() {
           </form>
         </CardContent>
       </Card>
+      <div className="mt-6 text-center">
+        <Button variant="link" onClick={() => setStep(step === 'request' ? 'reset' : 'request')}>
+          {step === 'request' ? 'I already have a reset token' : 'Request a reset link instead'}
+        </Button>
+      </div>
     </div>
   );
 }
