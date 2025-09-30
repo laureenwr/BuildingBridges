@@ -231,17 +231,15 @@ export default function HomePage() {
 
             <div className="relative bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl p-8 shadow-2xl">
               <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-xl">
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                  controls
-                  preload="metadata"
-                  playsInline
-                  poster="/coverimage.png"
-                >
-                  <source src="/media/intro.mp4" type="video/mp4" />
-                  Ihr Browser unterstützt das Video-Element nicht.
-                </video>
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube-nocookie.com/embed/txvwXWRwxyI"
+                  title="Erklärvideo: Building Bridges"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
               </div>
               
               <div className="mt-8 text-center">
