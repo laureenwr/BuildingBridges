@@ -178,3 +178,30 @@ If you prefer to set up environment variables manually:
    ```
 
 3. Ensure all required variables are set before running the application
+
+### Email (Password Reset)
+
+Enable outgoing emails for password resets using either Resend or SMTP.
+
+Resend:
+
+```env
+
+EMAIL_FROM=Building Bridges <no-reply@your-domain>
+SITE_URL=https://your-deployment-url
+```
+
+SMTP:
+
+```env
+SMTP_HOST=smtp.your-provider.com
+SMTP_PORT=587
+SMTP_USER=your_username
+SMTP_PASS=your_password
+EMAIL_FROM=Building Bridges <no-reply@your-domain>
+SITE_URL=https://your-deployment-url
+```
+
+Notes:
+- `SITE_URL` ensures reset links are absolute (falls back to `VERCEL_URL` or `http://localhost:3000`).
+- If neither Resend nor SMTP is configured, the reset page displays the link so you can copy it manually.
