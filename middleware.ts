@@ -20,6 +20,7 @@ const publicPaths = [
   '/',
   '/sign-in',
   '/sign-up',
+  '/reset-password',
   '/dashboard/mentors',
   '/mentors',
   '/contact',

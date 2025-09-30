@@ -394,7 +394,7 @@ export default function HomePage() {
               {
                 name: "Stiftung SPI",
                 role: "MEP-Entwicklung",
-                description: "Praxisorientierte Entwicklung und Umsetzung des Mentoring- und Empowerment-Programms.",
+                description: "Praxisorientierte Entwicklung und Umsetzung des Mentoring- und Empowerment-Programms unter M.A. Celiana Kiefer",
                 color: "blue",
                 logo: "/Projektpartner Logos/Stiftung SPI Logo.png",
                 alt: "Stiftung SPI Logo"

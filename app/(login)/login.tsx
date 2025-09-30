@@ -206,6 +206,14 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               </Button>
             </form>
 
+            <div className="mt-4 text-center">
+              {mode === 'signin' && (
+                <Link href="/reset-password" className="text-sm text-gray-600 hover:text-gray-800">
+                  Passwort vergessen?
+                </Link>
+              )}
+            </div>
+
             <div className="mt-8 text-center">
               <Link
                 href={mode === 'signup' ? '/sign-in' : '/sign-up'}
