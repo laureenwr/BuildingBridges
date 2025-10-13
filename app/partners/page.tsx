@@ -7,7 +7,7 @@ export default function PartnersPage() {
     { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ – Gefördert vom (deutsch)', width: 220, height: 70 },
     { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Rahmenprogramm Empirische Bildungsforschung – Wortmarke', width: 220, height: 70 },
     { src: '/Projektpartner%20Logos/Stiftung%20SPI%20Logo.png', alt: 'Stiftung SPI', width: 220, height: 70 },
-    { src: '/BMBF/image.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70 },
+    { src: '/BMBF/image copy 3.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70 },
   ];
 
   return (
