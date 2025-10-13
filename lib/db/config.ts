@@ -25,10 +25,21 @@ export const dbConfig = {
       return process.env.LOCAL_DATABASE_URL || localDbUrl;
     } else {
       // Cloud database in any environment, prioritize DATABASE_URL, then POSTGRES_URL
-      if (process.env.DATABASE_URL) {
-        return process.env.DATABASE_URL;
-      } else if (process.env.POSTGRES_URL) {
-        return process.env.POSTGRES_URL;
+      const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+      if (rawUrl) {
+        // Ensure SSL is enforced for remote databases (e.g., Neon)
+        try {
+          const url = new URL(rawUrl);
+          // Append sslmode=require if not already present
+          const hasSslMode = url.searchParams.has('sslmode');
+          if (!hasSslMode) {
+            url.searchParams.set('sslmode', 'require');
+          }
+          return url.toString();
+        } catch {
+          // If URL parsing fails, fall back to raw value
+          return rawUrl;
+        }
       }
     }
     
@@ -41,11 +52,16 @@ export const dbConfig = {
    * Get connection options for postgres client
    */
   getConnectionOptions() {
+    // Enable SSL for non-local (cloud) connections
+    const environment = process.env.NODE_ENV || 'development';
+    const isCloud = process.env.USE_CLOUD_DB === 'true' || environment !== 'development';
     return {
       max: process.env.DB_POOL_SIZE ? parseInt(process.env.DB_POOL_SIZE, 10) : 10,
       prepare: true, // Enables prepared statements for better security
       idle_timeout: process.env.DB_IDLE_TIMEOUT ? parseInt(process.env.DB_IDLE_TIMEOUT, 10) : 30, // seconds
       connect_timeout: process.env.DB_CONNECT_TIMEOUT ? parseInt(process.env.DB_CONNECT_TIMEOUT, 10) : 30, // seconds
+      // postgres.js accepts ssl: 'require' to enforce TLS
+      ...(isCloud ? { ssl: 'require' as const } : {}),
     };
   },
   
