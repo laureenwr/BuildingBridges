@@ -354,10 +354,10 @@ export default function HomePage() {
       <FundingBanner
         heading="Gefördert durch"
         logos={[
-          { src: '/BMBF/image copy.png', alt: 'ESF Plus – Kombilogos (BMBF und EU)', width: 220, height: 70, scale: 0.95 },
-          { src: '/BMBF/image copy 2.png', alt: 'ESF Plus – Programmlogo', width: 220, height: 70, scale: 0.85 },
-          { src: '/BMBF/image copy 3.png', alt: 'BMBF – Wortmarke', width: 220, height: 70, scale: 0.65 },
-          { src: '/BMBF/image.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.9 },
+          { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ – Gefördert vom (deutsch)', width: 220, height: 70, scale: 0.95 },
+          { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Rahmenprogramm Empirische Bildungsforschung – Wortmarke', width: 220, height: 70, scale: 0.9 },
+          { src: '/Projektpartner%20Logos/Stiftung%20SPI%20Logo.png', alt: 'Stiftung SPI', width: 220, height: 70, scale: 1.2},
+          { src: '/BMBF/image copy 3.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.6 },
         ]}
       />
 
