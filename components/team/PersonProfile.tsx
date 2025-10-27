@@ -18,10 +18,12 @@ export function PersonProfile({ m }: { m: TeamMember }) {
           </Card>
 
           <div className="md:col-span-2 space-y-6">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-3">Kurzprofil</h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{m.bio || '—'}</p>
-            </Card>
+            {m.bio ? (
+              <Card className="p-6">
+                <h2 className="text-xl font-semibold mb-3">Bio</h2>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">{m.bio}</p>
+              </Card>
+            ) : null}
 
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-3">Kontakt</h2>
