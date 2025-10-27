@@ -190,9 +190,12 @@ export const workshops = pgTable('workshops', {
   description: text('description'),
   startsAt: timestamp('starts_at'),
   endsAt: timestamp('ends_at'),
-  location: varchar('location', { length: 200 }),
+  location: varchar('location', { length: 200 }), // Room/Location
+  room: varchar('room', { length: 100 }), // Specific room number/name
   capacity: integer('capacity'),
   status: workshopStatusEnum('status').notNull().default('DRAFT'),
+  isPublic: boolean('is_public').notNull().default(false), // Display on public website
+  imageUrl: text('image_url'), // Workshop thumbnail/image
   createdBy: integer('created_by').references(() => users.id),
   meetingUrl: text('meeting_url'),
   materialsUrl: text('materials_url'),
@@ -215,13 +218,30 @@ export const workshopEnrollments = pgTable('workshop_enrollments', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const workshopFiles = pgTable('workshop_files', {
+  id: serial('id').primaryKey(),
+  workshopId: integer('workshop_id').references(() => workshops.id, { onDelete: 'cascade' }).notNull(),
+  fileName: varchar('file_name', { length: 255 }).notNull(),
+  fileUrl: text('file_url').notNull(),
+  fileSize: integer('file_size'), // in bytes
+  fileType: varchar('file_type', { length: 100 }), // MIME type
+  uploadedBy: integer('uploaded_by').references(() => users.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export const workshopsRelations = relations(workshops, ({ many, one }) => ({
   mentors: many(workshopMentors),
   enrollments: many(workshopEnrollments),
+  files: many(workshopFiles),
   creator: one(users, {
     fields: [workshops.createdBy],
     references: [users.id],
   }),
+}));
+
+export const workshopFilesRelations = relations(workshopFiles, ({ one }) => ({
+  workshop: one(workshops, { fields: [workshopFiles.workshopId], references: [workshops.id] }),
+  uploader: one(users, { fields: [workshopFiles.uploadedBy], references: [users.id] }),
 }));
 
 export const workshopMentorsRelations = relations(workshopMentors, ({ one }) => ({
