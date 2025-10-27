@@ -19,6 +19,7 @@ import {
   ActivityType,
   invitations,
   roleEnum,
+  verificationTokens,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
@@ -48,57 +49,8 @@ async function logActivity(
   await db.insert(activityLogs).values(newActivity);
 }
 
-const signInSchema = z.object({
-  email: z.string().email().min(3).max(255),
-  password: z.string().min(8).max(100),
-});
-
-export const signIn = validatedAction(signInSchema, async (data, formData) => {
-  const { email, password } = data;
-
-  try {
-    // Use direct SQL query with postgres-js client
-    const foundUsers = await client`
-      SELECT * FROM users 
-      WHERE email = ${email} AND deleted_at IS NULL 
-      LIMIT 1
-    `;
-
-    if (foundUsers.length === 0) {
-      return { error: 'Invalid email or password. Please try again.' };
-    }
-
-    const foundUser = foundUsers[0];
-
-    const isPasswordValid = await comparePasswords(
-      password,
-      foundUser.password_hash
-    );
-
-    if (!isPasswordValid) {
-      return { error: 'Invalid email or password. Please try again.' };
-    }
-
-    // Session is managed by NextAuth credentials; UI uses signIn('credentials')
-
-    const redirectTo = formData.get('redirect') as string | null;
-    if (redirectTo === 'checkout') {
-      const priceId = formData.get('priceId') as string;
-      // For now, skip checkout functionality
-      return { error: 'Checkout functionality temporarily disabled' };
-    }
-
-    // Redirect based on user role
-    const dashboardPath = foundUser.role === 'ADMIN' ? '/dashboard' : 
-                         foundUser.role === 'MENTOR' ? '/dashboard' : 
-                         '/dashboard';
-    
-    redirect(dashboardPath);
-  } catch (error) {
-    console.error('Sign in error:', error);
-    return { error: 'An error occurred during sign in. Please try again.' };
-  }
-});
+// Sign-in is handled by NextAuth credentials provider in lib/auth.ts
+// The login form uses nextAuthSignIn('credentials') directly
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -239,7 +191,6 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       await Promise.all([
         db.insert(teamMembers).values(newTeamMember),
         logActivity(teamId, createdUser.id, ActivityType.SIGN_UP),
-        // setSession(createdUser), // Removed setSession
       ]);
     } catch (error) {
       console.error('Failed to complete signup process:', error);
@@ -369,7 +320,6 @@ export const deleteAccount = validatedActionWithUser(
         );
     }
 
-    // (await cookies()).delete('session'); // Removed cookie deletion
     redirect('/sign-in');
   }
 );
@@ -498,84 +448,147 @@ export async function resetPassword(formData: FormData) {
   const email = formData.get('email') as string;
   const token = formData.get('token') as string;
   const newPassword = formData.get('newPassword') as string;
+  const confirmPassword = formData.get('confirmPassword') as string;
 
   try {
     if (!token && email) {
-      // Step 1: Send reset password email
-      // Implement your email sending logic here
+      // Step 1: Request password reset - Generate and store token
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      // Always return the same message for security (don't reveal if email exists)
+      if (existingUser.length === 0) {
+        console.log(`Password reset requested for non-existent email: ${email}`);
+        return {
+          error: '',
+          success: 'Falls ein Konto mit dieser E-Mail-Adresse existiert, erhalten Sie einen Link zum Zurücksetzen des Passworts.'
+        };
+      }
+
+      // Generate a secure random token
+      const resetToken = crypto.randomUUID();
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Store the token in verification_tokens table
+      await db.insert(verificationTokens).values({
+        identifier: email,
+        token: resetToken,
+        expires: expiresAt,
+      });
+
+      // TODO: Send email with reset link
+      // await sendPasswordResetEmail(email, resetToken);
+      // For now, just log the token (in production, this should be sent via email)
+      console.log(`Password reset token for ${email}: ${resetToken}`);
+      console.log(`Reset link: ${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`);
+
       return {
         error: '',
-        success: 'If an account exists with this email, you will receive a password reset link.'
+        success: 'Falls ein Konto mit dieser E-Mail-Adresse existiert, erhalten Sie einen Link zum Zurücksetzen des Passworts.'
       };
     } else if (token && newPassword) {
       // Step 2: Reset password with token
-      // Implement your password reset logic here
-      // Verify token and update password in database
+      if (!confirmPassword || newPassword !== confirmPassword) {
+        return {
+          error: 'Die Passwörter stimmen nicht überein.',
+          success: ''
+        };
+      }
+
+      // Validate password strength
+      if (newPassword.length < 8) {
+        return {
+          error: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
+          success: ''
+        };
+      }
+
+      if (!/[A-Z]/.test(newPassword)) {
+        return {
+          error: 'Das Passwort muss mindestens einen Großbuchstaben enthalten.',
+          success: ''
+        };
+      }
+
+      if (!/[0-9]/.test(newPassword)) {
+        return {
+          error: 'Das Passwort muss mindestens eine Zahl enthalten.',
+          success: ''
+        };
+      }
+
+      // Verify the token exists and is not expired
+      const [verificationToken] = await db
+        .select()
+        .from(verificationTokens)
+        .where(eq(verificationTokens.token, token))
+        .limit(1);
+
+      if (!verificationToken) {
+        return {
+          error: 'Ungültiger oder abgelaufener Token. Bitte fordern Sie einen neuen Link an.',
+          success: ''
+        };
+      }
+
+      if (verificationToken.expires < new Date()) {
+        // Clean up expired token
+        await db
+          .delete(verificationTokens)
+          .where(eq(verificationTokens.token, token));
+
+        return {
+          error: 'Der Token ist abgelaufen. Bitte fordern Sie einen neuen Link an.',
+          success: ''
+        };
+      }
+
+      // Update the user's password
+      const passwordHash = await hashPassword(newPassword);
+      await db
+        .update(users)
+        .set({ passwordHash })
+        .where(eq(users.email, verificationToken.identifier));
+
+      // Delete the used token
+      await db
+        .delete(verificationTokens)
+        .where(eq(verificationTokens.token, token));
+
+      console.log(`Password reset successful for email: ${verificationToken.identifier}`);
+
       return {
         error: '',
-        success: 'Password has been reset successfully. You can now login with your new password.'
+        success: 'Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.'
       };
     }
 
     return {
-      error: 'Invalid request',
+      error: 'Ungültige Anfrage',
       success: ''
     };
   } catch (error) {
+    console.error('Password reset error:', error);
     return {
-      error: 'Failed to reset password. Please try again.',
+      error: 'Fehler beim Zurücksetzen des Passworts. Bitte versuchen Sie es erneut.',
       success: ''
     };
   }
 }
 
-// Simple wrapper actions for direct form usage
-export async function signInAction(formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  
-  if (!email || !password) {
-    redirect('/sign-in?error=missing-credentials');
-  }
-
-  // Use direct SQL query with postgres-js client
-  const foundUsers = await client`
-    SELECT * FROM users 
-    WHERE email = ${email} AND deleted_at IS NULL 
-    LIMIT 1
-  `;
-
-  if (foundUsers.length === 0) {
-    redirect('/sign-in?error=invalid-credentials');
-  }
-
-  const foundUser = foundUsers[0];
-
-  const isPasswordValid = await comparePasswords(
-    password,
-    foundUser.password_hash
-  );
-
-  if (!isPasswordValid) {
-    redirect('/sign-in?error=invalid-credentials');
-  }
-
-  // Session is managed by NextAuth credentials; UI uses signIn('credentials')
-  const dashboardPath = foundUser.role === 'ADMIN' ? '/dashboard' : 
-                       foundUser.role === 'MENTOR' ? '/dashboard' : 
-                       '/dashboard';
-  
-  redirect(dashboardPath);
-}
+// Sign-in action removed - NextAuth handles authentication via credentials provider
 
 export async function signUpAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const role = 'STUDENT';
-  
-  // Hard block duplicate sign-ups with a user-friendly error page redirect
+
+  // Validate required fields
   if (!email || !password) {
-    throw new Error('Email and password are required');
+    redirect('/sign-up?error=missing-credentials');
   }
 
   try {
@@ -587,12 +600,20 @@ export async function signUpAction(formData: FormData) {
       .limit(1);
 
     if (existingUser.length > 0) {
-      return { error: 'An account with this email already exists. Please sign in instead.' } as any;
+      redirect('/sign-up?error=exists');
     }
 
-    // Validate password
+    // Validate password strength
     if (password.length < 8) {
-      throw new Error('Password must be at least 8 characters long.');
+      redirect('/sign-up?error=password-too-short');
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      redirect('/sign-up?error=password-no-uppercase');
+    }
+
+    if (!/[0-9]/.test(password)) {
+      redirect('/sign-up?error=password-no-number');
     }
 
     // Create user
@@ -607,13 +628,12 @@ export async function signUpAction(formData: FormData) {
     if (!createdUser) {
       console.error('Sign up error: insert returned no row');
       redirect('/sign-up?error=server-error');
-      return;
     }
 
     // Do not auto-login; redirect to sign-in with success message
     redirect('/sign-in?success=1');
   } catch (error) {
     console.error('Sign up error:', error);
-    return { error: 'Registration failed. Please try again.' } as any;
+    redirect('/sign-up?error=server-error');
   }
 }

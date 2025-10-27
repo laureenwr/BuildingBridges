@@ -1,0 +1,139 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - generic [ref=e6]:
+          - link "Building Bridges Logo Building Bridges" [ref=e8] [cursor=pointer]:
+            - /url: /
+            - img "Building Bridges Logo" [ref=e9]
+            - generic [ref=e10]: Building Bridges
+          - generic [ref=e11]:
+            - link "Workshops" [ref=e13] [cursor=pointer]:
+              - /url: /workshops
+              - button "Workshops" [ref=e14]
+            - link "Activity" [ref=e16] [cursor=pointer]:
+              - /url: /activity
+              - button "Activity" [ref=e17]
+            - link "Mentors" [ref=e19] [cursor=pointer]:
+              - /url: /mentors
+              - button "Mentors" [ref=e20]
+            - link "Partner" [ref=e22] [cursor=pointer]:
+              - /url: /partners
+              - button "Partner" [ref=e23]
+            - link "Team" [ref=e25] [cursor=pointer]:
+              - /url: /team
+              - button "Team" [ref=e26]
+            - link "Contact" [ref=e28] [cursor=pointer]:
+              - /url: /contact
+              - button "Contact" [ref=e29]
+          - generic [ref=e31]:
+            - link "Sign In" [ref=e32] [cursor=pointer]:
+              - /url: /sign-in
+              - button "Sign In" [ref=e33]
+            - link "Sign Up" [ref=e34] [cursor=pointer]:
+              - /url: /sign-up
+              - button "Sign Up" [ref=e35]
+    - main [ref=e36]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - img [ref=e43]
+          - heading "Building Bridges" [level=1] [ref=e46]
+          - paragraph [ref=e47]: Empowering Girls and FLINTA* of Colour
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - heading "Willkommen zurück" [level=2] [ref=e51]
+            - paragraph [ref=e52]: Melden Sie sich an, um auf Ihr Konto zuzugreifen
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - text: E-Mail-Adresse
+              - textbox "E-Mail-Adresse" [active] [ref=e55]:
+                - /placeholder: ihre.email@beispiel.de
+                - text: "[email protected]"
+            - generic [ref=e56]:
+              - text: Passwort
+              - textbox "Passwort" [ref=e57]:
+                - /placeholder: ••••••••
+                - text: wrongpassword123
+            - button "Anmelden" [ref=e58] [cursor=pointer]
+          - link "Passwort vergessen?" [ref=e60] [cursor=pointer]:
+            - /url: /reset-password
+          - link "Noch kein Konto? Registrieren" [ref=e62] [cursor=pointer]:
+            - /url: /sign-up
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - img [ref=e66]
+              - generic [ref=e68]: Empowerment
+            - generic [ref=e69]:
+              - img [ref=e70]
+              - generic [ref=e72]: Mentoring
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - generic [ref=e77]: Community
+    - contentinfo [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - link "Building Bridges Logo Building Bridges" [ref=e82] [cursor=pointer]:
+              - /url: /
+              - img "Building Bridges Logo" [ref=e83]
+              - generic [ref=e84]: Building Bridges
+            - paragraph [ref=e85]: Empowering FLINTA individuals and girls of color to achieve their full potential in psychosocial and educational fields.
+          - generic [ref=e86]:
+            - heading "About" [level=3] [ref=e87]
+            - list [ref=e88]:
+              - listitem [ref=e89]:
+                - link "Vision" [ref=e90] [cursor=pointer]:
+                  - /url: /vision
+              - listitem [ref=e91]:
+                - link "Team" [ref=e92] [cursor=pointer]:
+                  - /url: /team
+              - listitem [ref=e93]:
+                - link "Partner" [ref=e94] [cursor=pointer]:
+                  - /url: /partners
+              - listitem [ref=e95]:
+                - link "Contact" [ref=e96] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e97]:
+            - heading "Legal" [level=3] [ref=e98]
+            - list [ref=e99]:
+              - listitem [ref=e100]:
+                - link "Terms of Service" [ref=e101] [cursor=pointer]:
+                  - /url: /tos
+              - listitem [ref=e102]:
+                - link "Privacy Policy" [ref=e103] [cursor=pointer]:
+                  - /url: /privacy-policy
+              - listitem [ref=e104]:
+                - link "Imprint" [ref=e105] [cursor=pointer]:
+                  - /url: /imprint
+          - generic [ref=e106]:
+            - heading "Community" [level=3] [ref=e107]
+            - list [ref=e108]:
+              - listitem [ref=e109]:
+                - link "Workshops" [ref=e110] [cursor=pointer]:
+                  - /url: /workshops
+              - listitem [ref=e111]:
+                - link "Activities" [ref=e112] [cursor=pointer]:
+                  - /url: /activities
+              - listitem [ref=e113]:
+                - link "Roadmap" [ref=e114] [cursor=pointer]:
+                  - /url: /roadmap
+        - generic [ref=e116]:
+          - paragraph [ref=e117]: © 2025 Building Bridges. All rights reserved.
+          - generic [ref=e118]:
+            - link [ref=e119] [cursor=pointer]:
+              - /url: https://facebook.com
+              - img [ref=e120]
+            - link [ref=e122] [cursor=pointer]:
+              - /url: https://twitter.com
+              - img [ref=e123]
+            - link [ref=e125] [cursor=pointer]:
+              - /url: https://instagram.com
+              - img [ref=e126]
+            - link [ref=e129] [cursor=pointer]:
+              - /url: https://linkedin.com
+              - img [ref=e130]
+  - alert [ref=e134]
+```

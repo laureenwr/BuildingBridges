@@ -37,6 +37,12 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
         return 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.';
       case 'server-error':
         return 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.';
+      case 'password-too-short':
+        return 'Das Passwort muss mindestens 8 Zeichen lang sein.';
+      case 'password-no-uppercase':
+        return 'Das Passwort muss mindestens einen Großbuchstaben enthalten.';
+      case 'password-no-number':
+        return 'Das Passwort muss mindestens eine Zahl enthalten.';
       default:
         return null;
     }
@@ -191,7 +197,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 )}
                 {mode === 'signup' && (
                   <p className="mt-2 text-xs text-gray-500">
-                    Passwort muss mindestens 8 Zeichen lang sein
+                    Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten
                   </p>
                 )}
               </div>

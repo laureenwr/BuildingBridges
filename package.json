@@ -22,7 +22,12 @@
     "parse-prd": "node scripts/dev.js parse-prd",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -86,6 +91,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@vitest/coverage-v8": "^3.2.4",
     "vitest": "^3.2.4"
   }

@@ -7,6 +7,7 @@ import {
   integer,
   uuid,
   pgEnum,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import type { AdapterAccount } from "@auth/core/adapters";
@@ -123,7 +124,59 @@ export const onboardingData = pgTable('onboarding_data', {
   challenges: text('challenges').notNull(),
   goals: text('goals').notNull(),
   interests: text('interests').notNull(),
+  // Extended fields for AI matching
+  background: text('background'), // Educational/professional background
+  skills: text('skills'), // Comma-separated skills
+  availability: text('availability'), // Time commitment
+  preferredMentorshipStyle: text('preferred_mentorship_style'), // 1-on-1, group, etc.
+  specificNeeds: text('specific_needs'), // Specific help needed
+  languages: text('languages'), // Languages spoken
+  location: varchar('location', { length: 200 }), // City/region
+  // Digital storytelling
+  digitalStory: text('digital_story'), // AI-generated narrative from user's responses
+  storyGeneratedAt: timestamp('story_generated_at'), // When the story was generated
+  completed: boolean('completed').default(false),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Mentoring matches
+export const mentoringMatchStatusEnum = pgEnum('mentoring_match_status', ['PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED']);
+
+export const mentoringMatches = pgTable('mentoring_matches', {
+  id: serial('id').primaryKey(),
+  menteeId: integer('mentee_id')
+    .notNull()
+    .references(() => users.id),
+  mentorId: integer('mentor_id')
+    .notNull()
+    .references(() => users.id),
+  matchScore: integer('match_score'), // AI-generated match score (0-100)
+  matchReason: text('match_reason'), // AI-generated explanation
+  status: mentoringMatchStatusEnum('status').default('PENDING').notNull(),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// AI-generated recommendations
+export const recommendationTypeEnum = pgEnum('recommendation_type', ['WORKSHOP', 'SCHOLARSHIP', 'RESOURCE', 'EVENT']);
+
+export const aiRecommendations = pgTable('ai_recommendations', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  type: recommendationTypeEnum('type').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  url: text('url'),
+  reason: text('reason'), // AI-generated reason for recommendation
+  relevanceScore: integer('relevance_score'), // 0-100
+  isViewed: boolean('is_viewed').default(false),
+  isDismissed: boolean('is_dismissed').default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
 // Workshops
@@ -235,6 +288,12 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
+export type OnboardingData = typeof onboardingData.$inferSelect;
+export type NewOnboardingData = typeof onboardingData.$inferInsert;
+export type MentoringMatch = typeof mentoringMatches.$inferSelect;
+export type NewMentoringMatch = typeof mentoringMatches.$inferInsert;
+export type AIRecommendation = typeof aiRecommendations.$inferSelect;
+export type NewAIRecommendation = typeof aiRecommendations.$inferInsert;
 export type TeamDataWithMembers = {
   id: number;
   name: string;
