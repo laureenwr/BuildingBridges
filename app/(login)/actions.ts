@@ -205,8 +205,8 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       return createCheckoutSession({ team: createdTeam, priceId });
     }
 
-    // Return success instead of redirecting
-    return { success: true, redirectTo: '/onboarding' };
+    // Return success instead of redirecting - now goes to dashboard
+    return { success: true, redirectTo: '/dashboard' };
   } catch (error) {
     // Enhanced error logging with details
     console.error('Sign-up error:', error);
