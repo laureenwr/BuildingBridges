@@ -118,7 +118,7 @@ export default function MentoringPage() {
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
               <Sparkles className="h-6 w-6 text-purple-600" />
-              Erstelle dein eigenes Mentoring
+              Mein persönliches Mentoring-Programm
             </CardTitle>
             <CardDescription>
               Beantworte ein paar Fragen und lass unsere KI die perfekte Mentoring-Beziehung für dich finden!
@@ -166,7 +166,7 @@ export default function MentoringPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
           <Sparkles className="h-8 w-8 text-purple-600" />
-          Dein persönliches Mentoring
+          Mein persönliches Mentoring-Programm
         </h1>
         <p className="text-gray-600">
           KI-gestützte Empfehlungen basierend auf deinem Profil
