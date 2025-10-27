@@ -285,42 +285,53 @@ const deleteAccountSchema = z.object({
 export const deleteAccount = validatedActionWithUser(
   deleteAccountSchema,
   async (data, _, user) => {
-    const { password } = data;
+    try {
+      const { password } = data;
 
-    const isPasswordValid = await comparePasswords(password, user.passwordHash);
-    if (!isPasswordValid) {
-      return { error: 'Incorrect password. Account deletion failed.' };
-    }
+      const isPasswordValid = await comparePasswords(password, user.passwordHash);
+      if (!isPasswordValid) {
+        return { error: 'Incorrect password. Account deletion failed.' };
+      }
 
-    const userWithTeam = await getUserWithTeam(user.id);
+      const userWithTeam = await getUserWithTeam(user.id);
 
-    await logActivity(
-      userWithTeam?.teamId,
-      user.id,
-      ActivityType.DELETE_ACCOUNT
-    );
+      await logActivity(
+        userWithTeam?.teamId,
+        user.id,
+        ActivityType.DELETE_ACCOUNT
+      );
 
-    // Soft delete
-    await db
-      .update(users)
-      .set({
-        deletedAt: sql`CURRENT_TIMESTAMP`,
-        email: sql`CONCAT(email, '-', id, '-deleted')`, // Ensure email uniqueness
-      })
-      .where(eq(users.id, user.id));
-
-    if (userWithTeam?.teamId) {
+      // Soft delete
       await db
-        .delete(teamMembers)
-        .where(
-          and(
-            eq(teamMembers.userId, user.id),
-            eq(teamMembers.teamId, userWithTeam.teamId)
-          )
-        );
-    }
+        .update(users)
+        .set({
+          deletedAt: sql`CURRENT_TIMESTAMP`,
+          email: sql`CONCAT(email, '-', id, '-deleted')`, // Ensure email uniqueness
+        })
+        .where(eq(users.id, user.id));
 
-    redirect('/sign-in');
+      if (userWithTeam?.teamId) {
+        await db
+          .delete(teamMembers)
+          .where(
+            and(
+              eq(teamMembers.userId, user.id),
+              eq(teamMembers.teamId, userWithTeam.teamId)
+            )
+          );
+      }
+
+      redirect('/sign-in');
+    } catch (error) {
+      // Check if this is a Next.js redirect error and rethrow it
+      if (error && typeof error === 'object' && 'digest' in error &&
+          typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+        throw error;
+      }
+
+      console.error('Delete account error:', error);
+      return { error: 'An error occurred while deleting your account.' };
+    }
   }
 );
 
@@ -633,6 +644,12 @@ export async function signUpAction(formData: FormData) {
     // Do not auto-login; redirect to sign-in with success message
     redirect('/sign-in?success=1');
   } catch (error) {
+    // Check if this is a Next.js redirect error and rethrow it
+    if (error && typeof error === 'object' && 'digest' in error &&
+        typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      throw error;
+    }
+
     console.error('Sign up error:', error);
     redirect('/sign-up?error=server-error');
   }
