@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { resetPassword } from '@/app/(login)/actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type ResetPasswordState = {
   error: string;
@@ -15,13 +15,24 @@ type ResetPasswordState = {
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [step, setStep] = useState<'request' | 'reset'>('request');
+  const [token, setToken] = useState<string>('');
   const [formState, setFormState] = useState<ResetPasswordState>({
     error: '',
     success: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check for token in URL parameters
+  useEffect(() => {
+    const urlToken = searchParams.get('token');
+    if (urlToken) {
+      setToken(urlToken);
+      setStep('reset');
+    }
+  }, [searchParams]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,14 +51,11 @@ export default function ResetPasswordPage() {
             success: result.success // Use the success message directly from the response
           });
           
-          // If successful and we have a success message, show it
-          // No redirectTo handling needed as the action doesn't return that property
-          
-          // If we're in reset step, redirect to login after successful password reset
+          // If we're in reset step, redirect to sign-in after successful password reset
           if (step === 'reset') {
             setTimeout(() => {
               startTransition(() => {
-                router.push('/login');
+                router.push('/sign-in');
               });
             }, 3000); // Redirect after 3 seconds to allow user to see success message
           }
@@ -73,7 +81,7 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            {step === 'request' ? 'Reset Your Password' : 'Enter New Password'}
+            {step === 'request' ? 'Passwort zurücksetzen' : 'Neues Passwort eingeben'}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -93,69 +101,74 @@ export default function ResetPasswordPage() {
             {step === 'request' ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">E-Mail-Adresse</Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     required
-                    placeholder="Enter your email"
+                    placeholder="Ihre E-Mail-Adresse eingeben"
                   />
                 </div>
-                <Button 
+                <Button
                   type="submit"
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+                  {isSubmitting ? 'Wird gesendet...' : 'Link zum Zurücksetzen senden'}
                 </Button>
                 <div className="text-center mt-4">
                   <Button
                     type="button"
                     variant="link"
-                    onClick={() => startTransition(() => router.push('/login'))}
+                    onClick={() => startTransition(() => router.push('/sign-in'))}
                   >
-                    Back to Login
+                    Zurück zur Anmeldung
                   </Button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <input type="hidden" name="token" value="" />
+                <input type="hidden" name="token" value={token} />
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
+                  <Label htmlFor="newPassword">Neues Passwort</Label>
                   <Input
                     id="newPassword"
                     name="newPassword"
                     type="password"
                     required
-                    placeholder="Enter new password"
+                    minLength={8}
+                    placeholder="Neues Passwort eingeben"
                   />
+                  <p className="text-xs text-gray-500">
+                    Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten
+                  </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
                     required
-                    placeholder="Confirm new password"
+                    minLength={8}
+                    placeholder="Passwort bestätigen"
                   />
                 </div>
-                <Button 
+                <Button
                   type="submit"
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Updating...' : 'Update Password'}
+                  {isSubmitting ? 'Wird aktualisiert...' : 'Passwort aktualisieren'}
                 </Button>
                 <div className="text-center mt-4">
                   <Button
                     type="button"
                     variant="link"
-                    onClick={() => startTransition(() => router.push('/login'))}
+                    onClick={() => startTransition(() => router.push('/sign-in'))}
                   >
-                    Back to Login
+                    Zurück zur Anmeldung
                   </Button>
                 </div>
               </div>

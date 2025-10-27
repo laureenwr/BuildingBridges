@@ -1,0 +1,114 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - generic [ref=e6]:
+          - link "Building Bridges Logo Building Bridges" [ref=e8] [cursor=pointer]:
+            - /url: /
+            - img "Building Bridges Logo" [ref=e9]
+            - generic [ref=e10]: Building Bridges
+          - generic [ref=e11]:
+            - link "Workshops" [ref=e13] [cursor=pointer]:
+              - /url: /workshops
+              - button "Workshops" [ref=e14]
+            - link "Activity" [ref=e16] [cursor=pointer]:
+              - /url: /activity
+              - button "Activity" [ref=e17]
+            - link "Mentors" [ref=e19] [cursor=pointer]:
+              - /url: /mentors
+              - button "Mentors" [ref=e20]
+            - link "Partner" [ref=e22] [cursor=pointer]:
+              - /url: /partners
+              - button "Partner" [ref=e23]
+            - link "Team" [ref=e25] [cursor=pointer]:
+              - /url: /team
+              - button "Team" [ref=e26]
+            - link "Contact" [ref=e28] [cursor=pointer]:
+              - /url: /contact
+              - button "Contact" [ref=e29]
+          - generic [ref=e31]:
+            - link "Sign In" [ref=e32] [cursor=pointer]:
+              - /url: /sign-in
+              - button "Sign In" [ref=e33]
+            - link "Sign Up" [ref=e34] [cursor=pointer]:
+              - /url: /sign-up
+              - button "Sign Up" [ref=e35]
+    - main [ref=e36]:
+      - generic [ref=e38]:
+        - heading "Passwort zurücksetzen" [level=3] [ref=e40]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - text: E-Mail-Adresse
+            - textbox "E-Mail-Adresse" [active] [ref=e45]:
+              - /placeholder: Ihre E-Mail-Adresse eingeben
+              - text: "[email protected]"
+          - button "Link zum Zurücksetzen senden" [ref=e46] [cursor=pointer]
+          - button "Zurück zur Anmeldung" [ref=e48] [cursor=pointer]
+    - contentinfo [ref=e49]:
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - link "Building Bridges Logo Building Bridges" [ref=e53] [cursor=pointer]:
+              - /url: /
+              - img "Building Bridges Logo" [ref=e54]
+              - generic [ref=e55]: Building Bridges
+            - paragraph [ref=e56]: Empowering FLINTA individuals and girls of color to achieve their full potential in psychosocial and educational fields.
+          - generic [ref=e57]:
+            - heading "About" [level=3] [ref=e58]
+            - list [ref=e59]:
+              - listitem [ref=e60]:
+                - link "Vision" [ref=e61] [cursor=pointer]:
+                  - /url: /vision
+              - listitem [ref=e62]:
+                - link "Team" [ref=e63] [cursor=pointer]:
+                  - /url: /team
+              - listitem [ref=e64]:
+                - link "Partner" [ref=e65] [cursor=pointer]:
+                  - /url: /partners
+              - listitem [ref=e66]:
+                - link "Contact" [ref=e67] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e68]:
+            - heading "Legal" [level=3] [ref=e69]
+            - list [ref=e70]:
+              - listitem [ref=e71]:
+                - link "Terms of Service" [ref=e72] [cursor=pointer]:
+                  - /url: /tos
+              - listitem [ref=e73]:
+                - link "Privacy Policy" [ref=e74] [cursor=pointer]:
+                  - /url: /privacy-policy
+              - listitem [ref=e75]:
+                - link "Imprint" [ref=e76] [cursor=pointer]:
+                  - /url: /imprint
+          - generic [ref=e77]:
+            - heading "Community" [level=3] [ref=e78]
+            - list [ref=e79]:
+              - listitem [ref=e80]:
+                - link "Workshops" [ref=e81] [cursor=pointer]:
+                  - /url: /workshops
+              - listitem [ref=e82]:
+                - link "Activities" [ref=e83] [cursor=pointer]:
+                  - /url: /activities
+              - listitem [ref=e84]:
+                - link "Roadmap" [ref=e85] [cursor=pointer]:
+                  - /url: /roadmap
+        - generic [ref=e87]:
+          - paragraph [ref=e88]: © 2025 Building Bridges. All rights reserved.
+          - generic [ref=e89]:
+            - link [ref=e90] [cursor=pointer]:
+              - /url: https://facebook.com
+              - img [ref=e91]
+            - link [ref=e93] [cursor=pointer]:
+              - /url: https://twitter.com
+              - img [ref=e94]
+            - link [ref=e96] [cursor=pointer]:
+              - /url: https://instagram.com
+              - img [ref=e97]
+            - link [ref=e100] [cursor=pointer]:
+              - /url: https://linkedin.com
+              - img [ref=e101]
+  - alert [ref=e105]
+```

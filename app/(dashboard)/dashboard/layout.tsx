@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Users, Menu, UserCircle } from 'lucide-react';
+import { Users, Menu, UserCircle, Home, BookOpen, Sparkles } from 'lucide-react';
 
 // Client-side navigation component
 function DashboardNavigation({ children }: { children: React.ReactNode }) {
@@ -12,8 +12,10 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
+    { href: '/dashboard', icon: Home, label: 'Dashboard' },
+    { href: '/dashboard/workshops', icon: BookOpen, label: 'Workshops' },
+    { href: '/dashboard/mentoring', icon: Sparkles, label: 'My Mentoring Program' },
     { href: '/dashboard/personal', icon: UserCircle, label: 'Personal' },
-    { href: '/dashboard/workshops', icon: Users, label: 'Workshops' },
   ];
 
   return (
@@ -43,20 +45,25 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
           }`}
         >
           <nav className="h-full overflow-y-auto p-4">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
-                <Button
-                  variant={pathname === item.href ? 'secondary' : 'ghost'}
-                  className={`my-1 w-full justify-start ${
-                    pathname === item.href ? 'bg-gray-100' : ''
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <item.icon className="mr-2 h-4 w-4" />
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant="ghost"
+                    className={`my-1 w-full justify-start transition-colors ${
+                      isActive
+                        ? 'bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800'
+                        : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Button>
+                </Link>
+              );
+            })}
           </nav>
         </aside>
 

@@ -1,162 +1,201 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Users, Target, Calendar, Award, TrendingUp } from 'lucide-react';
+import { BookOpen, Users, Sparkles, Heart, ArrowRight, Calendar, Target, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 
 export function StudentDashboard() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Student Dashboard</h1>
-        <Button>
-          <Calendar className="mr-2 h-4 w-4" />
-          Book Session
-        </Button>
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-purple-50 rounded-xl p-8 border border-purple-100">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Willkommen zurück! 👋
+            </h1>
+            <p className="text-gray-600 max-w-2xl">
+              Dein persönlicher Raum für Wachstum, Lernen und Community. Entdecke Workshops,
+              vernetze dich mit Mentoren und erreiche deine Ziele.
+            </p>
+          </div>
+          <Link href="/dashboard/mentoring">
+            <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 whitespace-nowrap">
+              <Sparkles className="mr-2 h-4 w-4" />
+              My Mentoring Program
+            </Button>
+          </Link>
+        </div>
       </div>
-      
-      {/* Progress Cards */}
+
+      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Learning Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">75%</div>
-            <p className="text-xs text-muted-foreground">3 modules completed</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Mentorship Hours</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">This month</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Goals Achieved</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">Out of 12 goals</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/mentoring" className="group">
+          <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-purple-100 group-hover:border-purple-300">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Sparkles className="h-8 w-8 text-purple-600" />
+                <ArrowRight className="h-5 w-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <CardTitle className="mt-4">Create Your Mentoring</CardTitle>
+              <CardDescription>
+                Get AI-powered mentor matches and personalized recommendations
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href="/dashboard/workshops" className="group">
+          <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-blue-100 group-hover:border-blue-300">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <BookOpen className="h-8 w-8 text-blue-600" />
+                <ArrowRight className="h-5 w-5 text-blue-400 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <CardTitle className="mt-4">Browse Workshops</CardTitle>
+              <CardDescription>
+                Discover workshops and events tailored to your interests
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href="/workshops" className="group">
+          <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer border-green-100 group-hover:border-green-300">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Users className="h-8 w-8 text-green-600" />
+                <ArrowRight className="h-5 w-5 text-green-400 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <CardTitle className="mt-4">Explore Community</CardTitle>
+              <CardDescription>
+                Connect with other students and join our vibrant community
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BookOpen className="mr-2 h-5 w-5" />
-              My Learning Path
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Self-Care Workshop</span>
-                </div>
-                <span className="text-xs text-green-600">Completed</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-medium">Career Planning</span>
-                </div>
-                <span className="text-xs text-blue-600">In Progress</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm font-medium">Networking Skills</span>
-                </div>
-                <span className="text-xs text-gray-600">Upcoming</span>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full">
-              View All Modules
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="mr-2 h-5 w-5" />
-              My Mentors
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 p-3 border rounded-lg">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-purple-600">SA</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Sarah Ahmed</p>
-                  <p className="text-xs text-muted-foreground">Psychology Student</p>
-                </div>
-                <Button size="sm" variant="outline">Message</Button>
-              </div>
-              
-              <div className="flex items-center space-x-3 p-3 border rounded-lg">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-green-600">MK</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Maria Kowalski</p>
-                  <p className="text-xs text-muted-foreground">Career Counselor</p>
-                </div>
-                <Button size="sm" variant="outline">Message</Button>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full">
-              Find New Mentor
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Goals Section */}
-      <Card>
+      {/* Getting Started Section */}
+      <Card className="border-purple-200">
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Target className="mr-2 h-5 w-5" />
-            My Goals
+          <CardTitle className="flex items-center text-2xl">
+            <Target className="mr-2 h-6 w-6 text-purple-600" />
+            Get Started with Building Bridges
           </CardTitle>
+          <CardDescription>
+            Complete these steps to make the most of your experience
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium">Short-term Goals</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✅ Complete self-care workshop</li>
-                <li>🎯 Finish career planning module</li>
-                <li>📅 Schedule 2 mentor sessions</li>
-              </ul>
+          <div className="space-y-4">
+            <div className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200 hover:border-purple-200 transition-colors">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-700 font-semibold flex-shrink-0">
+                1
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Create Your Mentoring Program</h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Complete the onboarding questionnaire to get AI-powered mentor matches and personalized recommendations.
+                </p>
+                <Link href="/dashboard/mentoring">
+                  <Button variant="outline" size="sm">
+                    Start Now <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-medium">Long-term Goals</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>🎓 Apply to psychology program</li>
-                <li>💼 Secure internship opportunity</li>
-                <li>🌟 Become a peer mentor</li>
-              </ul>
+
+            <div className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold flex-shrink-0">
+                2
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Explore Available Workshops</h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Browse our curated selection of workshops designed to empower Girls and FLINTA* of Colour.
+                </p>
+                <Link href="/dashboard/workshops">
+                  <Button variant="outline" size="sm">
+                    View Workshops <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-4 p-4 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold flex-shrink-0">
+                3
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold mb-1">Complete Your Profile</h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  Add more information about yourself to help us provide better recommendations.
+                </p>
+                <Link href="/dashboard/personal">
+                  <Button variant="outline" size="sm">
+                    Edit Profile <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* About Building Bridges */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-gradient-to-br from-purple-50 to-white border-purple-100">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Heart className="mr-2 h-5 w-5 text-purple-600" />
+              Our Mission
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700 mb-4">
+              Building Bridges empowers Girls and FLINTA* of Colour through mentorship,
+              education, and community support. We create safe spaces for growth, learning,
+              and connection.
+            </p>
+            <Link href="/vision">
+              <Button variant="ghost" className="text-purple-600 hover:text-purple-700 p-0">
+                Learn more about our vision <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <TrendingUp className="mr-2 h-5 w-5 text-blue-600" />
+              What You Can Do
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-start">
+                <span className="text-blue-600 mr-2">✓</span>
+                <span>Connect with experienced mentors in your field of interest</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 mr-2">✓</span>
+                <span>Attend workshops on career development, self-care, and more</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 mr-2">✓</span>
+                <span>Access scholarships and resources for your educational journey</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 mr-2">✓</span>
+                <span>Join a supportive community of like-minded individuals</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 } 
