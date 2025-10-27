@@ -22,8 +22,60 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Building Bridges',
-  description: 'Empowerment und Mentoring für Mädchen & FLINTA of Color',
+  title: {
+    default: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    template: '%s | Building Bridges',
+  },
+  description: 'Building Bridges empowers Girls and FLINTA* of Colour through mentorship, education, and community support. Join our community for workshops, mentoring programs, and scholarships.',
+  keywords: ['Mentoring', 'Empowerment', 'FLINTA', 'Girls of Colour', 'Education', 'Workshops', 'Berlin', 'Mädchen', 'Bildung'],
+  authors: [{ name: 'Building Bridges Team' }],
+  creator: 'Building Bridges',
+  publisher: 'Building Bridges',
+  metadataBase: new URL('https://www.building-bridges.app'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'de_DE',
+    url: 'https://www.building-bridges.app',
+    title: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    description: 'Empowerment und Mentoring für Mädchen & FLINTA of Color',
+    siteName: 'Building Bridges',
+    images: [
+      {
+        url: '/logo_graphic.png',
+        width: 1200,
+        height: 630,
+        alt: 'Building Bridges Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    description: 'Empowerment und Mentoring für Mädchen & FLINTA of Color',
+    images: ['/logo_graphic.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: '/logo_round.svg', type: 'image/svg+xml' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+    ],
+    shortcut: '/logo_round.svg',
+    apple: '/logo.png',
+  },
 };
 
 export const viewport: Viewport = {
