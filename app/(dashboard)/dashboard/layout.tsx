@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,15 @@ import { Users, Menu, UserCircle, Home, BookOpen, Sparkles } from 'lucide-react'
 function DashboardNavigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch user role from API
+    fetch('/api/user/role')
+      .then(res => res.json())
+      .then(data => setUserRole(data.role))
+      .catch(err => console.error('Error fetching user role:', err));
+  }, []);
 
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -17,6 +26,11 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
     { href: '/dashboard/mentoring', icon: Sparkles, label: 'My Mentoring Program' },
     { href: '/dashboard/personal', icon: UserCircle, label: 'Personal' },
   ];
+
+  // Add admin-specific navigation
+  if (userRole === 'ADMIN') {
+    navItems.splice(2, 0, { href: '/dashboard/workshops/admin', icon: Users, label: 'Manage Workshops' });
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-68px)] w-full">
