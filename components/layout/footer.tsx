@@ -18,6 +18,7 @@ const footerLinks = [
       { label: 'Terms of Service', href: '/tos' },
       { label: 'Privacy Policy', href: '/privacy-policy' },
       { label: 'Imprint', href: '/imprint' },
+      { label: 'Glossary', href: '/glossary' },
     ],
   },
   {
@@ -33,7 +34,7 @@ const footerLinks = [
 const socialLinks = [
   { Icon: Facebook, href: 'https://facebook.com' },
   { Icon: Twitter, href: 'https://twitter.com' },
-  { Icon: Instagram, href: 'https://instagram.com' },
+  { Icon: Instagram, href: 'https://www.instagram.com/building_bridges_team/' },
   { Icon: Linkedin, href: 'https://linkedin.com' },
 ];
 
