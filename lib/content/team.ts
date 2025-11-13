@@ -163,6 +163,18 @@ export const teamMembers: TeamMember[] = [
     ],
     bio: 'Forschung zu generativer und agentischer KI; Computer Vision; Peer-to-Peer-Plattformen; Time-to-MVP-Reduktion durch Templating.',
   },
+  {
+    slug: 'laureen-warikoru',
+    firstName: 'Laureen',
+    lastName: 'Warikoru',
+    name: 'M.Sc. Laureen Warikoru',
+    degree: 'M.Sc.',
+    role: 'Wissenschaftliche Mitarbeiterin (TP3)',
+    org: 'Universität Duisburg-Essen',
+    image: '/images/placeholder-user.svg',
+    address: 'Universitätsstraße 9, 45151 Essen',
+    links: [],
+  },
 ];
 
 export function getMemberBySlug(slug: string) {
