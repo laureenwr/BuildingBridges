@@ -47,7 +47,7 @@ export default function ActivityPage() {
                 <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full">Community beitreten</Button>
               </Link>
               <Link href="/workshops">
-                <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full">Workshops ansehen</Button>
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full">Workshops ansehen</Button>
               </Link>
             </div>
           </motion.div>
