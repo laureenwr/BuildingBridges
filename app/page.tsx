@@ -138,7 +138,7 @@ export default function HomePage() {
             {[
               { number: "36", label: "Monate Projektlaufzeit", unit: "" },
               { number: "3", label: "Universitäten beteiligt", unit: "" },
-              { number: "10+", label: "Kooperationspartner", unit: "" }
+              { number: "10+", label: "Netzwerkpartner", unit: "" }
             ].map((stat, index) => (
               <div key={index} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center border border-white/20">
                 <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.number}{stat.unit}</div>
