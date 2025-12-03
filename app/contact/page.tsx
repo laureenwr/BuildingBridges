@@ -113,6 +113,8 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold text-gray-900">Stiftung SPI</h4>
                       <p className="text-gray-600">Sozialpädagogisches Institut Berlin "Walter May"</p>
+                      <p className="text-gray-600">Geschäftsbereich Lebenslagen, Vielfalt & Stadtentwicklung</p>
+                      <p className="text-gray-600">Celiana Kiefer</p>
                       <p className="text-gray-600 text-sm">Praxisorientierte Entwicklung des MEP-Programms</p>
                     </div>
                     

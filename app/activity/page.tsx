@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Users, MessageCircle, Heart, Award, TrendingUp, Clock, MapPin, ExternalLink } from 'lucide-react';
+import { Calendar, Users, MessageCircle, Heart, Award, Clock, MapPin, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 async function fetchWorkshopsClient() {
@@ -21,7 +21,6 @@ const communityStats: { icon: any; title: string; value: string }[] = [
   { icon: Users, title: 'Aktive Mitglieder', value: '0' },
   { icon: Award, title: 'Abgeschlossene Workshops', value: '0' },
   { icon: Heart, title: 'Mentoring-Paare', value: '0' },
-  { icon: TrendingUp, title: 'Job-Vermittlungen', value: '0' },
 ];
 
 export default function ActivityPage() {
@@ -62,7 +61,7 @@ export default function ActivityPage() {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">Live-Zahlen folgen; derzeit Platzhalter auf 0 gesetzt.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {communityStats.map((stat, index) => (
               <motion.div key={stat.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: index * 0.1 }} viewport={{ once: true }} whileHover={{ y: -5 }}>
                 <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white">
