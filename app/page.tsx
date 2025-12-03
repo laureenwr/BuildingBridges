@@ -111,7 +111,7 @@ export default function HomePage() {
                   boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(147,51,234,0.3)'
                 }}
               >
-                Programme entdecken
+                Angebote entdecken
                 <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -356,7 +356,6 @@ export default function HomePage() {
         logos={[
           { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ – Gefördert vom (deutsch)', width: 220, height: 70, scale: 0.95 },
           { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Rahmenprogramm Empirische Bildungsforschung – Wortmarke', width: 220, height: 70, scale: 0.9 },
-          { src: '/Projektpartner%20Logos/Stiftung%20SPI%20Logo.png', alt: 'Stiftung SPI', width: 220, height: 70, scale: 1.2},
           { src: '/BMBF/image copy 3.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.6 },
         ]}
       />

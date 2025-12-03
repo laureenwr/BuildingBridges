@@ -22,11 +22,11 @@ export function FundingBanner({
       <div className="container mx-auto px-4">
         <div className="w-full flex justify-center">
           <div className="inline-block">
-            <h3 className="text-gray-900 text-2xl md:text-3xl font-bold mb-3 pl-2 text-left">
+            <h3 className="text-gray-900 text-2xl md:text-3xl font-bold mb-3 text-center">
               {heading}
             </h3>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+            <div className="rounded-2xl border border-gray-200 bg-white px-2 md:px-3 py-6 md:py-7 shadow-sm inline-block">
+              <div className="flex flex-wrap gap-3 md:gap-4 items-center justify-center">
                 {logos.map((logo) => (
                   <div
                     key={logo.src}

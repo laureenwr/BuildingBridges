@@ -171,7 +171,7 @@ export const teamMembers: TeamMember[] = [
     degree: 'M.Sc.',
     role: 'Wissenschaftliche Mitarbeiterin (TP3)',
     org: 'Universität Duisburg-Essen',
-    image: '/images/placeholder-user.svg',
+    image: '/Team/LaureenWarikoru.png',
     address: 'Universitätsstraße 9, 45151 Essen',
     links: [],
   },

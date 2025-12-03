@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 const footerLinks = [
   {
@@ -32,10 +32,7 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-  { Icon: Facebook, href: 'https://facebook.com' },
-  { Icon: Twitter, href: 'https://twitter.com' },
   { Icon: Instagram, href: 'https://www.instagram.com/building_bridges_team/' },
-  { Icon: Linkedin, href: 'https://linkedin.com' },
 ];
 
 export function Footer() {
