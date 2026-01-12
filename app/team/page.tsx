@@ -29,7 +29,7 @@ export default function TeamPage() {
                     src={member.image}
                     alt={member.name || `${member.firstName} ${member.lastName}`}
                     fill
-                    className="object-contain p-6"
+                    className="object-cover"
                   />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-1">
