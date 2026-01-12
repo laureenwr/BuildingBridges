@@ -179,13 +179,21 @@ export default function HomePage() {
               Das Projekt wird von der Freien Universität Berlin, der Stiftung SPI und der Universität Duisburg-Essen durchgeführt.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+              <Card className="p-8 bg-gradient-to-br from-green-100 to-green-50 border-green-200 hover:shadow-lg transition-all duration-300">
+                <BookOpen className="h-12 w-12 text-green-600 mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Wissenschaftliche Koordination</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Das gesamte Projekt wird durch die Freie Universität (Klinische Kinder- und Jugendpsychologie und -psychotherapie) wissenschaftlich begleitet.
+                  Dabei werden anhand Interviews und Fragebögen Diskriminierungserfahrungen, psychische Gesundheit, Stressoren, Ressourcen und akademische Bildungsteilhabe bei Schüler*innen und Student*innen erfasst. Das MEP wird hinsichtlich Machbarkeit und Akzeptanz evaluiert.
+                </p>
+              </Card>
+              
               <Card className="p-8 bg-gradient-to-br from-purple-100 to-purple-50 border-purple-200 hover:shadow-lg transition-all duration-300">
                 <GraduationCap className="h-12 w-12 text-purple-600 mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Mentoring & Empowerment</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Entwicklung und Erprobung eines potentialorientierten, diversitätssensiblen und intersektionalen 
-                  Mentoring- und Empowerment-Programms (MEP) mit psychologischem, diskriminierungssensiblem Coaching.
+                  Entwicklung des Mentoring-Empowerment-Programm (MEP), welches BIPoC Mädchen und FLINTA* ab der 10. Klasse stärkt auf ihrem akademischen Weg in den psychosozialen Bereich. Das MEP bietet Mentoring und Workshops zu Empowerment, Selbstfürsorge an sowie weitere hilfreiche Infos zum Übergang Schule-Studium.
                 </p>
               </Card>
               
@@ -290,7 +298,7 @@ export default function HomePage() {
                 {
                   icon: Users,
                   title: "MEP-Programm entwickeln",
-                  description: "Entwicklung und Erprobung eines potentialorientierten, diversitätssensiblen Mentoring- und Empowerment-Programms mit psychologischem Coaching.",
+                  description: "Entwicklung des Mentoring-Empowerment-Programm (MEP), welches BIPoC Mädchen und FLINTA* ab der 10. Klasse stärkt auf ihrem akademischen Weg in den psychosozialen Bereich. Das MEP bietet Mentoring und Workshops zu Empowerment, Selbstfürsorge an sowie weitere hilfreiche Infos zum Übergang Schule-Studium.",
                   color: "purple"
                 },
                 {

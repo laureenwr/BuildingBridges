@@ -173,6 +173,7 @@ export const teamMembers: TeamMember[] = [
     org: 'Universität Duisburg-Essen',
     image: '/Team/LaureenWarikoru.png',
     address: 'Universitätsstraße 9, 45151 Essen',
+    email: 'laureen.warikoru@uni-due.de',
     links: [],
   },
 ];
