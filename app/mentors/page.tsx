@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
 import { saveMentorData } from '@/lib/actions';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
 export default function MentorsPage() {
   const [formData, setFormData] = useState({
@@ -24,6 +27,7 @@ export default function MentorsPage() {
     intersectionalityKnowledge: '',
     mentorExperience: '',
   });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +71,128 @@ export default function MentorsPage() {
         Herzlich willkommen beim Anmeldeformular für die Mentor:innen des Projekts Building Bridges! 
         Wir freuen uns, dass du Interesse an der Mitarbeit in unserem Mentor:innen-Programm zeigst.
       </p>
+
+      {/* Ausschreibung Mentoren Section */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Ausschreibung Mentoren</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-2xl">
+          {/* Ausschreibung Mentoren 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="cursor-pointer"
+            onClick={() => setSelectedImage('/Veranstaltungen/ausschreibungmentoren1.jpg')}
+          >
+            <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+              <div className="relative w-full aspect-[3/4] bg-gray-100">
+                <Image
+                  src="/Veranstaltungen/ausschreibungmentoren1.jpg"
+                  alt="Ausschreibung Mentoren Teil 1"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900">Ausschreibung Mentoren</h3>
+                <p className="text-sm text-gray-600 mt-1">Teil 1 - Zum Vergrößern klicken</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Ausschreibung Mentoren 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="cursor-pointer"
+            onClick={() => setSelectedImage('/Veranstaltungen/ausschreibungmentoren2.jpg')}
+          >
+            <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+              <div className="relative w-full aspect-[3/4] bg-gray-100">
+                <Image
+                  src="/Veranstaltungen/ausschreibungmentoren2.jpg"
+                  alt="Ausschreibung Mentoren Teil 2"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900">Ausschreibung Mentoren</h3>
+                <p className="text-sm text-gray-600 mt-1">Teil 2 - Zum Vergrößern klicken</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative max-w-5xl max-h-[90vh] w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                aria-label="Schließen"
+              >
+                <X className="h-8 w-8" />
+              </button>
+              <div className="relative w-full h-[90vh] bg-white rounded-lg overflow-hidden">
+                <Image
+                  src={selectedImage}
+                  alt="Vergrößerte Ansicht"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Flyer Mentees Section */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Flyer für Mentees</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-2xl">
+          {/* Flyer Mentees */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="cursor-pointer"
+            onClick={() => setSelectedImage('/Veranstaltungen/flyermentees.jpg')}
+          >
+            <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+              <div className="relative w-full aspect-[3/4] bg-gray-100">
+                <Image
+                  src="/Veranstaltungen/flyermentees.jpg"
+                  alt="Flyer für Mentees"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900">Flyer für Mentees</h3>
+                <p className="text-sm text-gray-600 mt-1">Zum Vergrößern klicken</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
       
       <Card>
         <CardHeader>

@@ -5,11 +5,10 @@ import Link from 'next/link';
 export function NavigationLinks({ mobile }: { mobile?: boolean }) {
   const links = [
     { href: '/vision', label: 'Vision' },
-    { href: '/workshops', label: 'Workshops' },
-    { href: '/activity', label: 'Activity' },
+    { href: '/workshops', label: 'Veranstaltungen' },
     { href: '/roadmap', label: 'Roadmap' },
     { href: '/partners', label: 'Partner' },
-    { href: '/team', label: 'Team' },
+    { href: '/team', label: 'Über uns' },
   ];
 
   return (

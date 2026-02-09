@@ -60,8 +60,7 @@ export default function HomePage() {
           <motion.h1 
             className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-white"
             style={{
-              textShadow: '3px 3px 6px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.6), 1px 1px 2px rgba(0,0,0,0.6)',
-              WebkitTextStroke: '1px rgba(0,0,0,0.5)'
+              textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)'
             }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -298,7 +297,7 @@ export default function HomePage() {
                 {
                   icon: Users,
                   title: "MEP-Programm entwickeln",
-                  description: "Entwicklung des Mentoring-Empowerment-Programm (MEP), welches BIPoC Mädchen und FLINTA* ab der 10. Klasse stärkt auf ihrem akademischen Weg in den psychosozialen Bereich. Das MEP bietet Mentoring und Workshops zu Empowerment, Selbstfürsorge an sowie weitere hilfreiche Infos zum Übergang Schule-Studium.",
+                  description: "Stärkung von BIPoC Mädchen und FLINTA* durch das bedarfsorientierte, intersektionalitätssensible Mentoringprogramm",
                   color: "purple"
                 },
                 {
@@ -357,16 +356,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Funding Banner per Leitfaden */}
-      <FundingBanner
-        heading="Gefördert durch"
-        logos={[
-          { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ – Gefördert vom (deutsch)', width: 220, height: 70, scale: 0.95 },
-          { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Rahmenprogramm Empirische Bildungsforschung – Wortmarke', width: 220, height: 70, scale: 0.9 },
-          { src: '/BMBF/image copy 3.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.6 },
-        ]}
-      />
 
       {/* Partners Section */}
       <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
@@ -443,6 +432,16 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Funding Banner per Leitfaden */}
+      <FundingBanner
+        heading="Gefördert durch"
+        logos={[
+          { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ – Gefördert vom (deutsch)', width: 220, height: 70, scale: 0.95 },
+          { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Rahmenprogramm Empirische Bildungsforschung – Wortmarke', width: 220, height: 70, scale: 0.9 },
+          { src: '/BMBF/image copy 3.png', alt: 'EU-Flagge – Europäische Union', width: 220, height: 70, scale: 0.6 },
+        ]}
+      />
+
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/coverimage.png')] bg-cover bg-center opacity-10"></div>
@@ -454,7 +453,7 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-5xl md:text-6xl font-bold mb-8">
-              Werden Sie Teil von Building Bridges
+              Werde Teil von Building Bridges
             </h2>
             <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed">
               Ob als Teilnehmerin, Mentorin oder Kooperationspartnerin - gemeinsam bauen wir Brücken 

@@ -7,7 +7,7 @@ export default function TeamPage() {
   const bySlug = new Map(teamMembers.map((m) => [m.slug, m] as const));
 
   const TP1 = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
-  const TP2 = ['celiana-kiefer', 'nina-sedlak-cinar', 'dilara-yildirim'];
+  const TP2 = ['celiana-kiefer', 'dilara-yildirim'];
   const TP3 = ['hannes-rothe', 'elias-jelinek', 'laureen-warikoru'];
 
   function renderSection(title: string, slugs: string[]) {
@@ -56,7 +56,7 @@ export default function TeamPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Unser Team</h1>
           <p className="text-gray-700 max-w-2xl mx-auto">
-            Lernen Sie die Menschen kennen, die hinter dem Building Bridges Projekt stehen.
+            Wir sind ein vielfältiges Team mit einer gemeinsamen Vision: Brücken bauen – zwischen Bildung, Perspektiven und Möglichkeiten.
           </p>
         </div>
         {renderSection('Teilprojekt 1 (TP1)', TP1)}
