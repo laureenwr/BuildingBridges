@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 // Client page (fetches via API)
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Users, MapPin, Star, ArrowRight, BookOpen, Code, Lightbulb, Target, GraduationCap, Heart, Globe, Award } from 'lucide-react';
+import { Calendar, Clock, Users, MapPin, Star, ArrowRight, BookOpen, Code, Lightbulb, Target, GraduationCap, Heart, Globe, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 async function fetchWorkshopsClient() {
   try {
     const res = await fetch(`/api/workshops`, { cache: 'no-store' });
@@ -101,6 +102,7 @@ const researchActivities = [
 
 export default function WorkshopsPage() {
   const [dbWorkshops, setDbWorkshops] = useState<any[]>([]);
+  const [showPastWorkshops, setShowPastWorkshops] = useState(false);
 
   useEffect(() => {
     fetchWorkshopsClient().then(setDbWorkshops).catch(() => setDbWorkshops([]));
@@ -116,14 +118,587 @@ export default function WorkshopsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-              Programme & Aktivitäten
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+              Trainings & Events
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitäten 
               zur Stärkung und Förderung von Mädchen und FLINTA* of Colour in akademischen Laufbahnen.
             </p>
           </motion.div>
+
+          {/* Upcoming Workshops */}
+          <section className="mb-20">
+            <motion.div 
+              className="text-left mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Workshopangebote</h2>
+              <p className="text-xl text-gray-600 max-w-3xl">Die nächsten Termine für unsere Workshops und Veranstaltungen.</p>
+            </motion.div>
+
+            <div className="space-y-6 max-w-5xl">
+              {/* First Workshop */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    {/* Image Section */}
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Users className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Networking & Austausch</p>
+                      </div>
+                    </div>
+                    
+                    {/* Content Section */}
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        {/* Category Tag */}
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        
+                        {/* Date, Time, Format */}
+                        <div className="text-sm text-gray-600 mb-4">
+                          Mittwoch, 14.01.2026 | 18:00 Uhr | Online
+                        </div>
+                        
+                        {/* Title */}
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Online Kennenlernen Mentor:innen
+                        </h3>
+                        
+                        {/* Description */}
+                        <p className="text-gray-700 leading-relaxed mb-6">
+                          Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr über das Mentoring-Programm. 
+                          In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.
+                        </p>
+                      </div>
+                      
+                      {/* Read More Link */}
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Einzelmentoring */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Individuelles Mentoring</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Jan-Nov. 2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Einzelmentoring
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Mentoring Workshop II Johanna Eck */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <BookOpen className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Workshop</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          März 2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Mentoring Workshop II Johanna Eck
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* SELF CARE I */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          April 2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          SELF CARE I
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Mentoring Workshop II- Vision */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Target className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Vision & Ziele</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Samstag, 25.04.2026, ganztägig
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Mentoring Workshop II- Vision
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Self Care II */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Freitag, 15.05.2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Self Care II
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Skills Training I */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Freitag, 12.06.2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Skills Training I
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Skills Training II */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Freitag, 03.08.2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Skills Training II
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Skills Training III */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
+                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block mb-4">
+                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
+                            für Teilnehmerinnen
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-4">
+                          Freitag, 09.10.2026
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          Skills Training III
+                        </h3>
+                      </div>
+                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* Past Workshops */}
+          <section className="mb-20">
+            <motion.div 
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <Button
+                onClick={() => setShowPastWorkshops(!showPastWorkshops)}
+                variant="outline"
+                className="text-lg px-8 py-6 border-2 border-gray-300 hover:border-purple-500 hover:text-purple-600"
+              >
+                {showPastWorkshops ? (
+                  <>
+                    Vergangene Workshops ausblenden
+                    <ChevronUp className="h-5 w-5 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    Vergangene Workshops anzeigen
+                    <ChevronDown className="h-5 w-5 ml-2" />
+                  </>
+                )}
+              </Button>
+            </motion.div>
+
+            <AnimatePresence>
+              {showPastWorkshops && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-6 max-w-5xl">
+                    {/* Basis-Training Gruppe I */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                    >
+                      <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 opacity-75">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                            <div className="text-center p-8">
+                              <GraduationCap className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
+                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                            </div>
+                          </div>
+                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              <div className="inline-block mb-4">
+                                <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
+                                  Abgeschlossen
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                Freitag, 20.-22.06.2025
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                                Basis-Training Gruppe I
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+
+                    {/* Kennenlernen- Workshop Johanna Eck */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 opacity-75">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                            <div className="text-center p-8">
+                              <Users className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
+                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                            </div>
+                          </div>
+                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              <div className="inline-block mb-4">
+                                <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
+                                  Abgeschlossen
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                Mittwoch, 08.10.2025 | 13-16 Uhr
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                                Kennenlernen- Workshop Johanna Eck
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+
+                    {/* Auftaktveranstaltung */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                      <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 opacity-75">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                            <div className="text-center p-8">
+                              <Star className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
+                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                            </div>
+                          </div>
+                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              <div className="inline-block mb-4">
+                                <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
+                                  Abgeschlossen
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                Samstag, 22.11.2025
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                                Auftaktveranstaltung
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+
+                    {/* Get together */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 opacity-75">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                            <div className="text-center p-8">
+                              <Heart className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
+                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                            </div>
+                          </div>
+                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              <div className="inline-block mb-4">
+                                <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
+                                  Abgeschlossen
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                Dienstag, 09.12.2025 | 18-20 Uhr
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                                Get together
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+
+                    {/* Perlen & Power Workshop Johanna Eck */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                      <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 opacity-75">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
+                            <div className="text-center p-8">
+                              <Award className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
+                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                            </div>
+                          </div>
+                          <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                              <div className="inline-block mb-4">
+                                <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
+                                  Abgeschlossen
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                Donnerstag, 18.12.2025
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                                Perlen & Power Workshop Johanna Eck
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
 
           {/* Workshops (DB-backed only) */}
           <section className="mb-20">
@@ -310,38 +885,6 @@ export default function WorkshopsPage() {
             </div>
           </section>
 
-          {/* CTA Section */}
-          <motion.section 
-            className="text-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 text-white">
-              <CardContent className="p-12">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                  Werden Sie Teil des Projekts
-                </h2>
-                <p className="text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-                  Ob als Teilnehmerin, Mentorin oder Kooperationspartnerin - 
-                  gemeinsam gestalten wir die Zukunft der Bildungsgerechtigkeit.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/sign-up">
-                    <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
-                      Jetzt anmelden
-                    </Button>
-                  </Link>
-                  <Link href="/contact">
-                    <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
-                      Kontakt aufnehmen
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.section>
         </div>
       </div>
     </main>

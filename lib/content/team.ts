@@ -67,23 +67,6 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    slug: 'nina-sedlak-cinar',
-    firstName: 'Nina',
-    lastName: 'Sedlak-Çınar',
-    name: 'Nina Sedlak-Çınar',
-    degree: 'BA Asienwissenschaften, Master im Fach Intercultural Education',
-    role: 'Planung, Durchführung von Veranstaltungen, Inhaltliche Konzeption und Weiterentwicklung des Mentoring Konzept, Beratung, Netzwerk- und Aquisearbeit',
-    org: 'Stiftung SPI',
-    bio: 'Aufgewachsen in ländlichem Raum in NRW, nach Abitur zum Studium nach Bonn, seit 2008 in Berlin, MA Abschluss 2010, seit 15 Jahren Arbeit im Bildungsbereich, mehrere Jahre Projektarbeit im Bereich Politische Bildungsarbeit, Antidiskriminierung und Empowerment mit unterrepräsentierten Gruppen. Dann habe ich sechs Jahre für ein Studienwerk in der Begabtenförderung gearbeitet. Seit 2025 arbeite ich im Projekt Talentscouting und berate, begleite und unterstütze junge Menschen aus weniger privilegierten Kontexten auf ihrem Bildungsweg.',
-    address: 'Building Bridges c/o MÄDEA, Grüntaler Straße 21, 13357 Berlin',
-    phone: '+49 152 01374725',
-    email: 'nina.sedlak-cinar@lvs.stiftung-spi.de',
-    image: '/images/placeholder-user.svg',
-    links: [
-      { label: 'Talentscouting Berlin', url: 'https://talentscouting-berlin.de/' },
-    ],
-  },
-  {
     slug: 'susanne-birnkammer',
     firstName: 'Susanne',
     lastName: 'Birnkammer',

@@ -20,12 +20,11 @@ import {
 import { signOut } from 'next-auth/react';
 
 const navItems = [
-  { name: 'Workshops', href: '/workshops' },
-  { name: 'Activity', href: '/activity' },
-  { name: 'Mentors', href: '/mentors' },
+  { name: 'Veranstaltungen', href: '/workshops' },
+  { name: 'Mentoren', href: '/mentors' },
   { name: 'Partner', href: '/partners' },
-  { name: 'Team', href: '/team' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'Über uns', href: '/team' },
+  { name: 'Kontakt', href: '/contact' },
 ];
 
 export function Navbar() {
