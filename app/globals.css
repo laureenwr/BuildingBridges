@@ -75,6 +75,36 @@
     --radius: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
+
+    /* Landing page shared tokens */
+    --landing-ink: #1a1033;
+    --landing-muted: #6b5f8a;
+    --landing-primary: #9152ff;
+    --landing-primary-dark: #7339e0;
+    --landing-primary-pale: #ede5ff;
+    --landing-surface-soft: #f2eeff;
+    --landing-surface-faint: #f5f0ff;
+    --landing-border: rgba(145, 82, 255, 0.15);
+    --landing-section-px: 2.5rem;
+    --landing-section-py: 7rem;
+    --landing-card-radius: 18px;
+    --landing-content-max: 1280px;
+    --landing-text-max: 760px;
+    --landing-block-gap: 2rem;
+  }
+
+  @media (max-width: 960px) {
+    :root {
+      --landing-section-px: 1.5rem;
+      --landing-section-py: 5rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    :root {
+      --landing-section-px: 1rem;
+      --landing-section-py: 4rem;
+    }
   }
 
   .dark {

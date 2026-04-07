@@ -1,0 +1,362 @@
+.home {
+  min-height: 100vh;
+  padding: var(--landing-section-py) var(--landing-section-px) 5rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(245, 240, 255, 0.42) 0%, rgba(237, 229, 255, 0.36) 50%, rgba(232, 220, 255, 0.42) 100%),
+    url('/coverimage.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.heroBlob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.heroBlobOne {
+  width: 700px;
+  height: 700px;
+  right: -200px;
+  top: -200px;
+  background: radial-gradient(circle, rgba(145, 82, 255, 0.18) 0%, transparent 68%);
+}
+
+.heroBlobTwo {
+  width: 420px;
+  height: 420px;
+  left: 3%;
+  bottom: -60px;
+  background: radial-gradient(circle, rgba(181, 128, 255, 0.15) 0%, transparent 68%);
+}
+
+.homeInner,
+.aboutInner,
+.programInner {
+  max-width: var(--landing-content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.homeInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--landing-primary);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.38rem 1.1rem;
+  border-radius: 100px;
+  margin-bottom: 1.6rem;
+}
+
+.title {
+  font-size: clamp(2.3rem, 4vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--landing-ink);
+}
+
+.title em {
+  color: #7339e0;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.subtext {
+  margin-top: 1.2rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--landing-muted);
+  max-width: 580px;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.btnPrimary,
+.btnSecondary {
+  text-decoration: none;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.9rem 2rem;
+  transition: all 0.2s ease;
+}
+
+.btnPrimary {
+  background: var(--landing-primary);
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  background: var(--landing-primary-dark);
+}
+
+.btnSecondary {
+  background: #fff;
+  color: var(--landing-primary);
+  border: 1.5px solid var(--landing-primary);
+}
+
+.btnSecondary:hover {
+  background: var(--landing-primary);
+  color: #fff;
+}
+
+.stats {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 2.2rem;
+}
+
+.statNum {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--landing-primary);
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--landing-muted);
+}
+
+.visual {
+  position: relative;
+}
+
+.cardStack {
+  position: relative;
+  height: 420px;
+}
+
+.storyCardPrimary,
+.storyCardSecondary,
+.storyCardTertiary {
+  position: absolute;
+  border-radius: 22px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 48px rgba(145, 82, 255, 0.18);
+  border: 1px solid rgba(145, 82, 255, 0.15);
+}
+
+.storyCardPrimary {
+  width: 310px;
+  top: 0;
+  left: 10px;
+  background: #9152ff;
+  color: #fff;
+}
+
+.storyCardSecondary {
+  width: 295px;
+  top: 90px;
+  left: 130px;
+  background: #fff;
+  color: #1a1033;
+}
+
+.storyCardTertiary {
+  width: 280px;
+  bottom: 10px;
+  left: 30px;
+  background: #ede5ff;
+  color: #3b2a6d;
+}
+
+.cardTag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.cardQuote {
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.about {
+  background: var(--landing-primary);
+  color: #fff;
+  padding: var(--landing-section-py) var(--landing-section-px);
+}
+
+.aboutInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.sectionEyebrow {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0.8rem;
+}
+
+.sectionTitle {
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.sectionTitle em {
+  font-style: italic;
+  color: var(--landing-primary-pale);
+}
+
+.aboutText {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin-top: 1rem;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.statBox {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 1.2rem;
+}
+
+.statBoxNum {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ede5ff;
+}
+
+.statBoxLabel {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.program {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: var(--landing-surface-soft);
+}
+
+.sectionEyebrowDark {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+  color: var(--landing-primary);
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+.sectionTitleDark {
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--landing-ink);
+  margin-bottom: 2.5rem;
+  max-width: var(--landing-text-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4rem;
+}
+
+.goalCard {
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.6rem;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  box-shadow: 0 2px 12px rgba(145, 82, 255, 0.08);
+}
+
+.goalIcon {
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.goalCard h3 {
+  font-size: 1.06rem;
+  margin-bottom: 0.5rem;
+  color: #1a1033;
+}
+
+.goalCard p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--landing-muted);
+}
+
+@media (max-width: 960px) {
+  .homeInner,
+  .aboutInner {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+  }
+
+  .visual {
+    display: none;
+  }
+
+  .goalGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .actions {
+    width: 100%;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .stats {
+    flex-wrap: wrap;
+    gap: 1.4rem;
+  }
+
+  .goalGrid,
+  .statGrid {
+    grid-template-columns: 1fr;
+  }
+}

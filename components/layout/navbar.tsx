@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/lib/design-system/components';
+import { useEffect, useState } from 'react';
 import { Menu, X, User, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NavigationLinks } from './navigation-links';
 import { useUser } from '@/lib/auth/index';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import { usePathname } from 'next/navigation';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -16,199 +14,289 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
+import styles from './navbar.module.css';
 
-const navItems = [
-  { name: 'Veranstaltungen', href: '/workshops' },
-  { name: 'Mentoren', href: '/mentors' },
-  { name: 'Partner', href: '/partners' },
-  { name: 'Über uns', href: '/team' },
-  { name: 'Kontakt', href: '/contact' },
+type NavChildItem = {
+  label: string;
+  labelDe?: string;
+  href: string;
+};
+
+type NavItem = {
+  label: string;
+  labelDe?: string;
+  href: string;
+  children?: NavChildItem[];
+};
+
+const defaultNavItems: NavItem[] = [
+  { label: 'Veranstaltungen', href: '/workshops' },
+  { label: 'Mentoren', href: '/mentors' },
+  { label: 'Partner', href: '/partners' },
+  { label: 'Über uns', href: '/team' },
+  { label: 'Kontakt', href: '/contact' },
 ];
 
+const landingNavItems: NavItem[] = [
+  { label: 'Home', labelDe: 'Start', href: '#home' },
+  {
+    label: 'About',
+    labelDe: 'Über',
+    href: '#about',
+    children: [
+      { label: 'About the Project', labelDe: 'Über das Projekt', href: '#about' },
+      { label: 'Vision & Goals', labelDe: 'Vision & Ziele', href: '#program' },
+      { label: 'Team & Partners', labelDe: 'Team & Partner', href: '#team' },
+    ],
+  },
+  {
+    label: 'Program',
+    labelDe: 'Programm',
+    href: '#program',
+    children: [
+      { label: 'Workshops & Events', labelDe: 'Workshops & Events', href: '#events' },
+      { label: 'Research Activities', labelDe: 'Forschungsaktivitäten', href: '#events' },
+      { label: 'Project Progress', labelDe: 'Projektfortschritt', href: '#events' },
+    ],
+  },
+  { label: 'Team', labelDe: 'Team', href: '#team' },
+  {
+    label: 'Platform',
+    labelDe: 'Plattform',
+    href: '#knowledge',
+    children: [
+      { label: 'Knowledge & Resources', labelDe: 'Wissen & Ressourcen', href: '#knowledge' },
+      { label: 'Story Creation Tool', labelDe: 'Story-Creation-Tool', href: '#storytelling' },
+      { label: 'Digital Toolkit', labelDe: 'Digitales Toolkit', href: '#storytelling' },
+    ],
+  },
+  { label: 'Partners', labelDe: 'Partner', href: '#partners' },
+];
+
+type Lang = 'en' | 'de';
+
 export function Navbar() {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [lang, setLang] = useState<Lang>('en');
 
-  // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 30);
     };
-
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('bb_lang_v1');
+      if (saved === 'en' || saved === 'de') {
+        setLang(saved);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    try {
+      localStorage.setItem('bb_lang_v1', lang);
+    } catch {
+      // ignore storage errors
+    }
+  }, [lang]);
+
+  const navItems = isLandingPage ? landingNavItems : defaultNavItems;
+  const t = (en: string, de?: string) => (lang === 'de' ? de ?? en : en);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      <motion.nav 
-        className="relative border-b border-gray-200"
-        animate={{
-          backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: scrolled ? 'blur(10px)' : 'blur(5px)',
-          boxShadow: scrolled ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)' : 'none'
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            {/* Logo - always visible */}
-            <motion.div 
-              className="flex-shrink-0 flex items-center"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Link href="/" className="flex items-center space-x-2">
-                <Image
-                  src="/logo_round.svg"
-                  alt="Building Bridges Logo"
-                  width={40}
-                  height={40}
-                  className="w-auto h-8"
-                />
-                <span className="text-xl font-bold">Building Bridges</span>
-              </Link>
-            </motion.div>
+    <>
+      <header className={`${styles.navRoot} ${scrolled ? styles.scrolled : ''}`}>
+        <nav className={styles.navInner}>
+          <Link href="/" className={styles.logo}>
+            <Image
+              src="/logo_round.svg"
+              alt="Building Bridges"
+              width={36}
+              height={36}
+              className={styles.logoImg}
+            />
+            <span>
+              Building<span className={styles.logoAccent}>Bridges</span>
+            </span>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-                >
-                  <Link href={item.href}>
-                    <Button
-                      variant="default"
-                      className="px-6"
-                    >
-                      {item.name}
-                    </Button>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Auth Buttons */}
-            <motion.div 
-              className="flex items-center space-x-4"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="default">Dashboard</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <Link href="/dashboard" className="block">
-                        <DropdownMenuItem className="cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href="/dashboard/general" className="block">
-                        <DropdownMenuItem className="cursor-pointer">
-                          <Settings className="mr-2 h-4 w-4" />
-                          <span>Settings</span>
-                        </DropdownMenuItem>
-                      </Link>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="cursor-pointer"
-                      onClick={async () => {
-                        await signOut({ callbackUrl: '/' });
-                      }}
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <Link href="/sign-in">
-                    <Button variant="outline" size="md">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button variant="default" size="md">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-              )}
-
-              {/* Mobile menu button */}
-              <button
-                type="button"
-                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                <span className="sr-only">Open main menu</span>
-                {isOpen ? (
-                  <X className="block h-6 w-6" />
+          <ul className={styles.navLinks}>
+            {navItems.map((item) => (
+              <li key={item.label} className={item.children && isLandingPage ? styles.navItemWithDropdown : undefined}>
+                {isLandingPage ? (
+                  <a href={item.href} className={item.children ? styles.dropdownTrigger : undefined}>
+                    {t(item.label, item.labelDe)}
+                    {item.children && <span className={styles.dropdownCaret} aria-hidden="true">▾</span>}
+                  </a>
                 ) : (
-                  <Menu className="block h-6 w-6" />
+                  <Link href={item.href}>{item.label}</Link>
                 )}
-              </button>
-            </motion.div>
-          </div>
-        </div>
 
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div 
-              className="md:hidden bg-white border-t border-gray-200"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {navItems.map((item, index) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                  >
-                    <Link href={item.href}>
-                      <Button
-                        variant="default"
-                        className="w-full mb-2"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Button>
+                {isLandingPage && item.children && (
+                  <ul className={styles.dropdownMenu}>
+                    {item.children.map((child) => (
+                      <li key={`${item.label}-${child.label}`}>
+                        <a href={child.href} className={styles.dropdownLink}>
+                          {t(child.label, child.labelDe)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.actions}>
+            {isLandingPage && (
+              <div className={styles.langSwitch}>
+                <button
+                  type="button"
+                  className={`${styles.langBtn} ${lang === 'en' ? styles.langActive : ''}`}
+                  onClick={() => setLang('en')}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.langBtn} ${lang === 'de' ? styles.langActive : ''}`}
+                  onClick={() => setLang('de')}
+                >
+                  DE
+                </button>
+              </div>
+            )}
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={styles.authButton}>Dashboard</button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <Link href="/dashboard" className="block">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </DropdownMenuItem>
                     </Link>
-                  </motion.div>
+                    <Link href="/dashboard/general" className="block">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={async () => {
+                      await signOut({ callbackUrl: '/' });
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                {isLandingPage ? (
+                  <>
+                    <a href="#contact" className={styles.btnOutline}>
+                      {t('Contact', 'Kontakt')}
+                    </a>
+                    <a href="#register" className={styles.btnFilled}>
+                      {t('Register →', 'Anmelden →')}
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/sign-in" className={styles.btnOutline}>
+                      Sign In
+                    </Link>
+                    <Link href="/sign-up" className={styles.btnFilled}>
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
+
+            <button
+              type="button"
+              className={styles.hamburger}
+              onClick={() => setIsOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {isOpen && (
+        <div className={styles.mobileMenu}>
+          {navItems.map((item) =>
+            isLandingPage ? (
+              <div key={item.label} className={styles.mobileItemGroup}>
+                <a href={item.href} onClick={() => setIsOpen(false)}>
+                  {t(item.label, item.labelDe)}
+                </a>
+                {item.children?.map((child) => (
+                  <a
+                    key={`${item.label}-${child.label}-mobile`}
+                    href={child.href}
+                    className={styles.mobileSubLink}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t(child.label, child.labelDe)}
+                  </a>
                 ))}
               </div>
-            </motion.div>
+            ) : (
+              <Link key={item.label} href={item.href} onClick={() => setIsOpen(false)}>
+                {item.label}
+              </Link>
+            ),
           )}
-        </AnimatePresence>
-      </motion.nav>
-    </header>
+
+          {isLandingPage ? (
+            <>
+              <a href="#contact" onClick={() => setIsOpen(false)}>
+                {t('Contact', 'Kontakt')}
+              </a>
+              <a href="#register" className={styles.mobileCta} onClick={() => setIsOpen(false)}>
+                {t('Register Now →', 'Jetzt anmelden →')}
+              </a>
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in" onClick={() => setIsOpen(false)}>
+                Sign In
+              </Link>
+              <Link href="/sign-up" className={styles.mobileCta} onClick={() => setIsOpen(false)}>
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
-} 
+}

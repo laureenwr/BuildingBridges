@@ -1,0 +1,319 @@
+.story {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: var(--landing-ink);
+  color: #fff;
+}
+
+.events {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: #fff;
+}
+
+.register {
+  padding: 6rem 2.5rem;
+  background: #9152ff;
+  color: #fff;
+}
+
+.contact {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: var(--landing-surface-soft);
+}
+
+.inner {
+  max-width: var(--landing-content-max);
+  margin: 0 auto;
+}
+
+.innerRegister,
+.innerContact {
+  max-width: var(--landing-content-max);
+  margin: 0 auto;
+  display: grid;
+  gap: var(--landing-block-gap);
+}
+
+.innerRegister {
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.innerContact {
+  grid-template-columns: 1fr 1.3fr;
+}
+
+.eyebrow,
+.eyebrowDark {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.eyebrow {
+  color: #b580ff;
+}
+
+.eyebrowDark {
+  color: var(--landing-primary);
+}
+
+.title,
+.titleDark {
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.9rem;
+}
+
+.title {
+  color: #fff;
+}
+
+.titleDark {
+  color: var(--landing-ink);
+}
+
+.lead,
+.leadDark {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: var(--landing-text-max);
+  margin-bottom: 2rem;
+}
+
+.lead {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.leadDark {
+  color: var(--landing-muted);
+}
+
+.storyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.storyCard {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 1.3rem;
+}
+
+.storyCard h3 {
+  margin-top: 0;
+  margin-bottom: 0.7rem;
+}
+
+.storyCard ol,
+.storyCard ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.8;
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.eventCard {
+  background: #fff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 16px;
+  padding: 1.1rem;
+}
+
+.eventType {
+  display: inline-flex;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: #ede5ff;
+  color: #7339e0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.eventCard h3 {
+  margin: 0 0 0.4rem;
+  color: #1a1033;
+  font-size: 1rem;
+}
+
+.eventCard p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 0.84rem;
+}
+
+.togglePast {
+  margin-top: 1rem;
+  border: 1px solid rgba(145, 82, 255, 0.25);
+  background: #fff;
+  color: var(--landing-muted);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pastGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.pastCard {
+  background: #f5f0ff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.pastCard h4 {
+  margin: 0 0 0.35rem;
+  color: #1a1033;
+  font-size: 0.95rem;
+}
+
+.pastCard p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 0.82rem;
+}
+
+.innerRegister h2 {
+  margin: 0 0 0.6rem;
+}
+
+.innerRegister p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.84);
+  line-height: 1.7;
+}
+
+.registerCards {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.regCard {
+  text-decoration: none;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.regCard span {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.86rem;
+}
+
+.contactBlocks {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.contactBlock {
+  background: #fff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.contactBlock h4 {
+  margin: 0 0 0.35rem;
+  color: #1a1033;
+  font-size: 0.92rem;
+}
+
+.contactBlock p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 0.84rem;
+}
+
+.form {
+  background: #fff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 22px;
+  padding: 1.4rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.form h3 {
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  color: #1a1033;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  border: 1px solid rgba(145, 82, 255, 0.2);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  color: #1a1033;
+  background: #f9f7ff;
+}
+
+.form button {
+  border: none;
+  border-radius: 999px;
+  background: #9152ff;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .storyGrid,
+  .eventGrid,
+  .pastGrid,
+  .innerRegister,
+  .innerContact {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .togglePast,
+  .form button {
+    width: 100%;
+  }
+
+  .regCard {
+    padding: 1.1rem 1rem;
+  }
+
+  .eventCard,
+  .pastCard,
+  .contactBlock {
+    padding: 1rem 0.9rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}

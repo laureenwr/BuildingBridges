@@ -1,0 +1,286 @@
+.team {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: #ffffff;
+}
+
+.knowledge {
+  padding: var(--landing-section-py) var(--landing-section-px);
+  background: var(--landing-surface-soft);
+}
+
+.inner {
+  max-width: var(--landing-content-max);
+  margin: 0 auto;
+}
+
+.eyebrow,
+.eyebrowDark {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.eyebrow {
+  color: var(--landing-primary);
+}
+
+.eyebrowDark {
+  color: var(--landing-primary);
+}
+
+.title,
+.titleDark {
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--landing-ink);
+  margin-bottom: 0.8rem;
+}
+
+.lead,
+.leadDark {
+  font-size: 0.95rem;
+  color: var(--landing-muted);
+  margin-bottom: 2.5rem;
+  max-width: var(--landing-text-max);
+}
+
+.group {
+  margin-bottom: 2.4rem;
+}
+
+.groupHeader {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(145, 82, 255, 0.2);
+  padding-bottom: 0.8rem;
+}
+
+.groupHeader h3 {
+  margin: 0 0 0.2rem;
+  color: #1a1033;
+}
+
+.groupHeader p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--landing-primary);
+}
+
+.memberGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.memberCard {
+  background: #fff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 18px;
+  padding: 1.2rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--landing-primary-pale);
+  color: var(--landing-primary-dark);
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+}
+
+.avatarImageWrap {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  border: 2px solid var(--landing-primary-pale);
+  box-shadow: 0 3px 14px rgba(145, 82, 255, 0.15);
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.memberCard h4 {
+  margin: 0 0 0.35rem;
+  color: #1a1033;
+  font-size: 1rem;
+}
+
+.memberCard p {
+  margin: 0;
+  color: var(--landing-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.tab,
+.tabActive {
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(145, 82, 255, 0.22);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab {
+  background: #fff;
+  color: var(--landing-muted);
+}
+
+.tabActive {
+  background: var(--landing-primary);
+  color: #fff;
+}
+
+.knowledgeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.kCard {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  padding: 1.2rem;
+}
+
+.kCard h4 {
+  margin: 0 0 0.45rem;
+  color: #1a1033;
+}
+
+.kCard p {
+  margin: 0;
+  color: var(--landing-muted);
+  line-height: 1.6;
+  font-size: 0.86rem;
+}
+
+.glossary {
+  margin-top: 1.4rem;
+  background: #fff;
+  border: 1px solid rgba(145, 82, 255, 0.15);
+  border-radius: 18px;
+  padding: 1.3rem;
+}
+
+.glossary h3 {
+  margin-top: 0;
+  color: #1a1033;
+}
+
+.termList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.term {
+  border: 1px solid rgba(145, 82, 255, 0.2);
+  background: var(--landing-surface-faint);
+  color: var(--landing-primary-dark);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.popup {
+  margin-top: 1rem;
+  border: 1px solid rgba(145, 82, 255, 0.2);
+  border-radius: 14px;
+  background: #fff;
+  padding: 1rem;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--landing-muted);
+}
+
+.popupLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--landing-primary);
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.popup p {
+  color: #1a1033;
+  margin: 0.2rem 0;
+  line-height: 1.6;
+}
+
+.popupDe {
+  color: var(--landing-muted) !important;
+}
+
+@media (max-width: 960px) {
+  .memberGrid,
+  .knowledgeGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tab,
+  .tabActive {
+    width: 100%;
+    text-align: center;
+  }
+
+  .memberGrid,
+  .knowledgeGrid {
+    grid-template-columns: 1fr;
+  }
+}
