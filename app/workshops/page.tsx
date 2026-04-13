@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Users, MapPin, Star, ArrowRight, BookOpen, Code, Lightbulb, Target, GraduationCap, Heart, Globe, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useLandingLocale } from '@/lib/landing/locale';
 async function fetchWorkshopsClient() {
   try {
     const res = await fetch(`/api/workshops`, { cache: 'no-store' });
@@ -76,31 +77,33 @@ const mepPrograms = [
   }
 ];
 
-const researchActivities = [
+const getResearchActivities = (t: (en: string, de: string) => string) => [
   {
-    title: "Diskriminierungsforschung",
-    description: "Untersuchung von Diskriminierungserfahrungen und Barrieren im Bildungsbereich.",
-    participants: "Schülerinnen & Studentinnen",
-    method: "Mixed-Methods",
+    title: t("Discrimination Research", "Diskriminierungsforschung"),
+    description: t("Study of discrimination experiences and barriers in education.", "Untersuchung von Diskriminierungserfahrungen und Barrieren im Bildungsbereich."),
+    participants: t("Pupils & students", "Schülerinnen & Studentinnen"),
+    method: t("Mixed methods", "Mixed-Methods"),
     icon: Target
   },
   {
-    title: "Resilienzstudien",
-    description: "Erforschung von Schutzfaktoren und Resilienzressourcen bei M*oC.",
-    participants: "MEP-Teilnehmerinnen",
-    method: "Längsschnittstudie",
+    title: t("Resilience Studies", "Resilienzstudien"),
+    description: t("Research on protective factors and resilience resources among M*oC.", "Erforschung von Schutzfaktoren und Resilienzressourcen bei M*oC."),
+    participants: t("MEP participants", "MEP-Teilnehmerinnen"),
+    method: t("Longitudinal study", "Längsschnittstudie"),
     icon: Heart
   },
   {
-    title: "Partizipative Evaluation",
-    description: "Gemeinsame Bewertung und Weiterentwicklung des MEP-Programms.",
-    participants: "Alle Beteiligten",
-    method: "Partizipativ",
+    title: t("Participatory Evaluation", "Partizipative Evaluation"),
+    description: t("Joint evaluation and further development of the MEP program.", "Gemeinsame Bewertung und Weiterentwicklung des MEP-Programms."),
+    participants: t("All stakeholders", "Alle Beteiligten"),
+    method: t("Participatory", "Partizipativ"),
     icon: Users
   }
 ];
 
 export default function WorkshopsPage() {
+  const { t } = useLandingLocale();
+  const researchActivities = getResearchActivities(t);
   const [dbWorkshops, setDbWorkshops] = useState<any[]>([]);
   const [showPastWorkshops, setShowPastWorkshops] = useState(false);
 
@@ -119,11 +122,13 @@ export default function WorkshopsPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
-              Trainings & Events
+              {t('Training & Events', 'Trainings & Events')}
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitäten 
-              zur Stärkung und Förderung von Mädchen und FLINTA* of Colour in akademischen Laufbahnen.
+              {t(
+                'The Building Bridges project offers a range of programs and research activities to empower girls and FLINTA* of Colour in academic pathways.',
+                'Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitäten zur Stärkung und Förderung von Mädchen und FLINTA* of Colour in akademischen Laufbahnen.'
+              )}
             </p>
           </motion.div>
 
@@ -136,13 +141,14 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Workshopangebote</h2>
-              <p className="text-xl text-gray-600 max-w-3xl">Die nächsten Termine für unsere Workshops und Veranstaltungen.</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{t('Workshop Offerings', 'Workshopangebote')}</h2>
+              <p className="text-xl text-gray-600 max-w-3xl">{t('Upcoming dates for our workshops and events.', 'Die nächsten Termine für unsere Workshops und Veranstaltungen.')}</p>
             </motion.div>
 
             <div className="space-y-6 max-w-5xl">
               {/* First Workshop */}
               <motion.div
+                id="event-networking-exchange"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -154,7 +160,7 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Users className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Networking & Austausch</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Networking & Exchange', 'Networking & Austausch')}</p>
                       </div>
                     </div>
                     
@@ -164,30 +170,32 @@ export default function WorkshopsPage() {
                         {/* Category Tag */}
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         
                         {/* Date, Time, Format */}
                         <div className="text-sm text-gray-600 mb-4">
-                          Mittwoch, 14.01.2026 | 18:00 Uhr | Online
+                          {t('Wednesday, Jan 14, 2026 | 6:00 PM | Online', 'Mittwoch, 14.01.2026 | 18:00 Uhr | Online')}
                         </div>
                         
                         {/* Title */}
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Online Kennenlernen Mentor:innen
+                          {t('Online Introductions to Mentors', 'Online Kennenlernen Mentor:innen')}
                         </h3>
                         
                         {/* Description */}
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr über das Mentoring-Programm. 
-                          In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.
+                          {t(
+                            'Meet our mentors and learn more about the mentoring program. In this online event, mentors introduce themselves and answer your questions.',
+                            'Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr über das Mentoring-Programm. In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.'
+                          )}
                         </p>
                       </div>
                       
                       {/* Read More Link */}
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-networking-exchange" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -196,6 +204,7 @@ export default function WorkshopsPage() {
 
               {/* Einzelmentoring */}
               <motion.div
+                id="event-individual-mentoring"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
@@ -206,25 +215,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Individuelles Mentoring</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Individual Mentoring', 'Individuelles Mentoring')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Jan-Nov. 2026
+                          {t('Jan-Nov 2026', 'Jan-Nov. 2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Einzelmentoring
+                          {t('One-to-one Mentoring', 'Einzelmentoring')}
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-individual-mentoring" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -233,6 +242,7 @@ export default function WorkshopsPage() {
 
               {/* Mentoring Workshop II Johanna Eck */}
               <motion.div
+                id="event-mentoring-workshop-ii"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -250,18 +260,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          März 2026
+                          {t('March 2026', 'März 2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Mentoring Workshop II Johanna Eck
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-mentoring-workshop-ii" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -270,6 +280,7 @@ export default function WorkshopsPage() {
 
               {/* SELF CARE I */}
               <motion.div
+                id="event-self-care-1"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
@@ -280,25 +291,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Self-care', 'Selbstfürsorge')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          April 2026
+                          {t('April 2026', 'April 2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           SELF CARE I
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-self-care-1" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -307,6 +318,7 @@ export default function WorkshopsPage() {
 
               {/* Mentoring Workshop II- Vision */}
               <motion.div
+                id="event-vision-goals"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -317,25 +329,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Target className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Vision & Ziele</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Vision & Goals', 'Vision & Ziele')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Samstag, 25.04.2026, ganztägig
+                          {t('Saturday, Apr 25, 2026, all day', 'Samstag, 25.04.2026, ganztägig')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Mentoring Workshop II- Vision
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-vision-goals" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -344,6 +356,7 @@ export default function WorkshopsPage() {
 
               {/* Self Care II */}
               <motion.div
+                id="event-self-care-2"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
@@ -354,25 +367,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Self-care', 'Selbstfürsorge')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 15.05.2026
+                          {t('Friday, May 15, 2026', 'Freitag, 15.05.2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Self Care II
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-self-care-2" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -381,6 +394,7 @@ export default function WorkshopsPage() {
 
               {/* Skills Training I */}
               <motion.div
+                id="event-skills-training-1"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -391,25 +405,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Skills', 'Kompetenzen')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 12.06.2026
+                          {t('Friday, Jun 12, 2026', 'Freitag, 12.06.2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training I
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-skills-training-1" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -418,6 +432,7 @@ export default function WorkshopsPage() {
 
               {/* Skills Training II */}
               <motion.div
+                id="event-skills-training-2"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
@@ -428,25 +443,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Skills', 'Kompetenzen')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 03.08.2026
+                          {t('Friday, Aug 3, 2026', 'Freitag, 03.08.2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training II
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-skills-training-2" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -455,6 +470,7 @@ export default function WorkshopsPage() {
 
               {/* Skills Training III */}
               <motion.div
+                id="event-skills-training-3"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
@@ -465,25 +481,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
+                        <p className="text-purple-700 font-medium text-lg">{t('Skills', 'Kompetenzen')}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {t('for participants', 'für Teilnehmerinnen')}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 09.10.2026
+                          {t('Friday, Oct 9, 2026', 'Freitag, 09.10.2026')}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training III
                         </h3>
                       </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                      <Link href="/workshops#event-skills-training-3" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                        {t('Read more', 'Weiterlesen')} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -493,7 +509,7 @@ export default function WorkshopsPage() {
           </section>
 
           {/* Past Workshops */}
-          <section className="mb-20">
+          <section id="research-activities" className="mb-20">
             <motion.div 
               className="text-center mb-8"
               initial={{ opacity: 0, y: 30 }}
@@ -508,12 +524,12 @@ export default function WorkshopsPage() {
               >
                 {showPastWorkshops ? (
                   <>
-                    Vergangene Workshops ausblenden
+                    {t('Hide past workshops', 'Vergangene Workshops ausblenden')}
                     <ChevronUp className="h-5 w-5 ml-2" />
                   </>
                 ) : (
                   <>
-                    Vergangene Workshops anzeigen
+                    {t('Show past workshops', 'Vergangene Workshops anzeigen')}
                     <ChevronDown className="h-5 w-5 ml-2" />
                   </>
                 )}
@@ -541,21 +557,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <GraduationCap className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{t('Workshop completed', 'Workshop abgeschlossen')}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {t('Completed', 'Abgeschlossen')}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Freitag, 20.-22.06.2025
+                                {t('Friday, Jun 20-22, 2025', 'Freitag, 20.-22.06.2025')}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Basis-Training Gruppe I
+                                {t('Basic Training Group I', 'Basis-Training Gruppe I')}
                               </h3>
                             </div>
                           </div>
@@ -574,21 +590,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Users className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{t('Workshop completed', 'Workshop abgeschlossen')}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {t('Completed', 'Abgeschlossen')}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Mittwoch, 08.10.2025 | 13-16 Uhr
+                                {t('Wednesday, Oct 8, 2025 | 1-4 PM', 'Mittwoch, 08.10.2025 | 13-16 Uhr')}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Kennenlernen- Workshop Johanna Eck
+                                {t('Introduction Workshop with Johanna Eck', 'Kennenlernen- Workshop Johanna Eck')}
                               </h3>
                             </div>
                           </div>
@@ -607,21 +623,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Star className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{t('Workshop completed', 'Workshop abgeschlossen')}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {t('Completed', 'Abgeschlossen')}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Samstag, 22.11.2025
+                                {t('Saturday, Nov 22, 2025', 'Samstag, 22.11.2025')}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Auftaktveranstaltung
+                                {t('Kick-off Event', 'Auftaktveranstaltung')}
                               </h3>
                             </div>
                           </div>
@@ -640,18 +656,18 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Heart className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{t('Workshop completed', 'Workshop abgeschlossen')}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {t('Completed', 'Abgeschlossen')}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Dienstag, 09.12.2025 | 18-20 Uhr
+                                {t('Tuesday, Dec 9, 2025 | 6-8 PM', 'Dienstag, 09.12.2025 | 18-20 Uhr')}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
                                 Get together
@@ -673,21 +689,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Award className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{t('Workshop completed', 'Workshop abgeschlossen')}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {t('Completed', 'Abgeschlossen')}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Donnerstag, 18.12.2025
+                                {t('Thursday, Dec 18, 2025', 'Donnerstag, 18.12.2025')}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Perlen & Power Workshop Johanna Eck
+                                {t('Pearls & Power Workshop with Johanna Eck', 'Perlen & Power Workshop Johanna Eck')}
                               </h3>
                             </div>
                           </div>
@@ -701,7 +717,7 @@ export default function WorkshopsPage() {
           </section>
 
           {/* Workshops (DB-backed only) */}
-          <section className="mb-20">
+          <section id="project-timeline" className="mb-20">
             <motion.div 
               className="text-center mb-16"
               initial={{ opacity: 0, y: 30 }}
@@ -709,12 +725,12 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Workshops</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">Aus der Datenbank – oder Hinweis, wenn noch keine veröffentlicht sind.</p>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t('Workshops', 'Workshops')}</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t('From the database - or a note if none are published yet.', 'Aus der Datenbank – oder Hinweis, wenn noch keine veröffentlicht sind.')}</p>
             </motion.div>
 
             {(!dbWorkshops || dbWorkshops.length === 0) ? (
-              <div className="text-center text-gray-600">Aktuell sind keine Workshops verfügbar.</div>
+              <div className="text-center text-gray-600">{t('No workshops are currently available.', 'Aktuell sind keine Workshops verfügbar.')}</div>
             ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
               {dbWorkshops.map((program: any, index: number) => (
@@ -735,7 +751,7 @@ export default function WorkshopsPage() {
                         {program.title || program.name}
                       </CardTitle>
                       <p className="text-gray-700 text-sm leading-relaxed">
-                        {program.description || 'Details folgen in Kürze.'}
+                        {program.description || t('Details coming soon.', 'Details folgen in Kürze.')}
                       </p>
                     </CardHeader>
                     
@@ -743,26 +759,26 @@ export default function WorkshopsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="h-4 w-4 mr-2 text-purple-600" />
-                          <span>{program.startDate || (program.startsAt ? new Date(program.startsAt).toLocaleDateString('de-DE') : 'tba')}</span>
+                          <span>{program.startDate || (program.startsAt ? new Date(program.startsAt).toLocaleDateString('de-DE') : t('tba', 'tba'))}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Clock className="h-4 w-4 mr-2 text-blue-600" />
-                          <span>{program.duration || (program.endsAt && program.startsAt ? '—' : 'tba')}</span>
+                          <span>{program.duration || (program.endsAt && program.startsAt ? '—' : t('tba', 'tba'))}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="h-4 w-4 mr-2 text-green-600" />
-                          <span>{program.participants || (program.capacity ? `${program.capacity} Plätze` : 'Kapazität tba')}</span>
+                          <span>{program.participants || (program.capacity ? `${program.capacity} ${t('seats', 'Plätze')}` : t('Capacity tba', 'Kapazität tba'))}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-                          <span>{program.location || 'Ort tba'}</span>
+                          <span>{program.location || t('Location tba', 'Ort tba')}</span>
                         </div>
                       </div>
 
                       <div className="pt-4">
                         <Link href="/sign-up">
                           <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                            Interesse bekunden
+                            {t('Register interest', 'Interesse bekunden')}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
                         </Link>
@@ -785,10 +801,10 @@ export default function WorkshopsPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Forschungsaktivitäten
+                {t('Research Activities', 'Forschungsaktivitäten')}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Wissenschaftliche Untersuchungen zu Barrieren, Erfolgsfaktoren und Resilienz
+                {t('Scientific studies on barriers, success factors, and resilience', 'Wissenschaftliche Untersuchungen zu Barrieren, Erfolgsfaktoren und Resilienz')}
               </p>
             </motion.div>
 
@@ -840,10 +856,10 @@ export default function WorkshopsPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Projektverlauf
+                {t('Project Timeline', 'Projektverlauf')}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Building Bridges läuft über 36 Monate von September 2024 bis August 2027
+                {t('Building Bridges runs for 36 months from September 2024 to August 2027', 'Building Bridges läuft über 36 Monate von September 2024 bis August 2027')}
               </p>
             </motion.div>
 
@@ -853,9 +869,9 @@ export default function WorkshopsPage() {
                 <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-purple-400 to-blue-400 rounded-full"></div>
                 
                 {[
-                  { phase: "Phase 1", period: "Sep 2024 - Aug 2025", title: "Projektstart & MEP-Entwicklung", description: "Entwicklung des Mentoring-Programms und erste Teilnehmerinnen-Kohorte" },
-                  { phase: "Phase 2", period: "Sep 2025 - Aug 2026", title: "Vollimplementierung & Forschung", description: "Vollständige Umsetzung aller Programme und intensive Datenerhebung" },
-                  { phase: "Phase 3", period: "Sep 2026 - Aug 2027", title: "Evaluation & Nachhaltigkeit", description: "Projektevaluation, Ergebnisverbreitung und Nachhaltigkeitsstrategie" }
+                  { phase: t("Phase 1", "Phase 1"), period: "Sep 2024 - Aug 2025", title: t("Project Launch & MEP Development", "Projektstart & MEP-Entwicklung"), description: t("Development of the mentoring program and first participant cohort", "Entwicklung des Mentoring-Programms und erste Teilnehmerinnen-Kohorte") },
+                  { phase: t("Phase 2", "Phase 2"), period: "Sep 2025 - Aug 2026", title: t("Full Implementation & Research", "Vollimplementierung & Forschung"), description: t("Full implementation of all programs and intensive data collection", "Vollständige Umsetzung aller Programme und intensive Datenerhebung") },
+                  { phase: t("Phase 3", "Phase 3"), period: "Sep 2026 - Aug 2027", title: t("Evaluation & Sustainability", "Evaluation & Nachhaltigkeit"), description: t("Project evaluation, dissemination of results, and sustainability strategy", "Projektevaluation, Ergebnisverbreitung und Nachhaltigkeitsstrategie") }
                 ].map((item, index) => (
                   <motion.div
                     key={item.phase}

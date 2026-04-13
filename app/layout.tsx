@@ -1,11 +1,11 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Sora, Lora, Fraunces, DM_Sans, DM_Mono } from 'next/font/google';
 import { UserProvider } from '@/lib/auth/index';
 import { getUser } from '@/lib/db/queries';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
+import { AppChrome } from '@/components/layout/app-chrome';
 import Script from 'next/script';
+import { LandingLocaleProvider } from '@/lib/landing/locale';
 
 // Configure Inter font
 const inter = Inter({
@@ -19,6 +19,41 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-jetbrains',
+});
+
+const sora = Sora({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sora',
+  weight: ['300', '400', '500', '600', '700', '800'],
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-lora',
+  weight: ['400', '500', '600', '700'],
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-fraunces',
+  weight: ['200', '400', '600', '700', '800'],
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-dm-sans',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-dm-mono',
+  weight: ['300', '400'],
 });
 
 export const metadata: Metadata = {
@@ -90,9 +125,9 @@ export default function RootLayout({
   let userPromise = getUser();
 
   return (
-    <html 
-      lang="de" 
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+    <html
+      lang="de"
+      className={`${inter.variable} ${jetbrainsMono.variable} ${sora.variable} ${lora.variable} ${fraunces.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
       <body className="font-primary antialiased min-h-[100dvh]">
         {/* Auto-reload on chunk load failure to avoid blank screen after deployments */}
@@ -113,11 +148,9 @@ export default function RootLayout({
           `}
         </Script>
         <UserProvider userPromise={userPromise}>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 mt-16">{children}</main>
-            <Footer />
-          </div>
+          <LandingLocaleProvider>
+            <AppChrome>{children}</AppChrome>
+          </LandingLocaleProvider>
         </UserProvider>
       </body>
     </html>

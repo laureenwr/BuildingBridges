@@ -12,9 +12,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!member) return { title: 'Team Member Not Found' };
 
   const name = member.name || `${member.firstName} ${member.lastName}`;
+  const desc =
+    member.bioEn?.trim() ||
+    member.bioDe?.trim() ||
+    member.bio?.trim() ||
+    `${name} — ${member.roleEn || member.role} @ ${member.org}`;
   return {
     title: `${name} - Building Bridges Team`,
-    description: member.bio || `${name}, ${member.role} bei ${member.org}`,
+    description: desc,
   };
 }
 

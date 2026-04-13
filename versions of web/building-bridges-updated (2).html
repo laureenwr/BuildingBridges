@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Bridges – Empowering Girls & FLINTA* of Colour</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --purple: #9152FF;
+    --purple-dark: #7339E0;
+    --purple-light: #B580FF;
+    --purple-pale: #EDE5FF;
+    --purple-faint: #F5F0FF;
+    --lavender-bg: #F2EEFF;
+    --white: #FFFFFF;
+    --ink: #1A1033;
+    --muted: #6B5F8A;
+    --border: rgba(145, 82, 255, 0.15);
+    --shadow-sm: 0 2px 12px rgba(145, 82, 255, 0.08);
+    --shadow-md: 0 6px 28px rgba(145, 82, 255, 0.13);
+    --shadow-lg: 0 12px 48px rgba(145, 82, 255, 0.18);
+    --sage: #6BAA8A;
+    --sage-pale: rgba(107,170,138,0.15);
+    --amber: #c08800;
+    --amber-pale: rgba(240,165,0,0.12);
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--lavender-bg);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ═══════════════════════════════════════
+     NAV — restructured for clarity
+  ═══════════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 20px rgba(145, 82, 255, 0.06);
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 0 2rem;
+    height: 70px;
+    gap: 1.5rem;
+  }
+
+  /* Logo — left column */
+  .nav-logo {
+    font-family: 'Lora', serif; font-size: 1.2rem; font-weight: 700;
+    color: var(--ink); text-decoration: none; letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 0.55rem;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .nav-logo span { color: var(--purple); }
+
+  /* Links — center column, centred */
+  .nav-links {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; list-style: none; margin: 0;
+  }
+  .nav-links > li { position: relative; }
+  .nav-links > li > a {
+    display: flex; align-items: center; gap: 0.28rem;
+    padding: 0.45rem 0.82rem; border-radius: 8px;
+    font-size: 0.835rem; font-weight: 500; color: var(--muted);
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s;
+    white-space: nowrap;
+  }
+  .nav-links > li > a:hover { background: var(--purple-faint); color: var(--purple); }
+  .nav-links > li > a.active { color: var(--purple); background: var(--purple-faint); }
+
+  /* CSS-only triangle chevron — clean, no character hacks */
+  .has-drop > a::after {
+    content: '';
+    display: inline-block;
+    width: 0; height: 0;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 4.5px solid currentColor;
+    opacity: 0.38;
+    margin-left: 2px;
+    transition: transform 0.22s ease, opacity 0.18s;
+    flex-shrink: 0;
+  }
+  .has-drop:hover > a::after { transform: rotate(180deg); opacity: 0.65; }
+
+  /* Dropdown — centred below trigger */
+  .dropdown {
+    display: none;
+    position: absolute; top: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%);
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.4rem; min-width: 215px;
+    box-shadow: 0 8px 30px rgba(145,82,255,0.13), 0 2px 8px rgba(0,0,0,0.04);
+    z-index: 999;
+  }
+  .has-drop:hover .dropdown { display: block; }
+  .dropdown a {
+    display: block; padding: 0.55rem 1rem; border-radius: 8px;
+    font-size: 0.835rem; color: var(--muted); text-decoration: none;
+    transition: background 0.15s, color 0.15s; font-weight: 500;
+  }
+  .dropdown a:hover { background: var(--purple-faint); color: var(--purple); }
+
+  /* Actions — right column */
+  .nav-actions { display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
+  .nav-divider { width: 1px; height: 20px; background: var(--border); margin: 0 0.15rem; }
+
+  /* Lang switcher */
+  .lang-switcher {
+    display: flex; align-items: center; gap: 2px;
+    background: var(--purple-faint); border-radius: 100px;
+    padding: 3px; border: 1px solid var(--border);
+  }
+  .lang-btn {
+    padding: 0.22rem 0.6rem; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 700;
+    border: none; cursor: pointer; background: transparent; color: var(--muted);
+    transition: background 0.15s, color 0.15s; font-family: 'Sora', sans-serif;
+    line-height: 1.4;
+  }
+  .lang-btn.active { background: var(--purple); color: #fff; }
+
+  /* CTA buttons */
+  .btn-outline {
+    padding: 0.44rem 1.05rem; border-radius: 100px;
+    border: 1.5px solid rgba(145,82,255,0.38); color: var(--purple);
+    font-size: 0.82rem; font-weight: 600; text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .btn-outline:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .btn-filled {
+    padding: 0.48rem 1.15rem; border-radius: 100px;
+    background: var(--purple); color: #fff;
+    font-size: 0.82rem; font-weight: 600; text-decoration: none;
+    box-shadow: 0 3px 12px rgba(145,82,255,0.35);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn-filled:hover { background: var(--purple-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(145,82,255,0.45); }
+
+  /* Hamburger */
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; border-radius: 8px; transition: background 0.15s; }
+  .hamburger:hover { background: var(--purple-faint); }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none; position: fixed; top: 70px; left: 0; right: 0;
+    background: var(--white); padding: 1rem 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md); z-index: 9998;
+    flex-direction: column; gap: 0.2rem;
+  }
+  .mobile-menu a {
+    display: block; padding: 0.7rem 0.75rem; border-radius: 8px;
+    font-size: 0.95rem; color: var(--muted); text-decoration: none; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mobile-menu a:hover { background: var(--purple-faint); color: var(--purple); }
+  .mobile-menu .m-cta {
+    margin-top: 0.75rem; text-align: center;
+    background: var(--purple); color: #fff !important;
+    border-radius: 100px; padding: 0.8rem !important;
+    font-weight: 600; box-shadow: 0 4px 14px rgba(145,82,255,0.32);
+  }
+
+  /* HERO */
+  #home {
+    min-height: 100vh; padding: 7rem 2.5rem 5rem;
+    display: flex; align-items: center; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #F5F0FF 0%, #EDE5FF 50%, #E8DCFF 100%);
+  }
+  .hero-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+  .hero-blob-1 { width: 700px; height: 700px; right: -200px; top: -200px; background: radial-gradient(circle, rgba(145,82,255,0.18) 0%, transparent 68%); }
+  .hero-blob-2 { width: 420px; height: 420px; left: 3%; bottom: -60px; background: radial-gradient(circle, rgba(181,128,255,0.15) 0%, transparent 68%); }
+  .hero-inner {
+    max-width: 1280px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--purple); color: #fff;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 0.38rem 1.1rem; border-radius: 100px; margin-bottom: 1.6rem;
+    box-shadow: 0 3px 14px rgba(145,82,255,0.35);
+  }
+  .hero-badge::before { content: '●'; color: rgba(255,255,255,0.6); font-size: 0.45rem; }
+  .hero h1 {
+    font-family: 'Lora', serif; font-size: clamp(2.6rem, 4.5vw, 4rem);
+    font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; color: var(--ink);
+  }
+  .hero h1 em { font-style: italic; font-weight: 400; color: var(--purple); }
+  .hero-sub { margin-top: 1.2rem; font-size: 1rem; line-height: 1.75; color: var(--muted); max-width: 500px; }
+  .hero-btns { margin-top: 2.2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .hero-btns .btn-primary {
+    background: var(--purple); color: #fff; padding: 0.9rem 2.2rem; border-radius: 100px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    box-shadow: 0 6px 24px rgba(145,82,255,0.4); transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .hero-btns .btn-primary:hover { background: var(--purple-dark); transform: translateY(-2px); box-shadow: 0 10px 32px rgba(145,82,255,0.5); }
+  .hero-btns .btn-secondary {
+    background: var(--white); color: var(--purple); padding: 0.9rem 2.2rem; border-radius: 100px;
+    border: 1.5px solid var(--purple); font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .hero-btns .btn-secondary:hover { background: var(--purple); color: #fff; }
+  .hero-stats { margin-top: 3rem; display: flex; gap: 2.5rem; }
+  .hero-stat-num { font-family: 'Lora', serif; font-size: 2.1rem; font-weight: 700; color: var(--purple); }
+  .hero-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; font-weight: 500; }
+  .hero-visual { position: relative; }
+  .card-stack { position: relative; height: 420px; }
+  .hcard {
+    position: absolute; border-radius: var(--radius-lg); padding: 1.6rem;
+    box-shadow: var(--shadow-lg); transition: transform 0.3s; border: 1px solid var(--border);
+  }
+  .hcard:nth-child(1) { width: 310px; top: 0; left: 10px; transform: rotate(-3deg); background: var(--purple); color: #fff; }
+  .hcard:nth-child(2) { width: 295px; top: 90px; left: 130px; transform: rotate(2deg); background: var(--white); }
+  .hcard:nth-child(3) { width: 280px; bottom: 10px; left: 30px; transform: rotate(-1deg); background: var(--purple-pale); }
+  .hcard:hover { transform: rotate(0deg) translateY(-6px) !important; }
+  .hcard-tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .hcard:nth-child(1) .hcard-tag { color: rgba(255,255,255,0.65); }
+  .hcard:nth-child(2) .hcard-tag { color: var(--purple); }
+  .hcard:nth-child(3) .hcard-tag { color: var(--purple-dark); }
+  .hcard-name { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .hcard:nth-child(1) .hcard-name { color: #fff; }
+  .hcard:nth-child(2) .hcard-name { color: var(--ink); }
+  .hcard:nth-child(3) .hcard-name { color: var(--purple-dark); }
+  .hcard-role { font-size: 0.82rem; font-weight: 500; }
+  .hcard:nth-child(1) .hcard-role { color: rgba(255,255,255,0.7); }
+  .hcard:nth-child(2) .hcard-role { color: var(--muted); }
+  .hcard:nth-child(3) .hcard-role { color: var(--muted); }
+  .hcard-quote {
+    margin-top: 0.8rem; font-size: 0.84rem; line-height: 1.6; font-style: italic;
+    border-left: 2.5px solid rgba(145,82,255,0.4); padding-left: 0.75rem;
+  }
+  .hcard:nth-child(1) .hcard-quote { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.82); }
+  .hcard:nth-child(2) .hcard-quote { color: var(--muted); }
+  .hcard:nth-child(3) .hcard-quote { color: var(--purple-dark); }
+
+  /* ABOUT */
+  #about {
+    background: var(--purple); color: #fff;
+    padding: 7rem 2.5rem; position: relative; overflow: hidden;
+  }
+  #about::before {
+    content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 70px;
+    background: var(--lavender-bg); clip-path: ellipse(55% 100% at 50% 0%);
+  }
+  .about-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
+  }
+  .section-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: rgba(255,255,255,0.65); margin-bottom: 0.8rem; }
+  .section-title { font-family: 'Lora', serif; font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 700; line-height: 1.12; letter-spacing: -0.02em; }
+  .section-title em { font-style: italic; font-weight: 400; color: var(--purple-pale); }
+  .about-text { font-size: 0.97rem; line-height: 1.8; opacity: 0.82; margin-top: 1.2rem; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
+  .stat-box {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    border-radius: var(--radius-md); padding: 1.4rem; transition: background 0.2s;
+  }
+  .stat-box:hover { background: rgba(255,255,255,0.17); }
+  .stat-num { font-family: 'Lora', serif; font-size: 2.4rem; font-weight: 700; color: var(--purple-pale); }
+  .stat-label { font-size: 0.83rem; opacity: 0.65; margin-top: 0.15rem; }
+  .pillars { display: flex; flex-direction: column; gap: 1rem; }
+  .pillar {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: rgba(255,255,255,0.08); border-radius: var(--radius-md);
+    padding: 1.2rem 1.4rem; border: 1px solid rgba(255,255,255,0.1); transition: background 0.2s;
+  }
+  .pillar:hover { background: rgba(255,255,255,0.13); }
+  .pillar-icon { font-size: 1.55rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .pillar-title { font-weight: 700; font-size: 0.97rem; margin-bottom: 0.3rem; }
+  .pillar-desc { font-size: 0.86rem; opacity: 0.72; line-height: 1.6; }
+
+  /* PROGRAM */
+  #program { padding: 7rem 2.5rem; background: var(--lavender-bg); }
+  .program-inner { max-width: 1280px; margin: 0 auto; }
+  .section-eyebrow-dark { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; color: var(--purple); margin-bottom: 0.8rem; text-align: center; }
+  .section-title-dark {
+    font-family: 'Lora', serif; font-size: clamp(2rem, 3vw, 2.6rem); font-weight: 700;
+    line-height: 1.12; letter-spacing: -0.02em; text-align: center; color: var(--ink); margin-bottom: 3.5rem;
+  }
+  .section-title-dark em { font-style: italic; font-weight: 400; color: var(--purple); }
+  .goals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .goal-card {
+    background: var(--white); border-radius: var(--radius-lg); padding: 2rem;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .goal-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--purple-light));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+  }
+  .goal-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+  .goal-card:hover::after { transform: scaleX(1); }
+  .goal-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .goal-card h3 { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.6rem; }
+  .goal-card p { font-size: 0.875rem; line-height: 1.65; color: var(--muted); }
+
+  /* TEAM */
+  #team { padding: 7rem 2.5rem; background: var(--white); }
+  .team-inner { max-width: 1280px; margin: 0 auto; }
+  .team-tp-block { margin-bottom: 4rem; }
+  .tp-header {
+    display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem;
+    padding-bottom: 1.2rem; border-bottom: 1.5px solid var(--border);
+  }
+  .tp-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em;
+  }
+  .tp1 .tp-badge { background: var(--purple); color: #fff; }
+  .tp2 .tp-badge { background: var(--sage); color: #fff; }
+  .tp3 .tp-badge { background: var(--amber); color: #fff; }
+  .tp-header-text h3 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 0.15rem; }
+  .tp-header-text span { font-size: 0.83rem; color: var(--muted); font-weight: 500; }
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .team-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.8rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .team-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  }
+  .tp1 .team-card::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+  .tp2 .team-card::before { background: linear-gradient(90deg, #6BAA8A, #8FC9AB); }
+  .tp3 .team-card::before { background: linear-gradient(90deg, #c08800, #e6b030); }
+  .team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .team-avatar {
+    width: 60px; height: 60px; border-radius: 50%; margin-bottom: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 700; color: #fff;
+  }
+  .tp1 .team-avatar { background: linear-gradient(135deg, var(--purple), var(--purple-light)); }
+  .tp2 .team-avatar { background: linear-gradient(135deg, #6BAA8A, #8FC9AB); }
+  .tp3 .team-avatar { background: linear-gradient(135deg, #c08800, #e6b030); }
+  .team-card h4 { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.2rem; }
+  .team-card .team-title { font-size: 0.8rem; font-weight: 700; color: var(--purple); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+  .tp2 .team-card .team-title { color: var(--sage); }
+  .tp3 .team-card .team-title { color: var(--amber); }
+  .team-card .team-role { font-size: 0.83rem; color: var(--muted); line-height: 1.55; margin-bottom: 0.7rem; }
+  .team-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .team-tag {
+    font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.65rem;
+    border-radius: 100px; background: var(--purple-pale); color: var(--purple);
+  }
+  .tp2 .team-tag { background: var(--sage-pale); color: #3d7a5c; }
+  .tp3 .team-tag { background: var(--amber-pale); color: var(--amber); }
+
+  /* INFORMATION PLATFORM */
+  #knowledge { padding: 7rem 2.5rem; background: var(--lavender-bg); }
+  .knowledge-inner { max-width: 1280px; margin: 0 auto; }
+  .platform-evolving-banner {
+    display: flex; align-items: center; gap: 0.8rem;
+    background: linear-gradient(90deg, var(--purple-pale), var(--purple-faint));
+    border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    padding: 1rem 1.5rem; margin-bottom: 3rem; font-size: 0.88rem; color: var(--muted);
+  }
+  .platform-evolving-banner strong { color: var(--purple); }
+  .evolving-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.85);} }
+  .knowledge-tabs { display: flex; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .k-tab {
+    padding: 0.55rem 1.3rem; border-radius: 100px; font-size: 0.84rem; font-weight: 600;
+    border: 1.5px solid var(--border); background: var(--white); color: var(--muted);
+    cursor: pointer; transition: all 0.18s; font-family: 'Sora', sans-serif;
+  }
+  .k-tab:hover, .k-tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .knowledge-panels { }
+  .k-panel { display: none; }
+  .k-panel.active { display: block; }
+  .knowledge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .k-card {
+    background: var(--white); border-radius: var(--radius-lg); padding: 1.8rem;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .k-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .k-card-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+  .k-card h4 { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; }
+  .k-card p { font-size: 0.875rem; line-height: 1.65; color: var(--muted); }
+  .k-card-formats { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1rem; }
+  .format-chip {
+    font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 100px;
+    border: 1.5px solid var(--border); color: var(--muted);
+  }
+  .content-warning-banner {
+    background: #fffaf0; border: 1.5px solid #f0c060; border-radius: var(--radius-md);
+    padding: 1rem 1.5rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .content-warning-banner p { font-size: 0.88rem; color: #7a5500; line-height: 1.5; }
+  .skip-btn {
+    padding: 0.4rem 1rem; border-radius: 100px; background: #f0c060;
+    border: none; font-size: 0.8rem; font-weight: 700; color: #5a3e00;
+    cursor: pointer; white-space: nowrap; font-family: 'Sora', sans-serif;
+  }
+  .glossary-strip {
+    background: var(--purple-faint); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    padding: 2rem; margin-top: 3rem;
+  }
+  .glossary-strip h4 { font-family: 'Lora', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); margin-bottom: 1.2rem; }
+  .glossary-terms { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .glossary-term {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0.45rem 1rem; font-size: 0.83rem; font-weight: 600; color: var(--purple);
+    cursor: pointer; transition: background 0.15s, color 0.15s; text-decoration: none; display: inline-block;
+  }
+  .glossary-term:hover { background: var(--purple); color: #fff; }
+  .feedback-strip {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    padding: 2rem; margin-top: 1.5rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+  }
+  .feedback-strip p { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  .feedback-strip strong { color: var(--ink); }
+  .feedback-btns { display: flex; gap: 0.6rem; margin-left: auto; flex-wrap: wrap; }
+  .fb-btn {
+    padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.83rem; font-weight: 600;
+    border: 1.5px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s; font-family: 'Sora', sans-serif;
+  }
+  .fb-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-faint); }
+  .fb-btn.positive:hover { border-color: var(--sage); color: #3d7a5c; background: var(--sage-pale); }
+
+  /* STORYTELLING PLATFORM */
+  #storytelling { padding: 7rem 2.5rem; background: var(--ink); color: #fff; position: relative; overflow: hidden; }
+  #storytelling::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(145,82,255,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 60% at 10% 80%, rgba(107,170,138,0.12) 0%, transparent 70%);
+  }
+  .story-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+  .story-header { max-width: 640px; margin-bottom: 4rem; }
+  .story-header .section-eyebrow { color: var(--purple-light); }
+  .story-header h2 { font-family: 'Lora', serif; font-size: clamp(2rem,3vw,2.8rem); font-weight: 700; line-height: 1.12; letter-spacing: -0.02em; }
+  .story-header h2 em { font-style: italic; font-weight: 400; color: var(--purple-light); }
+  .story-header p { margin-top: 1rem; font-size: 0.97rem; line-height: 1.75; color: rgba(255,255,255,0.68); }
+  .story-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+  .story-steps { display: flex; flex-direction: column; gap: 0; }
+  .story-step {
+    display: flex; gap: 1.2rem; padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08); position: relative;
+  }
+  .story-step:last-child { border-bottom: none; }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 800; color: var(--purple);
+    background: rgba(145,82,255,0.18); border: 1.5px solid rgba(145,82,255,0.35);
+  }
+  .step-content h4 { font-weight: 700; font-size: 0.97rem; margin-bottom: 0.3rem; }
+  .step-content p { font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.6); }
+  .step-options { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+  .step-option {
+    font-size: 0.72rem; padding: 0.22rem 0.7rem; border-radius: 100px; font-weight: 600;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);
+  }
+  .story-controls-panel {
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-xl); padding: 2rem;
+    display: flex; flex-direction: column; gap: 1.2rem;
+  }
+  .story-controls-panel h3 { font-family: 'Lora', serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .story-controls-panel p { font-size: 0.85rem; color: rgba(255,255,255,0.62); }
+  .control-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.04); border-radius: var(--radius-sm);
+    padding: 0.9rem 1.2rem; border: 1px solid rgba(255,255,255,0.08);
+  }
+  .control-label { font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 0.6rem; }
+  .control-label span { font-size: 1.1rem; }
+  .toggle-switch {
+    width: 40px; height: 22px; border-radius: 100px; border: none; cursor: pointer;
+    position: relative; transition: background 0.2s;
+  }
+  .toggle-switch.on { background: var(--sage); }
+  .toggle-switch.off { background: rgba(255,255,255,0.2); }
+  .toggle-switch::after {
+    content: ''; position: absolute; top: 3px; width: 16px; height: 16px;
+    border-radius: 50%; background: #fff; transition: left 0.2s;
+  }
+  .toggle-switch.on::after { left: 21px; }
+  .toggle-switch.off::after { left: 3px; }
+  .story-cta-btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    background: var(--purple); color: #fff; padding: 1rem 1.5rem; border-radius: 100px;
+    font-weight: 700; font-size: 0.95rem; text-decoration: none; border: none; cursor: pointer;
+    font-family: 'Sora', sans-serif; width: 100%;
+    box-shadow: 0 4px 20px rgba(145,82,255,0.45); transition: background 0.2s, transform 0.2s;
+  }
+  .story-cta-btn:hover { background: var(--purple-dark); transform: translateY(-1px); }
+  .ai-tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 4rem; }
+  .ai-tool-card {
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md); padding: 1.4rem; text-align: center;
+    transition: background 0.2s;
+  }
+  .ai-tool-card:hover { background: rgba(255,255,255,0.1); }
+  .ai-tool-icon { font-size: 1.8rem; margin-bottom: 0.7rem; }
+  .ai-tool-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .ai-tool-card p { font-size: 0.78rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .design-principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 4rem; }
+  .dp-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md); padding: 1.4rem;
+  }
+  .dp-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+  .dp-card p { font-size: 0.8rem; color: rgba(255,255,255,0.55); line-height: 1.55; }
+
+  /* PARTNERS */
+  #partners { padding: 7rem 2.5rem; background: var(--white); }
+  .partners-inner { max-width: 1280px; margin: 0 auto; }
+  .partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2.5rem; }
+  .partner-card {
+    border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    padding: 2rem; background: var(--white); transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .partner-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .partner-tag { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--purple); margin-bottom: 0.5rem; }
+  .partner-card h3 { font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; }
+  .partner-role { font-size: 0.83rem; font-weight: 600; color: var(--muted); margin-bottom: 0.7rem; }
+  .partner-card p { font-size: 0.875rem; line-height: 1.65; color: #888; }
+  .partner-link { display: inline-block; margin-top: 1rem; font-size: 0.84rem; font-weight: 700; color: var(--purple); text-decoration: none; }
+  .partner-link:hover { text-decoration: underline; }
+  .funding-bar {
+    background: var(--purple-faint); border-radius: var(--radius-lg);
+    padding: 2rem 2.5rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    border: 1.5px solid var(--border);
+  }
+  .funding-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); white-space: nowrap; }
+  .funding-logos { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .funding-badge {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0.6rem 1.2rem; font-size: 0.82rem; font-weight: 600; color: var(--muted);
+  }
+
+  /* REGISTER */
+  #register { background: var(--purple); padding: 6rem 2.5rem; position: relative; overflow: hidden; }
+  #register::before {
+    content: '"'; position: absolute; font-family: 'Lora', serif;
+    font-size: 22rem; font-weight: 700; color: rgba(255,255,255,0.06);
+    top: -4rem; left: 1rem; line-height: 1; pointer-events: none;
+  }
+  .register-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .register-inner h2 { font-family: 'Lora', serif; font-size: 2.8rem; font-weight: 700; color: #fff; line-height: 1.1; letter-spacing: -0.02em; }
+  .register-inner h2 em { font-style: italic; font-weight: 400; }
+  .register-inner p { color: rgba(255,255,255,0.8); margin-top: 1rem; font-size: 1rem; line-height: 1.7; }
+  .register-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .reg-card {
+    background: rgba(255,255,255,0.13); border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: var(--radius-md); padding: 1.4rem 1.6rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    text-decoration: none; color: #fff; transition: background 0.2s, transform 0.2s;
+  }
+  .reg-card:hover { background: rgba(255,255,255,0.22); transform: translateX(5px); }
+  .reg-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .reg-title { font-weight: 700; font-size: 1rem; }
+  .reg-desc { font-size: 0.84rem; opacity: 0.78; margin-top: 0.2rem; }
+  .reg-arrow { margin-left: auto; opacity: 0.6; font-size: 1.3rem; }
+
+  /* CONTACT */
+  #contact { padding: 7rem 2.5rem; background: var(--lavender-bg); }
+  .contact-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: start; }
+  .contact-details { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .contact-block {
+    background: var(--white); border-radius: var(--radius-md);
+    padding: 1.3rem 1.5rem; border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);
+  }
+  .contact-block-title { font-weight: 700; font-size: 0.9rem; color: var(--ink); margin-bottom: 0.35rem; }
+  .contact-block p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; margin: 0; }
+  .contact-block a { color: var(--purple); text-decoration: none; font-weight: 600; }
+  .contact-block a:hover { text-decoration: underline; }
+  .contact-form {
+    background: var(--white); border-radius: var(--radius-xl);
+    padding: 2.5rem; box-shadow: var(--shadow-md); border: 1.5px solid var(--border);
+  }
+  .contact-form h3 { font-family: 'Lora', serif; font-size: 1.55rem; font-weight: 700; color: var(--ink); margin-bottom: 1.5rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+  .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: 0.02em; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.75rem 1.1rem; border: 1.5px solid rgba(145,82,255,0.15);
+    border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 0.9rem;
+    color: var(--ink); background: var(--purple-faint); transition: border-color 0.2s, background 0.2s; outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--purple); background: var(--white); }
+  .form-group textarea { resize: vertical; min-height: 110px; }
+  .form-submit {
+    width: 100%; padding: 0.95rem; background: var(--purple); color: #fff;
+    border: none; border-radius: 100px; font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 18px rgba(145,82,255,0.35);
+  }
+  .form-submit:hover { background: var(--purple-dark); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(145,82,255,0.45); }
+
+  /* EVENTS */
+  #events { padding: 7rem 2.5rem; background: var(--white); }
+  .events-inner { max-width: 1280px; margin: 0 auto; }
+  .events-top { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; margin-bottom: 4rem; }
+  .events-desc { font-size: 1rem; line-height: 1.75; color: var(--muted); margin-top: 1rem; max-width: 420px; }
+  .next-up-card { background: var(--purple); border-radius: var(--radius-lg); padding: 2rem; color: #fff; box-shadow: var(--shadow-lg); }
+  .next-up-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.65); font-weight: 700; margin-bottom: 0.5rem; }
+  .next-up-title { font-family: 'Lora', serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .next-up-meta { font-size: 0.84rem; opacity: 0.72; margin-bottom: 0.8rem; }
+  .next-up-desc { font-size: 0.88rem; opacity: 0.82; line-height: 1.6; }
+  .next-up-link { display: inline-block; margin-top: 1rem; font-size: 0.84rem; font-weight: 700; color: var(--purple-pale); text-decoration: none; }
+  .next-up-link:hover { text-decoration: underline; }
+  .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; margin-bottom: 2rem; }
+  .event-card {
+    background: var(--white); border-radius: var(--radius-md); padding: 1.6rem;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);
+    transition: transform 0.22s, box-shadow 0.22s; display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .event-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .event-type-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.69rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+    padding: 0.28rem 0.8rem; border-radius: 100px; width: fit-content;
+    background: var(--purple-pale); color: var(--purple);
+  }
+  .event-audience { font-size: 0.72rem; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.07em; }
+  .event-date { font-size: 0.82rem; font-weight: 600; color: var(--purple-dark); }
+  .event-title { font-family: 'Lora', serif; font-size: 1rem; font-weight: 700; color: var(--ink); line-height: 1.3; }
+  .event-link { font-size: 0.82rem; font-weight: 700; color: var(--purple); text-decoration: none; margin-top: auto; }
+  .event-link:hover { text-decoration: underline; }
+  .completed-toggle {
+    display: flex; align-items: center; gap: 0.7rem; cursor: pointer;
+    background: none; border: 1.5px solid var(--border); border-radius: 100px;
+    padding: 0.6rem 1.4rem; font-family: 'Sora', sans-serif;
+    font-size: 0.875rem; font-weight: 600; color: var(--muted); margin-bottom: 1.5rem;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .completed-toggle:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-faint); }
+  .completed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; }
+  .completed-card {
+    background: var(--purple-faint); border-radius: var(--radius-md); padding: 1.3rem 1.5rem;
+    border: 1.5px solid var(--border); display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .completed-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.69rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage); width: fit-content;
+  }
+  .completed-badge::before { content: '✓'; }
+  .completed-date { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+  .completed-title { font-family: 'Lora', serif; font-size: 0.98rem; font-weight: 700; color: #666; }
+  .research-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1rem; }
+  .research-card {
+    background: var(--white); border-radius: var(--radius-lg); padding: 1.8rem;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .research-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .research-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--purple); margin-bottom: 0.7rem; }
+  .research-card h4 { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; }
+  .research-card p { font-size: 0.875rem; line-height: 1.65; color: var(--muted); margin-bottom: 0.7rem; }
+  .research-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .research-pill { font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.75rem; border-radius: 100px; background: var(--purple-pale); color: var(--purple); }
+  .phases-section { background: var(--purple); border-radius: var(--radius-xl); padding: 3rem; margin-top: 4rem; color: #fff; }
+  .phases-section h3 { font-family: 'Lora', serif; font-size: 1.65rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .phases-section > p { font-size: 0.9rem; opacity: 0.72; margin-bottom: 2rem; }
+  .phases-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; position: relative; }
+  .phases-track::before { content: ''; position: absolute; top: 26px; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.2); z-index: 0; }
+  .phase-item { position: relative; z-index: 1; }
+  .phase-dot {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Lora', serif; font-size: 1rem; font-weight: 700;
+    margin-bottom: 1rem; border: 2px solid rgba(255,255,255,0.25);
+  }
+  .phase-dot.done { background: var(--sage); color: #fff; border-color: var(--sage); }
+  .phase-dot.active { background: rgba(255,255,255,0.95); color: var(--purple); border-color: #fff; font-weight: 800; }
+  .phase-dot.upcoming { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
+  .phase-period { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--purple-pale); margin-bottom: 0.4rem; opacity: 0.85; }
+  .phase-title { font-family: 'Lora', serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .phase-desc { font-size: 0.84rem; opacity: 0.65; line-height: 1.55; }
+
+  /* FOOTER */
+  footer { background: var(--ink); color: rgba(255,255,255,0.5); padding: 4rem 2.5rem 2rem; }
+  .footer-inner { max-width: 1280px; margin: 0 auto; }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 2.5rem;
+    padding-bottom: 3rem; border-bottom: 1px solid rgba(145,82,255,0.18);
+  }
+  .footer-brand p { font-size: 0.875rem; line-height: 1.7; margin-top: 0.8rem; max-width: 280px; }
+  .footer-logo { font-family: 'Lora', serif; font-size: 1.25rem; font-weight: 700; color: #fff; }
+  .footer-logo span { color: var(--purple-light); }
+  .footer-col h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.75); margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .footer-col ul a { font-size: 0.875rem; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.2s; }
+  .footer-col ul a:hover { color: rgba(255,255,255,0.9); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 1.8rem; font-size: 0.83rem; flex-wrap: wrap; gap: 1rem; }
+  .footer-bottom a { color: rgba(255,255,255,0.38); text-decoration: none; transition: color 0.2s; }
+  .footer-bottom a:hover { color: rgba(255,255,255,0.7); }
+  .accessibility-strip {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    background: rgba(145,82,255,0.15); border-radius: var(--radius-md);
+    padding: 1rem 1.5rem; margin-bottom: 2rem; font-size: 0.83rem;
+    border: 1px solid rgba(145,82,255,0.25);
+  }
+  .acc-badge { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 100px; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .ai-tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .design-principles { grid-template-columns: repeat(2, 1fr); }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr 1fr; }
+    .nav-links > li > a { padding: 0.42rem 0.6rem; font-size: 0.8rem; }
+  }
+  @media (max-width: 960px) {
+    .nav-links, .nav-actions { display: none; }
+    .nav-inner { grid-template-columns: 1fr auto; }
+    .hamburger { display: flex; }
+    .hero-inner, .about-inner, .register-inner, .contact-inner, .story-flow { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-visual { display: none; }
+    .goals-grid, .partners-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    #home, #about, #program, #partners, #register, #contact, #events, #team, #knowledge, #storytelling { padding: 5rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .events-top { grid-template-columns: 1fr; gap: 2rem; }
+    .events-grid, .completed-grid, .research-grid { grid-template-columns: 1fr 1fr; }
+    .phases-track { grid-template-columns: 1fr; }
+    .phases-track::before { display: none; }
+    .knowledge-grid { grid-template-columns: 1fr 1fr; }
+    .ai-tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .design-principles { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .footer-top { grid-template-columns: 1fr; }
+    .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+    .events-grid, .completed-grid, .research-grid, .goals-grid, .knowledge-grid, .ai-tools-grid { grid-template-columns: 1fr; }
+    .knowledge-tabs { gap: 0.35rem; }
+    .k-tab { font-size: 0.78rem; padding: 0.45rem 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo">
+      <img src="mypic.png" alt="Building Bridges" style="height:36px;width:36px;border-radius:50%;object-fit:cover;">
+      Building<span>Bridges</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li class="has-drop">
+        <a href="#about">About</a>
+        <div class="dropdown">
+          <a href="#about">About the Project</a>
+          <a href="#about">Vision &amp; Goals</a>
+          <a href="#team">Team &amp; Partners</a>
+        </div>
+      </li>
+      <li class="has-drop">
+        <a href="#program">Program</a>
+        <div class="dropdown">
+          <a href="#program">MEP Program</a>
+          <a href="#events">Workshops &amp; Events</a>
+          <a href="#events">Activities</a>
+          <a href="#events">Roadmap</a>
+        </div>
+      </li>
+      <li class="has-drop">
+        <a href="#knowledge">Platform</a>
+        <div class="dropdown">
+          <a href="#knowledge">Knowledge &amp; Resources</a>
+          <a href="#storytelling">Story Creation Tool</a>
+          <a href="#storytelling">Digital Toolkit</a>
+        </div>
+      </li>
+      <li><a href="#events">Training &amp; Events</a></li>
+      <li><a href="#partners">Partners</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('de')">DE</button>
+      </div>
+      <div class="nav-divider"></div>
+      <a href="#contact" class="btn-outline">Contact</a>
+      <a href="#register" class="btn-filled">Register →</a>
+    </div>
+
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="toggleMenu()">Home</a>
+  <a href="#about" onclick="toggleMenu()">About the Project</a>
+  <a href="#team" onclick="toggleMenu()">Team</a>
+  <a href="#program" onclick="toggleMenu()">Program &amp; Goals</a>
+  <a href="#knowledge" onclick="toggleMenu()">Knowledge Platform</a>
+  <a href="#storytelling" onclick="toggleMenu()">Story Creation Tool</a>
+  <a href="#events" onclick="toggleMenu()">Training &amp; Events</a>
+  <a href="#partners" onclick="toggleMenu()">Partners</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="#register" class="m-cta" onclick="toggleMenu()">Register Now &rarr;</a>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">Research Project 2024&ndash;2027 &middot; Berlin &middot; Duisburg-Essen</div>
+      <h1>Mentoring &amp; empowerment for girls and <em>FLINTA* of Colour</em></h1>
+      <p class="hero-sub">An interdisciplinary research and development project to empower girls and FLINTA* of color from the 10th grade onwards to participate in higher education and academic careers in the psychosocial field.</p>
+      <div class="hero-btns">
+        <a href="#register" class="btn-primary">Register Now</a>
+        <a href="#about" class="btn-secondary">Discover the Project</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-num">36</div><div class="hero-stat-label">Months project duration</div></div>
+        <div><div class="hero-stat-num">3</div><div class="hero-stat-label">Universities involved</div></div>
+        <div><div class="hero-stat-num">10+</div><div class="hero-stat-label">Network partners</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="card-stack">
+        <div class="hcard">
+          <div class="hcard-tag">Psychology &middot; Berlin</div>
+          <div class="hcard-name">Free University of Berlin</div>
+          <div class="hcard-role">Scientific Coordination &amp; Research</div>
+          <div class="hcard-quote">Assessing mental health, resources, and academic participation among BIPoC students.</div>
+        </div>
+        <div class="hcard">
+          <div class="hcard-tag">MEP Program &middot; Social Work</div>
+          <div class="hcard-name">SPI Foundation</div>
+          <div class="hcard-role">Mentoring &amp; Empowerment Program</div>
+          <div class="hcard-quote">Supporting BIPoC girls and FLINTA* from grade 10 onwards on their academic path.</div>
+        </div>
+        <div class="hcard">
+          <div class="hcard-tag">Digital Platform &middot; UDE</div>
+          <div class="hcard-name">University of Duisburg-Essen</div>
+          <div class="hcard-role">Digital Storytelling Platform</div>
+          <div class="hcard-quote">Participatory storytelling enabling sustainable peer-to-peer exchange.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div>
+      <div class="section-eyebrow">About the Project</div>
+      <h2 class="section-title">Building <em>bridges</em> to academic futures</h2>
+      <p class="about-text">"Building Bridges" is a 36-month interdisciplinary research and development project that aims to empower and mentor girls and FLINTA* of color from the 10th grade onwards. The project is being carried out by the Free University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.</p>
+      <p class="about-text" style="margin-top:0.9rem;">The entire project is scientifically monitored by the Free University of Berlin (Clinical Child and Adolescent Psychology and Psychotherapy). Interviews and questionnaires assess experiences of discrimination, mental health, stressors, resources, and academic participation.</p>
+    </div>
+    <div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num">36</div><div class="stat-label">Months project duration</div></div>
+        <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">Universities involved</div></div>
+        <div class="stat-box"><div class="stat-num">10+</div><div class="stat-label">Network partners</div></div>
+        <div class="stat-box"><div class="stat-num">2027</div><div class="stat-label">Project end date</div></div>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon">🔬</div>
+          <div><div class="pillar-title">Scientific Coordination (TP1)</div><div class="pillar-desc">Interviews &amp; questionnaires assessing discrimination, mental health, and academic participation.</div></div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">🤝</div>
+          <div><div class="pillar-title">Mentoring &amp; Empowerment (TP2)</div><div class="pillar-desc">Supporting BIPoC girls and FLINTA* from grade 10 with empowerment, self-care, and transition workshops.</div></div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">💻</div>
+          <div><div class="pillar-title">Digital Platform (TP3)</div><div class="pillar-desc">A participatory "living" platform for context-sensitive storytelling and peer-to-peer exchange.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section id="program">
+  <div class="program-inner">
+    <div class="section-eyebrow-dark">Project Goals</div>
+    <h2 class="section-title-dark">Our main goals are to <em>promote &amp; empower</em></h2>
+    <div class="goals-grid">
+      <div class="goal-card"><div class="goal-icon">📋</div><h3>Developing an MEP Program</h3><p>Empowering BIPoC girls and FLINTA* through a needs-based, intersectionality-sensitive mentoring program.</p></div>
+      <div class="goal-card"><div class="goal-icon">🎓</div><h3>Promoting Academic Careers</h3><p>Promoting academic careers in the psychosocial field and strengthening the resources of M*oC for the path into science.</p></div>
+      <div class="goal-card"><div class="goal-icon">⭐</div><h3>Creating Role Models</h3><p>Integration of mentors and role models of colour to highlight successful educational biographies and empowerment.</p></div>
+      <div class="goal-card"><div class="goal-icon">🌐</div><h3>Digital Platform</h3><p>Creation of a participatory digital platform for context-sensitive storytelling and sustainable peer-to-peer exchange.</p></div>
+      <div class="goal-card"><div class="goal-icon">🔍</div><h3>Research Barriers</h3><p>Investigation of experiences of discrimination and barriers and conditions for increased participation in academic settings.</p></div>
+      <div class="goal-card"><div class="goal-icon">💪</div><h3>Strengthening Resilience</h3><p>Strengthening resilience and performance potential through the identification and activation of individual talents and resources.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="team-inner">
+    <div class="section-eyebrow-dark" style="text-align:left;">Project Team</div>
+    <h2 class="section-title-dark" style="text-align:left;margin-bottom:1rem;">Meet the <em>people</em> behind Building Bridges</h2>
+    <p style="font-size:0.97rem;color:var(--muted);margin-bottom:3.5rem;max-width:640px;">Three partner institutions – one shared mission. Each team brings complementary expertise in research, mentoring practice, and digital platform development.</p>
+    <div class="team-tp-block tp1">
+      <div class="tp-header">
+        <div class="tp-badge">TP1</div>
+        <div class="tp-header-text"><h3>Free University of Berlin – Scientific Coordination &amp; Research</h3><span>Department of Educational Science and Psychology &middot; Project Management &amp; Evaluation</span></div>
+      </div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-avatar">CC</div><h4>Univ.-Prof. Dr. Claudia Calvano</h4><div class="team-title">Principal Investigator &amp; Project Lead</div><div class="team-role">Professor of Clinical Child and Adolescent Psychology and Psychotherapy. Responsible for overall scientific management, coordination, and evaluation.</div><div class="team-tags"><span class="team-tag">Project Lead</span><span class="team-tag">Clinical Psychology</span><span class="team-tag">Evaluation</span></div></div>
+        <div class="team-card"><div class="team-avatar">RW</div><h4>Research &amp; Assessment Team</h4><div class="team-title">Study Coordination</div><div class="team-role">Responsible for design and implementation of interviews and questionnaires assessing mental health, discrimination, stressors, resources, and academic participation.</div><div class="team-tags"><span class="team-tag">Mixed Methods</span><span class="team-tag">Longitudinal Study</span><span class="team-tag">BIPoC Research</span></div></div>
+        <div class="team-card"><div class="team-avatar">SA</div><h4>Scientific Advisory Board</h4><div class="team-title">Intersectionality &amp; Ethics</div><div class="team-role">External advisors specialising in intersectionality, anti-discrimination, and research ethics. Ensures culturally sensitive and participatory research design throughout.</div><div class="team-tags"><span class="team-tag">Intersectionality</span><span class="team-tag">Research Ethics</span><span class="team-tag">Advisory</span></div></div>
+      </div>
+    </div>
+    <div class="team-tp-block tp2">
+      <div class="tp-header">
+        <div class="tp-badge">TP2</div>
+        <div class="tp-header-text"><h3>SPI Foundation – Mentoring &amp; Empowerment Program</h3><span>Social Pedagogical Institute Berlin "Walter May" &middot; Practice-oriented MEP Development &amp; Implementation</span></div>
+      </div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-avatar">CK</div><h4>MA Celiana Kiefer</h4><div class="team-title">MEP Program Lead</div><div class="team-role">Leads the practice-oriented development and implementation of the Mentoring &amp; Empowerment Program. Coordinates workshops, self-care modules, and skills training.</div><div class="team-tags"><span class="team-tag">MEP Lead</span><span class="team-tag">Social Work</span><span class="team-tag">Empowerment</span></div></div>
+        <div class="team-card"><div class="team-avatar">JE</div><h4>Johanna Eck</h4><div class="team-title">Workshop Facilitator &amp; Trainer</div><div class="team-role">Facilitates key MEP workshops including "Pearls &amp; Power" and the Mentoring Workshop series. Brings expertise in empowerment pedagogy and trauma-sensitive facilitation.</div><div class="team-tags"><span class="team-tag">Workshop Facilitation</span><span class="team-tag">Trauma-sensitive</span><span class="team-tag">Pearls &amp; Power</span></div></div>
+        <div class="team-card"><div class="team-avatar">MC</div><h4>Mentor Network</h4><div class="team-title">Mentors of Colour</div><div class="team-role">Students and graduates of colour serving as mentors and role models. Provide individual mentoring sessions and facilitate peer exchange from grade 10 onwards.</div><div class="team-tags"><span class="team-tag">Peer Mentoring</span><span class="team-tag">Role Models</span><span class="team-tag">M*oC</span></div></div>
+      </div>
+    </div>
+    <div class="team-tp-block tp3">
+      <div class="tp-header">
+        <div class="tp-badge">TP3</div>
+        <div class="tp-header-text"><h3>University of Duisburg-Essen – Digital Platform &amp; Research</h3><span>Faculty of Computer Science &middot; Participatory Platform Development</span></div>
+      </div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-avatar">HR</div><h4>Prof. Dr. Hannes Rothe</h4><div class="team-title">Platform Lead &amp; Principal Investigator</div><div class="team-role">Leads the participatory design and development of the digital storytelling platform. Responsible for technical architecture, research on co-creative digital tools, and design principles.</div><div class="team-tags"><span class="team-tag">Platform Lead</span><span class="team-tag">Co-design</span><span class="team-tag">Digital Storytelling</span></div></div>
+        <div class="team-card"><div class="team-avatar">DT</div><h4>Design &amp; Technology Team</h4><div class="team-title">UX, Development &amp; AI Integration</div><div class="team-role">Develops story creation modules, storyboard editor, media library, and AI-assisted tools. Implements trauma-sensitive UX design patterns and inclusive accessibility standards.</div><div class="team-tags"><span class="team-tag">UX/UI Design</span><span class="team-tag">AI Tools</span><span class="team-tag">Accessibility</span></div></div>
+        <div class="team-card"><div class="team-avatar">PR</div><h4>Participatory Research Group</h4><div class="team-title">Co-creation &amp; Community Engagement</div><div class="team-role">Works directly with participants and community partners to co-design the platform. Collects insights through workshops, interviews, and iterative feedback sessions.</div><div class="team-tags"><span class="team-tag">Participatory Design</span><span class="team-tag">Community</span><span class="team-tag">Co-creation</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KNOWLEDGE -->
+<section id="knowledge">
+  <div class="knowledge-inner">
+    <div class="section-eyebrow-dark" style="text-align:left;">Information Platform</div>
+    <h2 class="section-title-dark" style="text-align:left;margin-bottom:1rem;">Knowledge, <em>resources &amp; learning</em></h2>
+    <p style="font-size:0.97rem;color:var(--muted);margin-bottom:2rem;max-width:680px;">A growing, living resource hub with multimodal content — text, video, infographics, and example stories — presented in accessible language in both German and English.</p>
+    <div class="platform-evolving-banner">
+      <div class="evolving-dot"></div>
+      <div><strong>This section is evolving.</strong> Content is being added collaboratively with participants, researchers, and community partners. We welcome your feedback and contributions.</div>
+      <button class="skip-btn" onclick="document.getElementById('storytelling').scrollIntoView({behavior:'smooth'})">Jump ahead →</button>
+    </div>
+    <div class="knowledge-tabs">
+      <button class="k-tab active" onclick="switchTab(this,'mental-health')">🧠 Mental Health</button>
+      <button class="k-tab" onclick="switchTab(this,'barriers')">🚧 Barriers &amp; Discrimination</button>
+      <button class="k-tab" onclick="switchTab(this,'resilience')">💪 Resilience &amp; Resources</button>
+      <button class="k-tab" onclick="switchTab(this,'mep')">🤝 MEP Program</button>
+    </div>
+    <div class="knowledge-panels">
+      <div class="k-panel active" id="panel-mental-health">
+        <div class="content-warning-banner"><span style="font-size:1.3rem;">⚠️</span><p><strong>Content note:</strong> Some content discusses mental health challenges, stress, and discrimination. You can skip sensitive sections at any point.</p><button class="skip-btn" onclick="switchTab(document.querySelector('.k-tab:nth-child(3)'),'resilience')">Skip to Resilience →</button></div>
+        <div class="knowledge-grid">
+          <div class="k-card"><div class="k-card-icon">🧠</div><h4>Mental Health in the Psychosocial Field</h4><p>Information about mental health challenges, protective factors, and common experiences of BIPoC students in psychosocial degree programmes.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">🎬 Video</span><span class="format-chip">📊 Infographic</span></div></div>
+          <div class="k-card"><div class="k-card-icon">📚</div><h4>Stressors in Studying</h4><p>Research-based overview of specific stressors experienced by FLINTA* of Colour in studying and transitioning into psychosocial professions.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">💬 Example Stories</span></div></div>
+          <div class="k-card"><div class="k-card-icon">🌿</div><h4>Coping Strategies</h4><p>Evidence-based and community-sourced coping strategies for navigating academic stress, identity-related pressure, and systemic barriers.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">🎬 Video</span><span class="format-chip">🎧 Audio</span></div></div>
+        </div>
+      </div>
+      <div class="k-panel" id="panel-barriers">
+        <div class="content-warning-banner"><span style="font-size:1.3rem;">⚠️</span><p><strong>Content note:</strong> This section covers experiences of discrimination and structural barriers. Skip at any time if this is difficult to read.</p><button class="skip-btn" onclick="switchTab(document.querySelector('[onclick*=resilience]'),'resilience')">Skip to Resilience →</button></div>
+        <div class="knowledge-grid">
+          <div class="k-card"><div class="k-card-icon">🚧</div><h4>Structural Barriers in Education</h4><p>Overview of systemic and institutional barriers that affect the educational pathways of BIPoC girls and FLINTA*, based on current research findings.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">📊 Infographic</span></div></div>
+          <div class="k-card"><div class="k-card-icon">🗣️</div><h4>Experiences of Discrimination</h4><p>Research-based and story-based content on everyday and institutional discrimination in academic contexts — including micro-aggressions and racial bias.</p><div class="k-card-formats"><span class="format-chip">💬 Example Stories</span><span class="format-chip">📄 Text</span></div></div>
+          <div class="k-card"><div class="k-card-icon">⚖️</div><h4>Intersectionality &amp; Identity</h4><p>How overlapping identities — race, gender, class, disability — interact and create compounding experiences in educational spaces.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">🎬 Video</span><span class="format-chip">📊 Infographic</span></div></div>
+        </div>
+      </div>
+      <div class="k-panel" id="panel-resilience">
+        <div class="knowledge-grid">
+          <div class="k-card"><div class="k-card-icon">🌱</div><h4>Protective Factors</h4><p>Research on individual, social, and structural protective factors that support resilience and wellbeing among BIPoC students in psychosocial fields.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">📊 Infographic</span></div></div>
+          <div class="k-card"><div class="k-card-icon">✨</div><h4>Strengths &amp; Resources</h4><p>Community-sourced insights on personal strengths, cultural resources, and community connections that support academic success and wellbeing.</p><div class="k-card-formats"><span class="format-chip">💬 Example Stories</span><span class="format-chip">🎬 Video</span></div></div>
+          <div class="k-card"><div class="k-card-icon">🏆</div><h4>Success Stories</h4><p>Inspiring accounts from M*oC who have navigated higher education and entered psychosocial professions — including mentors from the Building Bridges network.</p><div class="k-card-formats"><span class="format-chip">💬 Stories</span><span class="format-chip">🎬 Video Portraits</span></div></div>
+        </div>
+      </div>
+      <div class="k-panel" id="panel-mep">
+        <div class="knowledge-grid">
+          <div class="k-card"><div class="k-card-icon">📋</div><h4>About the MEP Program</h4><p>Comprehensive overview of the Mentoring &amp; Empowerment Program — structure, goals, eligibility, and what to expect as a participant or mentor.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">📊 Infographic</span></div></div>
+          <div class="k-card"><div class="k-card-icon">🗓️</div><h4>Workshops &amp; Activities</h4><p>Detailed descriptions of all workshop formats including Self-Care sessions, Skills Trainings, Vision workshops, and Networking events.</p><div class="k-card-formats"><span class="format-chip">📄 Text</span><span class="format-chip">🎬 Video</span></div></div>
+          <div class="k-card"><div class="k-card-icon">🔐</div><h4>Sign In / Login</h4><p>Registered participants and mentors can log in to access their personal mentoring dashboard, workshop materials, and the private story creation space.</p><div class="k-card-formats"><span class="format-chip">🔒 Members only</span><span class="format-chip">🌐 Online</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="glossary-strip">
+      <h4>📖 Glossary — Key Terms Explained</h4>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.2rem;">Accessible definitions for important terms used in this project. Available in German and English.</p>
+      <div class="glossary-terms">
+        <span class="glossary-term">FLINTA*</span><span class="glossary-term">BIPoC</span><span class="glossary-term">M*oC</span><span class="glossary-term">Intersectionality</span><span class="glossary-term">Empowerment</span><span class="glossary-term">Mentoring</span><span class="glossary-term">MEP Program</span><span class="glossary-term">Resilience</span><span class="glossary-term">Psychosocial</span><span class="glossary-term">Discrimination</span><span class="glossary-term">Micro-aggressions</span><span class="glossary-term">Safe Space</span><span class="glossary-term">Peer-to-Peer</span><span class="glossary-term">WCAG</span>
+      </div>
+    </div>
+    <div class="feedback-strip">
+      <div><strong style="display:block;font-size:0.95rem;color:var(--ink);margin-bottom:0.2rem;">How helpful was this section?</strong><p>Your feedback helps us improve this platform. All responses are anonymous.</p></div>
+      <div class="feedback-btns">
+        <button class="fb-btn positive" onclick="this.textContent='✓ Thanks!'">👍 Helpful</button>
+        <button class="fb-btn" onclick="this.textContent='✓ Noted'">👎 Not helpful</button>
+        <button class="fb-btn" onclick="alert('Mini survey coming soon — thank you!')">📝 Leave feedback</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORYTELLING -->
+<section id="storytelling">
+  <div class="story-inner">
+    <div class="story-header">
+      <div class="section-eyebrow">Story Creation Tool — TP3</div>
+      <h2>A co-creative space for <em>your story</em></h2>
+      <p>The core innovation of Building Bridges: a digital storytelling tool where you control how much you share, whether to publish, and how AI assists your creative process. Built with and for the community.</p>
+    </div>
+    <div class="story-flow">
+      <div>
+        <h3 style="font-family:'Lora',serif;font-size:1.3rem;font-weight:700;margin-bottom:0.3rem;">Story Creation Steps</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:1.5rem;">A guided, safe process — skip any step at any time.</p>
+        <div class="story-steps">
+          <div class="story-step"><div class="step-num">1</div><div class="step-content"><h4>Choose your story type</h4><p>Select the kind of story you want to tell. All types are valid and valuable.</p><div class="step-options"><span class="step-option">Experience story</span><span class="step-option">Mentoring story</span><span class="step-option">Awareness story</span></div></div></div>
+          <div class="story-step"><div class="step-num">2</div><div class="step-content"><h4>Set the context</h4><p>Where and when did this happen? You control how specific you want to be.</p><div class="step-options"><span class="step-option">School / University</span><span class="step-option">Online space</span><span class="step-option">Personal</span></div></div></div>
+          <div class="story-step"><div class="step-num">3</div><div class="step-content"><h4>Share your experience</h4><p>What happened? You can use guided prompts, templates, or free text. Sensitive questions can always be skipped.</p><div class="step-options"><span class="step-option">⚠️ Skip sensitive sections</span></div></div></div>
+          <div class="story-step"><div class="step-num">4</div><div class="step-content"><h4>Add your empowerment message</h4><p>What would you like others to know? What helped you? What would you tell someone in your position?</p></div></div>
+          <div class="story-step" style="border-bottom:none;"><div class="step-num">5</div><div class="step-content"><h4>Choose how to publish</h4><p>Your story is saved as a private draft by default. You decide if, when, and how to share.</p><div class="step-options"><span class="step-option">🔒 Keep private</span><span class="step-option">👥 Share with group</span><span class="step-option">🌐 Publish</span></div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="story-controls-panel">
+          <div><h3>You are always in control</h3><p style="margin-top:0.4rem;">Adjust these settings at any time during or after creating your story.</p></div>
+          <div class="control-row"><div class="control-label"><span>🤖</span> Use AI assistance</div><button class="toggle-switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="control-row"><div class="control-label"><span>💬</span> Receive peer feedback</div><button class="toggle-switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="control-row"><div class="control-label"><span>🌐</span> Publish publicly</div><button class="toggle-switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="control-row"><div class="control-label"><span>🎙️</span> Add voice-over / audio</div><button class="toggle-switch off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="control-row"><div class="control-label"><span>🖼️</span> Generate images</div><button class="toggle-switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="control-row"><div class="control-label"><span>♿</span> Add subtitles / captions</div><button class="toggle-switch on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <button class="story-cta-btn">✍️ Create your own story</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:4rem;">
+      <h3 style="font-family:'Lora',serif;font-size:1.4rem;font-weight:700;margin-bottom:0.4rem;">AI-Supported Technical Toolkit</h3>
+      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin-bottom:2rem;">Combining manual creativity with responsible AI support — always optional, always transparent.</p>
+      <div class="ai-tools-grid">
+        <div class="ai-tool-card"><div class="ai-tool-icon">✍️</div><h4>Text Generation</h4><p>LLM-powered writing assistance to help structure, refine, or expand your narrative — you stay the author.</p></div>
+        <div class="ai-tool-card"><div class="ai-tool-icon">🖼️</div><h4>Image Generation</h4><p>Create original illustrations and visuals for your story without using personal photos.</p></div>
+        <div class="ai-tool-card"><div class="ai-tool-icon">🎙️</div><h4>Audio &amp; Voice-over</h4><p>Record or generate narration. Voice-overs with privacy-preserving options including voice modulation.</p></div>
+        <div class="ai-tool-card"><div class="ai-tool-icon">📝</div><h4>Auto-Structuring &amp; Subtitles</h4><p>Automated story structuring and subtitle generation for accessibility and multimodal publishing.</p></div>
+      </div>
+    </div>
+    <div style="margin-top:3rem;">
+      <h3 style="font-family:'Lora',serif;font-size:1.4rem;font-weight:700;margin-bottom:0.4rem;">Design Principles</h3>
+      <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin-bottom:2rem;">Developed through interviews, workshops, and participant feedback — translated into concrete platform decisions.</p>
+      <div class="design-principles">
+        <div class="dp-card"><h4><span>🔒</span> Privacy by default</h4><p>Stories are saved as private drafts. Nothing is published without your explicit choice.</p></div>
+        <div class="dp-card"><h4><span>⏭️</span> Skip anything</h4><p>Every sensitive question has a "skip" option. No part of the process is mandatory.</p></div>
+        <div class="dp-card"><h4><span>🕐</span> Publish later</h4><p>You never have to publish immediately. Take as much time as you need to decide.</p></div>
+        <div class="dp-card"><h4><span>🌈</span> Inclusive language</h4><p>All platform text uses gender-inclusive, accessible language in German and English.</p></div>
+        <div class="dp-card"><h4><span>💙</span> Emotional safety</h4><p>Content warnings, pause points, and wellbeing check-ins are built into the story flow.</p></div>
+        <div class="dp-card"><h4><span>🔍</span> Transparency</h4><p>Clear explanations of how AI is used, what data is stored, and who can access your content.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <div class="partners-inner">
+    <div class="section-eyebrow-dark">Project Partners</div>
+    <h2 class="section-title-dark">A strong <em>alliance</em> of universities &amp; foundations</h2>
+    <div class="partners-grid">
+      <div class="partner-card"><div class="partner-tag">Network Coordination &middot; TP1</div><h3>Free University of Berlin</h3><div class="partner-role">Project Management &amp; Research</div><p>Overall coordination, scientific management and evaluation under Prof. Dr. Claudia Calvano. Department of Educational Science and Psychology.</p><a href="https://www.fu-berlin.de" class="partner-link" target="_blank">Visit website &rarr;</a></div>
+      <div class="partner-card"><div class="partner-tag">MEP Development &middot; TP2</div><h3>SPI Foundation</h3><div class="partner-role">Mentoring &amp; Empowerment Program</div><p>Practice-oriented development and implementation of the MEP under MA Celiana Kiefer. Social Pedagogical Institute Berlin "Walter May".</p><a href="#" class="partner-link">Visit website &rarr;</a></div>
+      <div class="partner-card"><div class="partner-tag">Digital Platform &middot; TP3</div><h3>University of Duisburg-Essen</h3><div class="partner-role">Digital Platform &amp; Research</div><p>Participatory development of the digital storytelling platform under Prof. Dr. Hannes Rothe. Faculty of Computer Science.</p><a href="https://www.uni-due.de" class="partner-link" target="_blank">Visit website &rarr;</a></div>
+    </div>
+    <div class="funding-bar">
+      <div class="funding-label">Funded by</div>
+      <div class="funding-logos">
+        <div class="funding-badge">🇩🇪 BMBF &amp; BMFSJ</div>
+        <div class="funding-badge">🇪🇺 European Social Fund Plus (ESF+)</div>
+        <div class="funding-badge">Framework Programme Empirical Educational Research</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <div class="events-inner">
+    <div class="events-top">
+      <div>
+        <div class="section-eyebrow-dark" style="text-align:left;">Training &amp; Events</div>
+        <h2 class="section-title-dark" style="text-align:left;">Workshops &amp; <em>program activities</em></h2>
+        <p class="events-desc">The Building Bridges project offers various programs and research activities to empower and promote girls and FLINTA* of Colour in academic careers.</p>
+      </div>
+      <div class="next-up-card">
+        <div class="next-up-eyebrow">Next up</div>
+        <div class="next-up-title">Networking &amp; Exchange</div>
+        <div class="next-up-meta">Wednesday, January 14, 2026 &middot; 6:00 PM &middot; Online</div>
+        <div class="next-up-desc">Online introductions to mentors. Get to know our mentors and learn more about the mentoring program.</div>
+        <a href="#" class="next-up-link">Read more →</a>
+      </div>
+    </div>
+    <div class="section-eyebrow-dark" style="text-align:left;margin-bottom:0.5rem;">Workshop Offerings</div>
+    <p style="font-size:0.95rem;color:var(--muted);margin-bottom:2rem;">The next dates for our workshops and events.</p>
+    <div class="events-grid">
+      <div class="event-card"><div class="event-type-badge">Networking &amp; Exchange</div><div class="event-audience">For participants</div><div class="event-date">Wednesday, January 14, 2026 &middot; 6:00 PM &middot; Online</div><div class="event-title">Online introductions to mentors</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge">Individual Mentoring</div><div class="event-audience">For participants</div><div class="event-date">January – November 2026</div><div class="event-title">Individual Mentoring</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge">Workshop</div><div class="event-audience">For participants</div><div class="event-date">March 2026</div><div class="event-title">Mentoring Workshop II – Johanna Eck</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(107,170,138,0.15);color:#4a9470;">Self-care</div><div class="event-audience">For participants</div><div class="event-date">April 2026</div><div class="event-title">SELF CARE I</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(240,165,0,0.12);color:#c08800;">Vision &amp; Goals</div><div class="event-audience">For participants</div><div class="event-date">Saturday, April 25, 2026 &middot; All day</div><div class="event-title">Mentoring Workshop II – Vision</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(107,170,138,0.15);color:#4a9470;">Self-care</div><div class="event-audience">For participants</div><div class="event-date">Friday, May 15, 2026</div><div class="event-title">Self Care II</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(145,82,255,0.08);color:var(--purple-dark);">Skills</div><div class="event-audience">For participants</div><div class="event-date">Friday, June 12, 2026</div><div class="event-title">Skills Training I</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(145,82,255,0.08);color:var(--purple-dark);">Skills</div><div class="event-audience">For participants</div><div class="event-date">Friday, August 3, 2026</div><div class="event-title">Skills Training II</div><a href="#" class="event-link">Read more →</a></div>
+      <div class="event-card"><div class="event-type-badge" style="background:rgba(145,82,255,0.08);color:var(--purple-dark);">Skills</div><div class="event-audience">For participants</div><div class="event-date">Friday, October 9, 2026</div><div class="event-title">Skills Training III</div><a href="#" class="event-link">Read more →</a></div>
+    </div>
+    <button class="completed-toggle" onclick="toggleCompleted()"><span>📋</span> View past workshops</button>
+    <div id="completedSection" style="display:none;">
+      <div class="completed-grid">
+        <div class="completed-card"><div class="completed-badge">Completed</div><div class="completed-date">Friday, June 20–22, 2025</div><div class="completed-title">Basic Training Group I</div></div>
+        <div class="completed-card"><div class="completed-badge">Completed</div><div class="completed-date">Wednesday, October 8, 2025 &middot; 1–4 PM</div><div class="completed-title">Introductory Workshop with Johanna Eck</div></div>
+        <div class="completed-card"><div class="completed-badge">Completed</div><div class="completed-date">Saturday, November 22, 2025</div><div class="completed-title">Opening Event</div></div>
+        <div class="completed-card"><div class="completed-badge">Completed</div><div class="completed-date">Tuesday, December 9, 2025 &middot; 6–8 PM</div><div class="completed-title">Get-together</div></div>
+        <div class="completed-card"><div class="completed-badge">Completed</div><div class="completed-date">Thursday, December 18, 2025</div><div class="completed-title">Pearls &amp; Power Workshop – Johanna Eck</div></div>
+      </div>
+    </div>
+    <div style="margin-top:4rem;">
+      <div class="section-eyebrow-dark" style="text-align:left;">Research Activities</div>
+      <h3 style="font-family:'Lora',serif;font-size:1.8rem;font-weight:700;color:var(--ink);margin-bottom:1.2rem;letter-spacing:-0.02em;">Scientific studies on <em style="font-style:italic;font-weight:400;color:var(--purple);">barriers &amp; resilience</em></h3>
+      <div class="research-grid">
+        <div class="research-card"><div class="research-tag">Discrimination Research</div><h4>Discrimination &amp; Barriers</h4><p>Investigation of experiences of discrimination and barriers in the education sector.</p><div class="research-meta"><span class="research-pill">Schoolgirls &amp; students</span><span class="research-pill">Mixed methods</span></div></div>
+        <div class="research-card"><div class="research-tag">Resilience Studies</div><h4>Resilience &amp; Resources</h4><p>Research into protective factors and resilience resources in M*oC.</p><div class="research-meta"><span class="research-pill">MEP participants</span><span class="research-pill">Longitudinal study</span></div></div>
+        <div class="research-card"><div class="research-tag">Participatory Evaluation</div><h4>MEP Program Evaluation</h4><p>Joint evaluation and further development of the MEP program with all involved.</p><div class="research-meta"><span class="research-pill">All involved</span><span class="research-pill">Participatory</span></div></div>
+      </div>
+    </div>
+    <div class="phases-section">
+      <h3>Project Progress</h3>
+      <p>Building Bridges runs for 36 months, from September 2024 to August 2027.</p>
+      <div class="phases-track">
+        <div class="phase-item"><div class="phase-dot done">1</div><div class="phase-period">Sep 2024 – Aug 2025</div><div class="phase-title">Project Launch &amp; MEP Development</div><div class="phase-desc">Development of the mentoring program and first cohort of participants.</div></div>
+        <div class="phase-item"><div class="phase-dot active">2</div><div class="phase-period">Sep 2025 – Aug 2026</div><div class="phase-title">Full Implementation &amp; Research</div><div class="phase-desc">Full implementation of all programs and intensive data collection.</div></div>
+        <div class="phase-item"><div class="phase-dot upcoming">3</div><div class="phase-period">Sep 2026 – Aug 2027</div><div class="phase-title">Evaluation &amp; Sustainability</div><div class="phase-desc">Project evaluation, dissemination of results and sustainability strategy.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTER -->
+<section id="register">
+  <div class="register-inner">
+    <div>
+      <h2>Become part of <em>Building Bridges</em></h2>
+      <p>Whether as a participant, mentor or cooperation partner — together we build bridges to a diverse and inclusive academic future. The project runs from September 2024 to August 2027.</p>
+    </div>
+    <div class="register-cards">
+      <a href="#" class="reg-card"><div class="reg-icon">👩‍🎓</div><div><div class="reg-title">For Participants</div><div class="reg-desc">Girls and FLINTA* of Colour from 10th grade onwards</div></div><div class="reg-arrow">→</div></a>
+      <a href="#" class="reg-card"><div class="reg-icon">🌟</div><div><div class="reg-title">For Mentors</div><div class="reg-desc">Students and Role Models of Colour</div></div><div class="reg-arrow">→</div></a>
+      <a href="#" class="reg-card"><div class="reg-icon">🏫</div><div><div class="reg-title">For Partners</div><div class="reg-desc">Schools, organizations and institutions</div></div><div class="reg-arrow">→</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-eyebrow-dark" style="text-align:left;">Contact</div>
+      <h2 style="font-family:'Lora',serif;font-size:2.2rem;font-weight:700;color:var(--ink);line-height:1.1;margin-bottom:1rem;">Get in <em style="font-style:italic;font-weight:400;color:var(--purple);">touch</em></h2>
+      <p style="font-size:0.97rem;line-height:1.75;color:var(--muted);">Do you have questions about the Building Bridges project or would you like to learn more about our research? We look forward to hearing from you.</p>
+      <div class="contact-details">
+        <div class="contact-block"><div class="contact-block-title">Project Management – Free University of Berlin (TP1)</div><p>Univ.-Prof. Dr. Claudia Calvano<br>Habel Schwertter Allee 45, 14195 Berlin<br><a href="/cdn-cgi/l/email-protection#7811161e17381a0d11141c11161f551a0a111c1f1d0b561c1d"><span class="__cf_email__" data-cfemail="0960676f66496b7c60656d60676e246b7b606d6e6c7a276d6c">[email&#160;protected]</span></a></p></div>
+        <div class="contact-block"><div class="contact-block-title">SPI Foundation – MEP Program (TP2)</div><p>MA Celiana Kiefer &middot; Social Pedagogical Institute Berlin "Walter May"<br>Practice-oriented development of the MEP program</p></div>
+        <div class="contact-block"><div class="contact-block-title">University of Duisburg-Essen – Digital Platform (TP3)</div><p>Prof. Dr. Hannes Rothe &middot; Faculty of Computer Science<br>Development of the digital storytelling platform</p></div>
+        <div class="contact-block"><div class="contact-block-title">Media &amp; Press</div><p>For press inquiries: <a href="/cdn-cgi/l/email-protection#4b3b392e38380b293e22272f22252c662939222f2c2e38652f2e"><span class="__cf_email__" data-cfemail="f78785928484b795829e9b939e9990da95859e93909284d99392">[email&#160;protected]</span></a></p></div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <h3>Send a Message</h3>
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" placeholder="Your first name"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" placeholder="Your last name"></div>
+      </div>
+      <div class="form-group"><label>Email Address</label><input type="email" placeholder="your@email.com"></div>
+      <div class="form-group"><label>Institution / Organization</label><input type="text" placeholder="Your institution or organization"></div>
+      <div class="form-group"><label>Regarding</label>
+        <select>
+          <option value="">Select a topic</option>
+          <option>General Inquiry</option>
+          <option>Participation / Registration</option>
+          <option>Mentoring Program (MEP)</option>
+          <option>Research Collaboration</option>
+          <option>Digital Platform / Story Tool</option>
+          <option>Media &amp; Press</option>
+          <option>News &amp; Updates</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Message</label><textarea placeholder="Your message…"></textarea></div>
+      <button class="form-submit">Send Message &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="accessibility-strip">
+      <span style="font-size:1rem;">♿</span>
+      <span style="color:rgba(255,255,255,0.75);font-size:0.85rem;">This platform is built to WCAG 2.1 accessibility standards.</span>
+      <span class="acc-badge">WCAG 2.1 AA</span>
+      <span class="acc-badge">Gender-inclusive language</span>
+      <span class="acc-badge">DE / EN</span>
+      <span class="acc-badge">Screen-reader friendly</span>
+    </div>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Building<span>Bridges</span></div>
+        <p>Empowering FLINTA individuals and girls of color to achieve their full potential in psychosocial and educational fields. 2024–2027.</p>
+      </div>
+      <div class="footer-col"><h4>About</h4><ul><li><a href="#about">Vision</a></li><li><a href="#team">Team</a></li><li><a href="#partners">Partners</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Platform</h4><ul><li><a href="#knowledge">Knowledge Hub</a></li><li><a href="#storytelling">Story Creation</a></li><li><a href="#knowledge">Glossary</a></li><li><a href="#">Login</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Terms of Service</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Imprint</a></li><li><a href="#">Accessibility</a></li></ul></div>
+      <div class="footer-col"><h4>Community</h4><ul><li><a href="#events">Workshops</a></li><li><a href="#events">Activities</a></li><li><a href="#events">Roadmap</a></li><li><a href="#register">Join Program</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Building Bridges. All rights reserved.</span>
+      <div style="display:flex;gap:1.5rem;"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Imprint</a></div>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function toggleCompleted() {
+    const s = document.getElementById('completedSection');
+    s.style.display = s.style.display === 'none' ? 'grid' : 'none';
+  }
+  function toggleMenu() {
+    const m = document.getElementById('mobileMenu');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  }
+  function setLang(lang) {
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('ac

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/lib/design-system/components';
+import { Button, buttonVariants } from '@/lib/design-system/components';
+import { cn } from '@/lib/utils';
 import { Menu, X, User, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -90,13 +91,8 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
                 >
-                  <Link href={item.href}>
-                    <Button
-                      variant="default"
-                      className="px-6"
-                    >
-                      {item.name}
-                    </Button>
+                  <Link href={item.href} className={cn(buttonVariants({ variant: 'default' }), 'px-6')}>
+                    {item.name}
                   </Link>
                 </motion.div>
               ))}
@@ -118,18 +114,18 @@ export function Navbar() {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                      <Link href="/dashboard" className="block">
-                        <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/dashboard">
                           <User className="mr-2 h-4 w-4" />
                           <span>Dashboard</span>
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href="/dashboard/general" className="block">
-                        <DropdownMenuItem className="cursor-pointer">
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/dashboard/general">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Settings</span>
-                        </DropdownMenuItem>
-                      </Link>
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
@@ -145,15 +141,11 @@ export function Navbar() {
                 </DropdownMenu>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link href="/sign-in">
-                    <Button variant="outline" size="md">
-                      Sign In
-                    </Button>
+                  <Link href="/sign-in" className={buttonVariants({ variant: 'outline', size: 'md' })}>
+                    Sign In
                   </Link>
-                  <Link href="/sign-up">
-                    <Button variant="default" size="md">
-                      Sign Up
-                    </Button>
+                  <Link href="/sign-up" className={buttonVariants({ variant: 'default', size: 'md' })}>
+                    Sign Up
                   </Link>
                 </div>
               )}
@@ -193,14 +185,12 @@ export function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
-                    <Link href={item.href}>
-                      <Button
-                        variant="default"
-                        className="w-full mb-2"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Button>
+                    <Link
+                      href={item.href}
+                      className={cn(buttonVariants({ variant: 'default' }), 'mb-2 w-full')}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
                     </Link>
                   </motion.div>
                 ))}

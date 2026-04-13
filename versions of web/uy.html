@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Cards – Building Bridges</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --purple: #9152FF;
+    --purple-dark: #7339E0;
+    --purple-light: #B580FF;
+    --purple-pale: #EDE5FF;
+    --purple-faint: #F5F0FF;
+    --white: #FFFFFF;
+    --ink: #1A1033;
+    --muted: #6B5F8A;
+    --border: rgba(145, 82, 255, 0.15);
+    --shadow-sm: 0 2px 12px rgba(145, 82, 255, 0.08);
+    --shadow-md: 0 6px 28px rgba(145, 82, 255, 0.13);
+    --sage: #6BAA8A;
+    --sage-pale: rgba(107,170,138,0.15);
+    --amber: #c08800;
+    --amber-pale: rgba(240,165,0,0.12);
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+  }
+  body { font-family: 'Sora', sans-serif; background: #f0ebff; color: var(--ink); padding: 2rem; }
+
+  .team-tp-block { margin-bottom: 4rem; }
+  .tp-header {
+    display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem;
+    padding-bottom: 1.2rem; border-bottom: 1.5px solid var(--border);
+  }
+  .tp-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em;
+  }
+  .tp1 .tp-badge { background: var(--purple); color: #fff; }
+  .tp2 .tp-badge { background: var(--sage); color: #fff; }
+  .tp3 .tp-badge { background: var(--amber); color: #fff; }
+  .tp-header-text h3 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 0.15rem; }
+  .tp-header-text span { font-size: 0.83rem; color: var(--muted); font-weight: 500; }
+
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+  .team-card {
+    background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.8rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .team-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 1;
+  }
+  .tp1 .team-card::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+  .tp2 .team-card::before { background: linear-gradient(90deg, #6BAA8A, #8FC9AB); }
+  .tp3 .team-card::before { background: linear-gradient(90deg, #c08800, #e6b030); }
+  .team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+  .team-photo {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    object-fit: cover; object-position: center top;
+    border: 3px solid var(--purple-pale);
+    box-shadow: 0 2px 12px rgba(145,82,255,0.18);
+    display: block;
+  }
+  .tp2 .team-photo {
+    border-color: rgba(107,170,138,0.4);
+    box-shadow: 0 2px 12px rgba(107,170,138,0.22);
+  }
+  .tp3 .team-photo {
+    border-color: rgba(192,136,0,0.35);
+    box-shadow: 0 2px 12px rgba(192,136,0,0.18);
+  }
+
+  .team-card h4 { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.2rem; }
+  .team-card .team-title { font-size: 0.8rem; font-weight: 700; color: var(--purple); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+  .tp2 .team-card .team-title { color: var(--sage); }
+  .tp3 .team-card .team-title { color: var(--amber); }
+  .team-card .team-role { font-size: 0.83rem; color: var(--muted); line-height: 1.55; margin-bottom: 0.7rem; }
+
+  .team-contact {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    margin-bottom: 0.75rem; padding: 0.7rem 0.9rem;
+    background: var(--purple-faint); border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .tp2 .team-contact { background: var(--sage-pale); border-color: rgba(107,170,138,0.2); }
+  .tp3 .team-contact { background: var(--amber-pale); border-color: rgba(192,136,0,0.15); }
+  .team-contact a {
+    font-size: 0.78rem; color: var(--purple); text-decoration: none; font-weight: 600; transition: color 0.15s;
+  }
+  .tp2 .team-contact a { color: #3d7a5c; }
+  .tp3 .team-contact a { color: var(--amber); }
+  .team-contact a:hover { text-decoration: underline; color: var(--purple-dark); }
+  .tp2 .team-contact a:hover { color: #2a5940; }
+  .tp3 .team-contact a:hover { color: #8a6000; }
+  .team-contact span { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  .team-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .team-tag {
+    font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.65rem;
+    border-radius: 100px; background: var(--purple-pale); color: var(--purple);
+  }
+  .tp2 .team-tag { background: var(--sage-pale); color: #3d7a5c; }
+  .tp3 .team-tag { background: var(--amber-pale); color: var(--amber); }
+
+  @media (max-width: 1100px) { .team-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .team-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+  <!-- TP1 -->
+  <div class="team-tp-block tp1">
+    <div class="tp-header">
+      <div class="tp-badge">TP1</div>
+      <div class="tp-header-text">
+        <h3>Free University of Berlin – Scientific Coordination &amp; Research</h3>
+        <span>Department of Educational Science and Psychology &middot; Project Management &amp; Evaluation</span>
+      </div>
+    </div>
+    <div class="team-grid">
+
+      <div class="team-card">
+        <img src="Claudia.webp" alt="Claudia Calvano" class="team-photo">
+        <h4>Univ.-Prof. Dr. Claudia Calvano</h4>
+        <div class="team-title">Project Lead &amp; Sub-project Management 1</div>
+        <div class="team-role">Diploma psychologist and child &amp; adolescent psychotherapist. Claudia studied psychology at Tübingen, Oslo, and Potsdam, and has been at the Free University of Berlin since 2023. Her research focuses on mental health in children, adolescents, and parents — with particular emphasis on marginalized groups and diversity-sensitive empowerment approaches.</div>
+        <div class="team-contact">
+          <a href="mailto:claudia.calvano@fu-berlin.de">✉ claudia.calvano@fu-berlin.de</a>
+          <span>📍 Habelschwerdter Allee 45, 14195 Berlin</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Project Lead</span>
+          <span class="team-tag">Clinical Psychology</span>
+          <span class="team-tag">Empowerment</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="Susane.webp" alt="Susanne Birnkammer" class="team-photo">
+        <h4>M.Sc. Susanne Birnkammer</h4>
+        <div class="team-title">Research Assistant &amp; Doctoral Candidate</div>
+        <div class="team-role">Research assistant and doctoral candidate at the Free University of Berlin, contributing to the scientific coordination and data collection within the Building Bridges project.</div>
+        <div class="team-contact">
+          <a href="mailto:susanne.birnkammer@fu-berlin.de">✉ susanne.birnkammer@fu-berlin.de</a>
+          <span>📍 Room JK27/228 · Habelschwerdter Allee 45, 14195 Berlin</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Doctoral Candidate</span>
+          <span class="team-tag">Research Assistant</span>
+          <span class="team-tag">FU Berlin</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="Felicia.webp" alt="Felicia Boma Lazaridou" class="team-photo">
+        <h4>Dr. rer. medic. Felicia Boma Lazaridou</h4>
+        <div class="team-title">Research Assistant (Externally Funded)</div>
+        <div class="team-role">Research assistant on the externally funded Building Bridges project at the Free University of Berlin, supporting the scientific research activities within the clinical child and adolescent psychology unit.</div>
+        <div class="team-contact">
+          <a href="mailto:felicia.lazaridou@fu-berlin.de">✉ felicia.lazaridou@fu-berlin.de</a>
+          <span>📍 Room JK27/228 · Habelschwerdter Allee 45, 14195 Berlin</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Research Assistant</span>
+          <span class="team-tag">External Project</span>
+          <span class="team-tag">FU Berlin</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TP2 -->
+  <div class="team-tp-block tp2">
+    <div class="tp-header">
+      <div class="tp-badge">TP2</div>
+      <div class="tp-header-text">
+        <h3>SPI Foundation – Mentoring &amp; Empowerment Program</h3>
+        <span>Social Pedagogical Institute Berlin "Walter May" &middot; Practice-oriented MEP Development &amp; Implementation</span>
+      </div>
+    </div>
+    <div class="team-grid">
+
+      <div class="team-card">
+        <img src="Celiana.webp" alt="Celiana Kiefer" class="team-photo">
+        <h4>MA Celiana Kiefer</h4>
+        <div class="team-title">MEP Program Lead · Sub-project Management 2</div>
+        <div class="team-role">Studied social work, specialising in cultural education during her master's studies. Active in girls' work for several years — formerly leading MÄDEA, Girls' Center for Empowerment and Feminism in Berlin, and serves as a volunteer on the board of the Federal Working Group on Girls' Politics. Currently training as a systemic consultant. Her work focuses on girls' work and politics, empowerment, racism, feminism, intersectionality, queerness, and diverse relationship models. She identifies as a Black person, queer, and a child of a working-class family.</div>
+        <div class="team-contact">
+          <a href="mailto:kiefer@building-bridges.de">✉ kiefer@building-bridges.de</a>
+          <span>📍 Building Bridges c/o MÄDEA, Grüntaler Straße 21, 13357 Berlin</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">MEP Lead</span>
+          <span class="team-tag">Empowerment</span>
+          <span class="team-tag">Girls' Work</span>
+          <span class="team-tag">Intersectionality</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="Deli.jpg" alt="Dilara Yildirim" class="team-photo">
+        <h4>Dilara Yildirim</h4>
+        <div class="team-title">Student Assistant</div>
+        <div class="team-role">Currently enrolled in the BA program in Early Childhood Education. Student assistant at SPI Foundation / Mädea, supporting the Building Bridges mentoring and empowerment program.</div>
+        <div class="team-contact">
+          <a href="mailto:yildirim@building-bridges.de">✉ yildirim@building-bridges.de</a>
+          <span>📍 Building Bridges c/o MÄDEA, Grüntaler Straße 21, 13357 Berlin</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Student Assistant</span>
+          <span class="team-tag">Early Childhood Ed.</span>
+          <span class="team-tag">SPI / Mädea</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TP3 -->
+  <div class="team-tp-block tp3">
+    <div class="tp-header">
+      <div class="tp-badge">TP3</div>
+      <div class="tp-header-text">
+        <h3>University of Duisburg-Essen – Digital Platform &amp; Research</h3>
+        <span>Faculty of Computer Science &middot; Participatory Platform Development</span>
+      </div>
+    </div>
+    <div class="team-grid">
+
+      <div class="team-card">
+        <img src="Hannes.webp" alt="Prof. Dr. Hannes Rothe" class="team-photo">
+        <h4>Prof. Dr. Hannes Rothe</h4>
+        <div class="team-title">Project Management Digital Platform (TP3) · Chairholder</div>
+        <div class="team-role">Professor and Chair of Sustainability and Innovation in Digital Ecosystems at the University of Duisburg-Essen, and head of the Place Beyond Bytes. He teaches Digital Innovation, Entrepreneurship, and Machine Learning. His research sits at the intersection of Digital Innovation &amp; Entrepreneurship, Managing Digital Ecosystems, and Organizing Data &amp; Knowledge.</div>
+        <div class="team-contact">
+          <a href="mailto:hannes.rothe@uni-due.de">✉ hannes.rothe@uni-due.de</a>
+          <span>📍 Universitätsstraße 9, 45151 Essen</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Platform Lead</span>
+          <span class="team-tag">Digital Innovation</span>
+          <span class="team-tag">Co-design</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="Elias.webp" alt="Elias Jelinek" class="team-photo">
+        <h4>M.Sc. Elias Jelinek</h4>
+        <div class="team-title">Research Associate (TP3)</div>
+        <div class="team-role">Research on generative and agentic AI, computer vision, peer-to-peer platforms, and time-to-MVP reduction through templating.</div>
+        <div class="team-contact">
+          <a href="mailto:elias.jelinek@uni-due.de">✉ elias.jelinek@uni-due.de</a>
+          <span>📍 Universitätsstraße 9, 45151 Essen</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Research Associate</span>
+          <span class="team-tag">Generative AI</span>
+          <span class="team-tag">Computer Vision</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="Laureen.webp" alt="Laureen Warikoru" class="team-photo">
+        <h4>M.Sc. Laureen Warikoru</h4>
+        <div class="team-title">Research Associate (TP3)</div>
+        <div class="team-role">Research associate at the University of Duisburg-Essen, contributing to the digital platform development within the Building Bridges project.</div>
+        <div class="team-contact">
+          <a href="mailto:laureen.warikoru@uni-due.de">✉ laureen.warikoru@uni-due.de</a>
+          <span>📍 Universitätsstraße 9, 45151 Essen</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Research Associate</span>
+          <span class="team-tag">UDE</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <img src="sumi.jpg" alt="Sumera Sajid" class="team-photo">
+        <h4>Sumera Sajid</h4>
+        <div class="team-title">Student Assistant</div>
+        <div class="team-role">Student assistant at the University of Duisburg-Essen, supporting the digital platform development team within the Building Bridges project.</div>
+        <div class="team-contact">
+          <span>📍 Universitätsstraße 9, 45151 Essen</span>
+        </div>
+        <div class="team-tags">
+          <span class="team-tag">Student Assistant</span>
+          <span class="team-tag">UDE</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
