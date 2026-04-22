@@ -7,14 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
+import { GraduationCap, Users, AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
 import { signUpAction } from './actions';
 import { signIn as nextAuthSignIn } from 'next-auth/react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
-import { useLandingLocale } from '@/lib/landing/locale';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
-  const { t } = useLandingLocale();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
   const priceId = searchParams.get('priceId');
@@ -31,26 +30,21 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const getErrorMessage = (errorCode: string | null) => {
     switch (errorCode) {
       case 'missing-credentials':
-        return t('Please enter your email and password.', 'Bitte geben Sie E-Mail und Passwort ein.');
+        return 'Bitte geben Sie E-Mail und Passwort ein.';
       case 'invalid-credentials':
-        return t('Invalid email or password. Please try again.', 'Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.');
+        return 'Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.';
       case 'exists':
-        return t(
-          'An account with this email already exists. Please sign in.',
-          'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.'
-        );
+        return 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.';
       case 'server-error':
-        return t('A server error occurred. Please try again later.', 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+        return 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.';
       case 'password-too-short':
-        return t('Password must be at least 8 characters long.', 'Das Passwort muss mindestens 8 Zeichen lang sein.');
+        return 'Das Passwort muss mindestens 8 Zeichen lang sein.';
       case 'password-no-uppercase':
-        return t('Password must contain at least one uppercase letter.', 'Das Passwort muss mindestens einen Großbuchstaben enthalten.');
+        return 'Das Passwort muss mindestens einen Großbuchstaben enthalten.';
       case 'password-no-number':
-        return t('Password must contain at least one number.', 'Das Passwort muss mindestens eine Zahl enthalten.');
+        return 'Das Passwort muss mindestens eine Zahl enthalten.';
       default:
-        return errorCode
-          ? t('Something went wrong. Please try again.', 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.')
-          : null;
+        return null;
     }
   };
 
@@ -80,7 +74,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             Building Bridges
           </h1>
           <p className="text-sm text-gray-600">
-            {t('Empowering Girls and FLINTA* of Colour', 'Empowerment für Mädchen und FLINTA* of Colour')}
+            Empowering Girls and FLINTA* of Colour
           </p>
         </div>
 
@@ -88,14 +82,12 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           <CardContent className="pt-8 pb-8">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                {mode === 'signup'
-                  ? t('Create account', 'Konto erstellen')
-                  : t('Welcome back', 'Willkommen zurück')}
+                {mode === 'signup' ? 'Konto erstellen' : 'Willkommen zurück'}
               </h2>
               <p className="text-gray-600">
                 {mode === 'signup'
-                  ? t('Join our community and start your journey.', 'Werden Sie Teil unserer Community und starten Sie Ihre Reise.')
-                  : t('Sign in to access your account.', 'Melden Sie sich an, um auf Ihr Konto zuzugreifen.')}
+                  ? 'Werden Sie Teil unserer Community und starten Sie Ihre Reise'
+                  : 'Melden Sie sich an, um auf Ihr Konto zuzugreifen'}
               </p>
             </div>
 
@@ -145,14 +137,12 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"
                 >
-                  {t('Account created. Please sign in.', 'Konto erstellt. Bitte melden Sie sich an.')}
+                  Konto erstellt. Bitte melden Sie sich an.
                 </motion.div>
               )}
               
               <div>
-                <Label htmlFor="email" className="text-gray-700 font-medium">
-                  {t('Email address', 'E-Mail-Adresse')}
-                </Label>
+                <Label htmlFor="email" className="text-gray-700 font-medium">E-Mail-Adresse</Label>
                 <Input
                   id="email"
                   name="email"
@@ -162,7 +152,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   className={`mt-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-lg ${
                     validationErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                   }`}
-                  placeholder={t('you@example.com', 'ihre.email@beispiel.de')}
+                  placeholder="ihre.email@beispiel.de"
                   onChange={() => {
                     if (validationErrors.email) {
                       setValidationErrors(prev => ({ ...prev, email: undefined }));
@@ -178,9 +168,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-gray-700 font-medium">
-                  {t('Password', 'Passwort')}
-                </Label>
+                <Label htmlFor="password" className="text-gray-700 font-medium">Passwort</Label>
                 <Input
                   id="password"
                   name="password"
@@ -209,10 +197,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 )}
                 {mode === 'signup' && (
                   <p className="mt-2 text-xs text-gray-500">
-                    {t(
-                      'Password must be at least 8 characters and include one uppercase letter and one number.',
-                      'Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten.'
-                    )}
+                    Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten
                   </p>
                 )}
               </div>
@@ -223,14 +208,14 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 type="submit"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg py-3 font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
               >
-                {mode === 'signin' ? t('Sign in', 'Anmelden') : t('Create account', 'Konto erstellen')}
+                {mode === 'signin' ? 'Anmelden' : 'Konto erstellen'}
               </Button>
             </form>
 
             <div className="mt-4 text-center">
               {mode === 'signin' && (
                 <Link href="/reset-password" className="text-sm text-gray-600 hover:text-gray-800">
-                  {t('Forgot password?', 'Passwort vergessen?')}
+                  Passwort vergessen?
                 </Link>
               )}
             </div>
@@ -241,8 +226,8 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 className="text-purple-600 hover:text-purple-700 transition-colors duration-200 font-medium"
               >
                 {mode === 'signup'
-                  ? t('Already have an account? Sign in', 'Bereits ein Konto? Anmelden')
-                  : t("Don't have an account? Register", 'Noch kein Konto? Registrieren')}
+                  ? 'Bereits ein Konto? Anmelden'
+                  : 'Noch kein Konto? Registrieren'}
               </Link>
             </div>
 
@@ -251,15 +236,15 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <Heart className="h-4 w-4 mr-1 text-purple-500" />
-                  <span>{t('Empowerment', 'Empowerment')}</span>
+                  <span>Empowerment</span>
                 </div>
                 <div className="flex items-center">
                   <BookOpen className="h-4 w-4 mr-1 text-blue-500" />
-                  <span>{t('Mentoring', 'Mentoring')}</span>
+                  <span>Mentoring</span>
                 </div>
                 <div className="flex items-center">
                   <Globe className="h-4 w-4 mr-1 text-green-500" />
-                  <span>{t('Community', 'Community')}</span>
+                  <span>Community</span>
                 </div>
               </div>
             </div>

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useLandingLocale } from '@/lib/landing/locale';
 import { AiStoryGenerator } from '@/components/landing/AiStoryGenerator';
-import { CommunityStories } from '@/components/landing/CommunityStories';
 
 export function StorytellingSection() {
   const { t } = useLandingLocale();
@@ -101,8 +100,6 @@ export function StorytellingSection() {
         </div>
 
         <AiStoryGenerator />
-
-        <CommunityStories />
 
         <div className="mt-16">
           <h3 className="mb-1 font-[family-name:var(--font-lora)] text-[1.4rem] font-bold">{t('AI-Supported Technical Toolkit', 'KI-unterstütztes technisches Toolkit')}</h3>

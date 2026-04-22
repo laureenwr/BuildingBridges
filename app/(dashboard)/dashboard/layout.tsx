@@ -48,21 +48,20 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Button
-                  key={item.href}
-                  asChild
-                  variant="ghost"
-                  className={`my-1 w-full justify-start transition-colors ${
-                    isActive
-                      ? 'bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <Link href={item.href} onClick={() => setIsSidebarOpen(false)}>
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant="ghost"
+                    className={`my-1 w-full justify-start transition-colors ${
+                      isActive
+                        ? 'bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800'
+                        : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.label}
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               );
             })}
           </nav>

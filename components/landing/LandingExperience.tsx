@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import type { TeamMember } from '@/lib/content/team';
-import { pickTeamMemberOrgOrBio, pickTeamMemberText } from '@/lib/content/team';
+import { LandingNav } from '@/components/landing/LandingNav';
+import { LandingFooter } from '@/components/landing/LandingFooter';
 import { KnowledgeSection } from '@/components/landing/KnowledgeSection';
 import { StorytellingSection } from '@/components/landing/StorytellingSection';
 import { useLandingLocale } from '@/lib/landing/locale';
@@ -12,7 +13,7 @@ import { FundingBanner } from '@/components/partners/FundingBanner';
 
 const TP1_SLUGS = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
 const TP2_SLUGS = ['celiana-kiefer', 'dilara-yildirim'];
-const TP3_SLUGS = ['hannes-rothe', 'daniel-courtney', 'laureen-warikoru', 'sumera-sajid'];
+const TP3_SLUGS = ['hannes-rothe', 'elias-jelinek', 'laureen-warikoru'];
 
 function pickMembers(all: TeamMember[], slugs: string[]) {
   const map = new Map(all.map((m) => [m.slug, m]));
@@ -30,6 +31,8 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
 
   return (
     <div className="min-h-screen bg-[#F2EEFF] font-[family-name:var(--font-sora)] text-[#1A1033] antialiased">
+      <LandingNav />
+
       <section id="home" className="relative flex min-h-screen items-center overflow-hidden scroll-mt-[70px] px-10 pb-20 pt-28 max-md:px-6 max-md:pb-16 max-md:pt-24">
         <div className="pointer-events-none absolute inset-0 z-0">
           <Image
@@ -520,6 +523,8 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
           ]}
         />
       </div>
+
+      <LandingFooter />
     </div>
   );
 }
@@ -559,7 +564,6 @@ function TeamTpBlock({
   members: TeamMember[];
   displayName: (m: TeamMember) => string;
 }) {
-  const { t } = useLandingLocale();
   const badgeBg =
     variant === 'tp1' ? 'bg-[#9152FF]' : variant === 'tp2' ? 'bg-[#6BAA8A]' : 'bg-[#c08800]';
   const titleColor = variant === 'tp1' ? 'text-[#9152FF]' : variant === 'tp2' ? 'text-[#6BAA8A]' : 'text-[#c08800]';
@@ -597,22 +601,13 @@ function TeamTpBlock({
             >
               <div className={`absolute left-0 right-0 top-0 h-1 bg-gradient-to-r ${bar}`} />
               <div
-                className={`mb-4 aspect-[4/5] w-full overflow-hidden rounded-2xl border-[3px] border-solid shadow-[0_2px_12px_rgba(145,82,255,0.18)] ${photoBorder}`}
+                className={`relative mb-4 h-[90px] w-[90px] overflow-hidden rounded-full border-[3px] border-solid shadow-[0_2px_12px_rgba(145,82,255,0.18)] ${photoBorder}`}
               >
-                <Image
-                  src={m.image}
-                  alt={displayName(m)}
-                  width={400}
-                  height={500}
-                  className="h-full w-full object-cover object-top"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
+                <Image src={m.image} alt={displayName(m)} fill className="object-cover object-top" sizes="90px" />
               </div>
               <h4 className="mb-1 font-[family-name:var(--font-lora)] text-[1.05rem] font-bold text-[#1A1033]">{displayName(m)}</h4>
-              <div className={`mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] ${titleColor}`}>
-                {pickTeamMemberText(m, 'role', t) ?? m.role}
-              </div>
-              <p className="text-[0.83rem] leading-relaxed text-[#6B5F8A]">{pickTeamMemberOrgOrBio(m, t)}</p>
+              <div className={`mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] ${titleColor}`}>{m.role}</div>
+              <p className="text-[0.83rem] leading-relaxed text-[#6B5F8A]">{m.bio ?? m.org}</p>
             </Link>
             {m.email ? (
               <div className={`mx-7 mb-4 rounded-xl border border-[rgba(145,82,255,0.15)] px-3 py-2.5 text-[0.78rem] ${contactBg}`}>
