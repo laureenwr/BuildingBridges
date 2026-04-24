@@ -1,12 +1,20 @@
-import Link from 'next/link';
+'use client';
 
-const cards = [
-  { href: '/sign-up', icon: '👩‍🎓', title: 'For participants', desc: 'Girls and FLINTA* of Colour from 10th grade onwards' },
-  { href: '/mentors', icon: '🌟', title: 'For mentors', desc: 'Students and role models of Colour' },
-  { href: '/contact', icon: '🏫', title: 'For partners', desc: 'Schools, organizations and institutions' },
-];
+import Link from 'next/link';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export function LandingRegister() {
+  const { isDe } = useLanguage();
+  const cards = [
+    {
+      href: '/sign-up',
+      icon: '👩‍🎓',
+      title: isDe ? 'Fuer Teilnehmende' : 'For participants',
+      desc: isDe ? 'Girls und FLINTA* of Colour ab der 10. Klasse' : 'Girls and FLINTA* of Colour from 10th grade onwards',
+    },
+    { href: '/mentors', icon: '🌟', title: isDe ? 'Fuer Mentor:innen' : 'For mentors', desc: isDe ? 'Studierende und Role Models of Colour' : 'Students and role models of Colour' },
+    { href: '/contact', icon: '🏫', title: isDe ? 'Fuer Partner' : 'For partners', desc: isDe ? 'Schulen, Organisationen und Institutionen' : 'Schools, organizations and institutions' },
+  ];
   return (
     <section id="register" className="relative overflow-hidden bg-[#9152FF] px-6 py-20 sm:px-10 sm:py-24">
       <span
@@ -18,11 +26,16 @@ export function LandingRegister() {
       <div className="relative z-[1] mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
           <h2 className="font-lora text-[clamp(2rem,4vw,2.8rem)] font-bold leading-tight tracking-tight text-white">
-            Become part of <em className="font-normal not-italic">Building Bridges</em>
+            {isDe ? (
+              <>Werde Teil von <em className="font-normal not-italic">Building Bridges</em></>
+            ) : (
+              <>Become part of <em className="font-normal not-italic">Building Bridges</em></>
+            )}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/80">
-            Whether as a participant, mentor or cooperation partner — together we build bridges to a diverse and inclusive
-            academic future. The project runs from September 2024 to August 2027.
+            {isDe
+              ? 'Ob als Teilnehmende, Mentor:in oder Kooperationspartner - gemeinsam bauen wir Bruecken zu einer vielfaeltigen und inklusiven akademischen Zukunft. Das Projekt laeuft von September 2024 bis August 2027.'
+              : 'Whether as a participant, mentor or cooperation partner - together we build bridges to a diverse and inclusive academic future. The project runs from September 2024 to August 2027.'}
           </p>
         </div>
         <div className="flex flex-col gap-4">

@@ -1,6 +1,9 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { FundingBanner } from '@/components/partners/FundingBanner';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 const partners = [
   {
@@ -30,12 +33,17 @@ const partners = [
 ];
 
 export function LandingPartnersFunding() {
+  const { isDe } = useLanguage();
   return (
     <section id="partners" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-[1280px]">
-        <p className="mb-3 text-center text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Project Partners</p>
+        <p className="mb-3 text-center text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Projektpartner' : 'Project Partners'}</p>
         <h2 className="mb-12 text-center font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-          A strong <em className="font-normal not-italic text-[#9152FF]">alliance</em> of universities &amp; foundations
+          {isDe ? (
+            <>Eine starke <em className="font-normal not-italic text-[#9152FF]">Allianz</em> aus Hochschulen &amp; Stiftungen</>
+          ) : (
+            <>A strong <em className="font-normal not-italic text-[#9152FF]">alliance</em> of universities &amp; foundations</>
+          )}
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {partners.map((p) => (
@@ -57,7 +65,7 @@ export function LandingPartnersFunding() {
                 className="mt-4 inline-block text-[0.84rem] font-bold text-[#9152FF] hover:underline"
                 {...(p.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
-                Visit website →
+                {isDe ? 'Website besuchen →' : 'Visit website →'}
               </Link>
             </article>
           ))}
@@ -65,7 +73,7 @@ export function LandingPartnersFunding() {
 
         <div className="mt-14">
           <FundingBanner
-            heading="Funded by"
+            heading={isDe ? 'Gefoerdert durch' : 'Funded by'}
             logos={[
               { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ', width: 220, height: 70, scale: 0.95 },
               { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Empirical Educational Research', width: 220, height: 70, scale: 0.9 },

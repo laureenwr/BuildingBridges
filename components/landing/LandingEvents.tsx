@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type EventTypeStyle = 'sage' | 'amber' | 'muted';
 
@@ -50,6 +51,7 @@ function TypeBadge({ label, variant }: { label: string; variant?: EventTypeStyle
 }
 
 export function LandingEvents() {
+  const { isDe } = useLanguage();
   const [showPast, setShowPast] = useState(false);
 
   return (
@@ -57,36 +59,49 @@ export function LandingEvents() {
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-16 grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-20">
           <div>
-            <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Training &amp; Events</p>
+            <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">
+              {isDe ? 'Trainings & Veranstaltungen' : 'Training & Events'}
+            </p>
             <h2 className="font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-              Workshops &amp; <em className="font-normal not-italic text-[#9152FF]">program activities</em>
+              {isDe ? (
+                <>
+                  Workshops &amp; <em className="font-normal not-italic text-[#9152FF]">Programmaktionen</em>
+                </>
+              ) : (
+                <>
+                  Workshops &amp; <em className="font-normal not-italic text-[#9152FF]">program activities</em>
+                </>
+              )}
             </h2>
             <p className="mt-4 max-w-[420px] text-base leading-relaxed text-[#6B5F8A]">
-              The Building Bridges project offers programs and research activities to empower girls and FLINTA* of Colour
-              in academic careers.
+              {isDe
+                ? 'Das Projekt Building Bridges bietet Programme und Forschungsaktivitaeten, um Girls und FLINTA* of Colour auf akademischen Wegen zu staerken.'
+                : 'The Building Bridges project offers programs and research activities to empower girls and FLINTA* of Colour in academic careers.'}
             </p>
             <Link href="/workshops" className="mt-6 inline-block text-sm font-bold text-[#9152FF] hover:underline">
-              Full workshop schedule →
+              {isDe ? 'Vollstaendiger Workshop-Plan →' : 'Full workshop schedule →'}
             </Link>
           </div>
           <div className="rounded-[24px] bg-[#9152FF] p-8 text-white shadow-[0_12px_48px_rgba(145,82,255,0.18)]">
-            <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-white/65">Next up</p>
+            <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-white/65">{isDe ? 'Als naechstes' : 'Next up'}</p>
             <h3 className="font-lora text-xl font-bold">Networking &amp; Exchange</h3>
             <p className="mt-1 text-[0.84rem] opacity-72">Wednesday, January 14, 2026 · 6:00 PM · Online</p>
             <p className="mt-3 text-[0.88rem] leading-relaxed opacity-80">
               Online introductions to mentors. Get to know our mentors and learn more about the mentoring program.
             </p>
             <Link href="/workshops" className="mt-4 inline-block text-[0.84rem] font-bold text-[#EDE5FF] hover:underline">
-              Read more →
+              {isDe ? 'Mehr erfahren →' : 'Read more →'}
             </Link>
           </div>
         </div>
 
-        <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Workshop offerings</p>
-        <p className="mb-8 text-[0.95rem] text-[#6B5F8A]">The next dates for workshops and events.</p>
+        <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Workshop-Angebote' : 'Workshop offerings'}</p>
+        <p className="mb-8 text-[0.95rem] text-[#6B5F8A]">
+          {isDe ? 'Die naechsten Termine fuer Workshops und Veranstaltungen.' : 'The next dates for workshops and events.'}
+        </p>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {upcoming.map((e) => (
+          {upcoming.slice(0, 3).map((e) => (
             <article
               key={e.title}
               className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-white p-6 shadow-[0_2px_12px_rgba(145,82,255,0.08)] transition hover:-translate-y-1 hover:shadow-[0_6px_28px_rgba(145,82,255,0.13)]"
@@ -96,10 +111,19 @@ export function LandingEvents() {
               <p className="text-[0.82rem] font-semibold text-[#7339E0]">{e.date}</p>
               <h4 className="font-lora text-base font-bold leading-snug text-[#1A1033]">{e.title}</h4>
               <Link href="/workshops" className="mt-auto text-[0.82rem] font-bold text-[#9152FF] hover:underline">
-                Read more →
+                {isDe ? 'Mehr erfahren →' : 'Read more →'}
               </Link>
             </article>
           ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/workshops"
+            className="inline-flex items-center justify-center rounded-full bg-[#9152FF] px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:bg-[#7d41eb]"
+          >
+            {isDe ? 'Alle Workshops ansehen →' : 'View all workshops →'}
+          </Link>
         </div>
 
         <button
@@ -107,7 +131,7 @@ export function LandingEvents() {
           onClick={() => setShowPast(!showPast)}
           className="mb-6 mt-10 flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-[rgba(145,82,255,0.15)] bg-transparent px-5 py-2.5 font-primary text-[0.875rem] font-semibold text-[#6B5F8A] transition hover:border-[#9152FF] hover:bg-[#F5F0FF] hover:text-[#9152FF]"
         >
-          <span>📋</span> {showPast ? 'Hide' : 'View'} past workshops
+          <span>📋</span> {showPast ? (isDe ? 'Ausblenden' : 'Hide') : isDe ? 'Anzeigen' : 'View'} {isDe ? 'vergangene Workshops' : 'past workshops'}
         </button>
 
         {showPast && (

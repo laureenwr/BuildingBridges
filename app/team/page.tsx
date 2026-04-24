@@ -8,7 +8,7 @@ export default function TeamPage() {
 
   const TP1 = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
   const TP2 = ['celiana-kiefer', 'dilara-yildirim'];
-  const TP3 = ['hannes-rothe', 'elias-jelinek', 'laureen-warikoru'];
+  const TP3 = ['hannes-rothe', 'daniel-courtney', 'sumera-sajid', 'laureen-warikoru'];
 
   function renderSection(title: string, slugs: string[]) {
     const members = slugs

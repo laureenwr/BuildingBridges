@@ -80,6 +80,7 @@ export function Navbar() {
     } catch {
       /* ignore */
     }
+    window.dispatchEvent(new CustomEvent('bb-lang-change', { detail: lang }));
   }, [lang]);
 
   return (

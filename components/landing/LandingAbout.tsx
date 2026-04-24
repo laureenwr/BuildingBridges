@@ -1,74 +1,125 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+
+const pillars = [
+  {
+    icon: '📖',
+    title: 'Scientific coordination',
+    body:
+      'The entire project is being scientifically monitored by the Free University of Berlin. Interviews and questionnaires are being used to assess experiences of discrimination, mental health, stressors, resources, and academic participation among school and university students. The MEP (Measure for Educational Progress) will be evaluated for feasibility and acceptance.',
+    cardClass: 'border-[#d8e7df] bg-[#cfe9db]',
+    iconClass: 'text-[#2f9a78]',
+    chip: 'TP1',
+  },
+  {
+    icon: '🎓',
+    title: 'Mentoring & Empowerment',
+    body:
+      'Development of the Mentoring Empowerment Program (MEP), which supports BIPoC girls and FLINTA* from grade 10 onwards on their academic path into the psychosocial field. The MEP offers mentoring and workshops on empowerment, self-care, and other helpful information on the transition from school to university.',
+    cardClass: 'border-[#ddd4ea] bg-[#e8def3]',
+    iconClass: 'text-[#7c3aed]',
+    chip: 'TP2',
+  },
+  {
+    icon: '💬',
+    title: 'Digital platform',
+    body:
+      'Participatory development of a "living" digital platform for context-sensitive storytelling that enables audiovisual experience reports and promotes sustainable peer-to-peer exchange.',
+    cardClass: 'border-[#d3dfef] bg-[#dbe7f6]',
+    iconClass: 'text-[#4f7dcf]',
+    chip: 'TP3',
+  },
+] as const;
+
 export function LandingAbout() {
+  const [activeCard, setActiveCard] = useState<number>(1);
+  const [isPaused, setIsPaused] = useState(false);
+  const { isDe } = useLanguage();
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const timer = window.setInterval(() => {
+      setActiveCard((prev) => (prev + 1) % pillars.length);
+    }, 2800);
+
+    return () => window.clearInterval(timer);
+  }, [isPaused]);
+
   return (
-    <section id="about" className="relative overflow-hidden bg-[#9152FF] px-6 py-24 text-white sm:px-10 sm:py-28">
-      <div
-        className="pointer-events-none absolute -top-px left-0 right-0 h-[70px] bg-[#F2EEFF] [clip-path:ellipse(55%_100%_at_50%_0%)]"
-        aria-hidden
-      />
-      <div className="relative z-[1] mx-auto grid max-w-[1280px] grid-cols-1 items-start gap-12 pt-8 lg:grid-cols-2 lg:gap-20">
-        <div>
-          <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-white/65">About the Project</p>
-          <h2 className="font-lora text-[clamp(2rem,3vw,2.8rem)] font-bold leading-tight tracking-tight">
-            Building <em className="font-normal not-italic text-[#EDE5FF]">bridges</em> to academic futures
-          </h2>
-          <p className="mt-5 text-[0.97rem] leading-[1.8] opacity-80">
-            &quot;Building Bridges&quot; is a 36-month interdisciplinary research and development project that aims to
-            empower and mentor girls and FLINTA* of color from the 10th grade onwards. The project is being carried out
-            by the Free University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.
-          </p>
-          <p className="mt-4 text-[0.97rem] leading-[1.8] opacity-80">
-            The entire project is scientifically monitored by the Free University of Berlin. Interviews and
-            questionnaires assess experiences of discrimination, mental health, stressors, resources, and academic
-            participation.
-          </p>
-        </div>
-        <div>
-          <div className="mb-6 grid grid-cols-2 gap-4">
-            {[
-              ['36', 'Months project duration'],
-              ['3', 'Universities involved'],
-              ['10+', 'Network partners'],
-              ['2027', 'Project end date'],
-            ].map(([num, label]) => (
-              <div
-                key={label}
-                className="rounded-[18px] border border-white/20 bg-white/10 p-5 transition hover:bg-white/[0.17]"
+    <section id="about" className="relative overflow-hidden bg-[#f4f2f8] px-6 py-24 sm:px-10 sm:py-28">
+      <div className="pointer-events-none absolute -right-20 top-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(145,82,255,0.18)_0%,rgba(145,82,255,0)_70%)]" />
+      <div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(107,170,138,0.16)_0%,rgba(107,170,138,0)_70%)]" />
+      <div className="mx-auto max-w-[1280px]">
+        <motion.h2
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.45 }}
+          className="text-center font-lora text-[clamp(2rem,3.4vw,3rem)] font-bold text-[#12162b]"
+        >
+          {isDe ? 'Ueber das Projekt' : 'About the project'}
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
+          className="mx-auto mt-4 max-w-4xl text-center text-[clamp(1rem,1.7vw,1.1rem)] leading-relaxed text-[#3f3f52]"
+        >
+          {isDe
+            ? '&quot;Building Bridges&quot; ist ein 36-monatiges interdisziplinaeres Forschungs- und Entwicklungsprojekt zur Staerkung und Begleitung von Girls und FLINTA* of Colour ab der 10. Klasse. Das Projekt wird von der Freien Universitaet Berlin, der Stiftung SPI und der Universitaet Duisburg-Essen umgesetzt.'
+            : '&quot;Building Bridges&quot; is a 36-month interdisciplinary research and development project that aims to empower and mentor girls and FLINTA* of color from the 10th grade onwards. The project is being carried out by the Free University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.'}
+        </motion.p>
+
+        <div
+          className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-5 md:grid-cols-3"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {pillars.map((pillar, index) => {
+            const isActive = activeCard === index;
+            return (
+              <motion.article
+                key={pillar.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.35, delay: 0.08 * index }}
+                onMouseEnter={() => setActiveCard(index)}
+                onFocus={() => setActiveCard(index)}
+                className={`relative rounded-[14px] border px-6 py-5 shadow-sm transition duration-300 ${pillar.cardClass} ${
+                  isActive ? '-translate-y-1 shadow-[0_16px_30px_rgba(26,16,60,0.12)]' : 'hover:-translate-y-1 hover:shadow-md'
+                }`}
               >
-                <div className="font-lora text-[2.4rem] font-bold text-[#EDE5FF]">{num}</div>
-                <div className="mt-1 text-[0.83rem] opacity-65">{label}</div>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col gap-4">
-            {[
-              {
-                icon: '🔬',
-                t: 'Scientific Coordination (TP1)',
-                d: 'Interviews & questionnaires assessing discrimination, mental health, and academic participation.',
-              },
-              {
-                icon: '🤝',
-                t: 'Mentoring & Empowerment (TP2)',
-                d: 'Supporting BIPoC girls and FLINTA* from grade 10 with empowerment, self-care, and transition workshops.',
-              },
-              {
-                icon: '💻',
-                t: 'Digital Platform (TP3)',
-                d: 'A participatory “living” platform for context-sensitive storytelling and peer-to-peer exchange.',
-              },
-            ].map((p) => (
-              <div
-                key={p.t}
-                className="flex gap-4 rounded-[18px] border border-white/10 bg-white/[0.08] p-5 transition hover:bg-white/[0.13]"
-              >
-                <span className="mt-0.5 text-2xl">{p.icon}</span>
-                <div>
-                  <div className="text-[0.97rem] font-bold">{p.t}</div>
-                  <p className="mt-1 text-[0.86rem] leading-relaxed opacity-72">{p.d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+                <span className="absolute right-4 top-4 rounded-full bg-white/75 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[#5f5782]">
+                  {pillar.chip}
+                </span>
+                <div className={`mb-4 text-[2rem] ${pillar.iconClass}`}>{pillar.icon}</div>
+                <h3 className="font-lora text-[2rem] font-bold leading-snug text-[#11192a]">
+                  {isDe
+                    ? pillar.chip === 'TP1'
+                      ? 'Wissenschaftliche Koordination'
+                      : pillar.chip === 'TP2'
+                        ? 'Mentoring & Empowerment'
+                        : 'Digitale Plattform'
+                    : pillar.title}
+                </h3>
+                <p className="mt-3 text-[0.98rem] leading-relaxed text-[#30404f]">
+                  {isDe
+                    ? pillar.chip === 'TP1'
+                      ? 'Das Projekt wird wissenschaftlich durch die Freie Universitaet Berlin begleitet. Interviews und Frageboegen erfassen Diskriminierungserfahrungen, mentale Gesundheit, Stressoren, Ressourcen und Bildungsbeteiligung. Das MEP wird hinsichtlich Machbarkeit und Akzeptanz evaluiert.'
+                      : pillar.chip === 'TP2'
+                        ? 'Entwicklung des Mentoring-Empowerment-Programms (MEP), das BIPoC Girls und FLINTA* ab Klasse 10 auf dem akademischen Weg in psychosoziale Felder begleitet. Das MEP bietet Mentoring und Workshops zu Empowerment, Self-Care und Uebergang Schule-Hochschule.'
+                        : 'Partizipative Entwicklung einer lebendigen digitalen Plattform fuer kontextsensitive Erzaehlformate mit audiovisuellen Erfahrungsberichten und nachhaltigem Peer-to-Peer-Austausch.'
+                    : pillar.body}
+                </p>
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </section>

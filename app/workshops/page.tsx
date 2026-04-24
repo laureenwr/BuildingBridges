@@ -103,9 +103,44 @@ const researchActivities = [
 export default function WorkshopsPage() {
   const [dbWorkshops, setDbWorkshops] = useState<any[]>([]);
   const [showPastWorkshops, setShowPastWorkshops] = useState(false);
+  const [lang, setLang] = useState<'en' | 'de'>('en');
+  const isDe = lang === 'de';
 
   useEffect(() => {
     fetchWorkshopsClient().then(setDbWorkshops).catch(() => setDbWorkshops([]));
+  }, []);
+
+  useEffect(() => {
+    const loadLanguage = () => {
+      try {
+        const saved = localStorage.getItem('bb_lang_v1');
+        if (saved === 'en' || saved === 'de') {
+          setLang(saved);
+          return;
+        }
+      } catch {
+        /* ignore */
+      }
+      setLang(document.documentElement.lang === 'de' ? 'de' : 'en');
+    };
+
+    loadLanguage();
+
+    const handleLanguageChange = (event: Event) => {
+      const customEvent = event as CustomEvent<'en' | 'de'>;
+      if (customEvent.detail === 'en' || customEvent.detail === 'de') {
+        setLang(customEvent.detail);
+      } else {
+        loadLanguage();
+      }
+    };
+
+    window.addEventListener('bb-lang-change', handleLanguageChange as EventListener);
+    window.addEventListener('storage', loadLanguage);
+    return () => {
+      window.removeEventListener('bb-lang-change', handleLanguageChange as EventListener);
+      window.removeEventListener('storage', loadLanguage);
+    };
   }, []);
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
@@ -119,11 +154,12 @@ export default function WorkshopsPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
-              Trainings & Events
+              {isDe ? 'Trainings & Events' : 'Training & Events'}
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitäten 
-              zur Stärkung und Förderung von Mädchen und FLINTA* of Colour in akademischen Laufbahnen.
+              {isDe
+                ? 'Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitaeten zur Staerkung und Foerderung von Maedchen und FLINTA* of Colour in akademischen Laufbahnen.'
+                : 'The Building Bridges project offers programs and research activities to empower girls and FLINTA* of Colour in academic pathways.'}
             </p>
           </motion.div>
 
@@ -136,8 +172,10 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Workshopangebote</h2>
-              <p className="text-xl text-gray-600 max-w-3xl">Die nächsten Termine für unsere Workshops und Veranstaltungen.</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{isDe ? 'Workshopangebote' : 'Workshop offerings'}</h2>
+              <p className="text-xl text-gray-600 max-w-3xl">
+                {isDe ? 'Die naechsten Termine fuer unsere Workshops und Veranstaltungen.' : 'The next dates for our workshops and events.'}
+              </p>
             </motion.div>
 
             <div className="space-y-6 max-w-5xl">
@@ -154,7 +192,7 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Users className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Networking & Austausch</p>
+                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Networking & Austausch' : 'Networking & Exchange'}</p>
                       </div>
                     </div>
                     
@@ -164,30 +202,31 @@ export default function WorkshopsPage() {
                         {/* Category Tag */}
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         
                         {/* Date, Time, Format */}
                         <div className="text-sm text-gray-600 mb-4">
-                          Mittwoch, 14.01.2026 | 18:00 Uhr | Online
+                          {isDe ? 'Mittwoch, 14.01.2026 | 18:00 Uhr | Online' : 'Wednesday, 14 Jan 2026 | 6:00 PM | Online'}
                         </div>
                         
                         {/* Title */}
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Online Kennenlernen Mentor:innen
+                          {isDe ? 'Online Kennenlernen Mentor:innen' : 'Online introductions to mentors'}
                         </h3>
                         
                         {/* Description */}
                         <p className="text-gray-700 leading-relaxed mb-6">
-                          Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr über das Mentoring-Programm. 
-                          In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.
+                          {isDe
+                            ? 'Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr ueber das Mentoring-Programm. In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.'
+                            : 'Get to know our mentors and learn more about the mentoring program. In this online event, mentors introduce themselves and answer your questions.'}
                         </p>
                       </div>
                       
                       {/* Read More Link */}
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -213,18 +252,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Jan-Nov. 2026
+                          {isDe ? 'Jan-Nov. 2026' : 'Jan-Nov 2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Einzelmentoring
+                          {isDe ? 'Einzelmentoring' : 'Individual mentoring'}
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -250,18 +289,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          März 2026
+                          {isDe ? 'Maerz 2026' : 'March 2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Mentoring Workshop II Johanna Eck
+                          {isDe ? 'Mentoring Workshop II Johanna Eck' : 'Mentoring Workshop II - Johanna Eck'}
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -280,25 +319,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Selbstfuersorge' : 'Self-care'}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          April 2026
+                          {isDe ? 'April 2026' : 'April 2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           SELF CARE I
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -324,18 +363,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Samstag, 25.04.2026, ganztägig
+                          {isDe ? 'Samstag, 25.04.2026, ganztaegig' : 'Saturday, 25.04.2026, all day'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Mentoring Workshop II- Vision
+                          {isDe ? 'Mentoring Workshop II- Vision' : 'Mentoring Workshop II - Vision'}
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -354,25 +393,25 @@ export default function WorkshopsPage() {
                     <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
                       <div className="text-center p-8">
                         <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Selbstfürsorge</p>
+                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Selbstfuersorge' : 'Self-care'}</p>
                       </div>
                     </div>
                     <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 15.05.2026
+                          {isDe ? 'Freitag, 15.05.2026' : 'Friday, 15.05.2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Self Care II
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -398,18 +437,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 12.06.2026
+                          {isDe ? 'Freitag, 12.06.2026' : 'Friday, 12.06.2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training I
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -435,18 +474,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 03.08.2026
+                          {isDe ? 'Freitag, 03.08.2026' : 'Friday, 03.08.2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training II
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -472,18 +511,18 @@ export default function WorkshopsPage() {
                       <div>
                         <div className="inline-block mb-4">
                           <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            für Teilnehmerinnen
+                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 mb-4">
-                          Freitag, 09.10.2026
+                          {isDe ? 'Freitag, 09.10.2026' : 'Friday, 09.10.2026'}
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                           Skills Training III
                         </h3>
                       </div>
                       <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        Weiterlesen <ArrowRight className="h-4 w-4 ml-2" />
+                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
                       </Link>
                     </div>
                   </div>
@@ -508,12 +547,12 @@ export default function WorkshopsPage() {
               >
                 {showPastWorkshops ? (
                   <>
-                    Vergangene Workshops ausblenden
+                    {isDe ? 'Vergangene Workshops ausblenden' : 'Hide past workshops'}
                     <ChevronUp className="h-5 w-5 ml-2" />
                   </>
                 ) : (
                   <>
-                    Vergangene Workshops anzeigen
+                    {isDe ? 'Vergangene Workshops anzeigen' : 'View past workshops'}
                     <ChevronDown className="h-5 w-5 ml-2" />
                   </>
                 )}
@@ -541,21 +580,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <GraduationCap className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{isDe ? 'Workshop abgeschlossen' : 'Workshop completed'}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {isDe ? 'Abgeschlossen' : 'Completed'}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Freitag, 20.-22.06.2025
+                                {isDe ? 'Freitag, 20.-22.06.2025' : 'Friday, 20-22.06.2025'}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Basis-Training Gruppe I
+                                {isDe ? 'Basis-Training Gruppe I' : 'Basic training group I'}
                               </h3>
                             </div>
                           </div>
@@ -574,21 +613,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Users className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{isDe ? 'Workshop abgeschlossen' : 'Workshop completed'}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {isDe ? 'Abgeschlossen' : 'Completed'}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Mittwoch, 08.10.2025 | 13-16 Uhr
+                                {isDe ? 'Mittwoch, 08.10.2025 | 13-16 Uhr' : 'Wednesday, 08.10.2025 | 1-4 PM'}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Kennenlernen- Workshop Johanna Eck
+                                {isDe ? 'Kennenlernen- Workshop Johanna Eck' : 'Intro workshop with Johanna Eck'}
                               </h3>
                             </div>
                           </div>
@@ -607,21 +646,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Star className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{isDe ? 'Workshop abgeschlossen' : 'Workshop completed'}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {isDe ? 'Abgeschlossen' : 'Completed'}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Samstag, 22.11.2025
+                                {isDe ? 'Samstag, 22.11.2025' : 'Saturday, 22.11.2025'}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Auftaktveranstaltung
+                                {isDe ? 'Auftaktveranstaltung' : 'Opening event'}
                               </h3>
                             </div>
                           </div>
@@ -640,18 +679,18 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Heart className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{isDe ? 'Workshop abgeschlossen' : 'Workshop completed'}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {isDe ? 'Abgeschlossen' : 'Completed'}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Dienstag, 09.12.2025 | 18-20 Uhr
+                                {isDe ? 'Dienstag, 09.12.2025 | 18-20 Uhr' : 'Tuesday, 09.12.2025 | 6-8 PM'}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
                                 Get together
@@ -673,21 +712,21 @@ export default function WorkshopsPage() {
                           <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 flex items-center justify-center">
                             <div className="text-center p-8">
                               <Award className="h-24 w-24 text-gray-400 mx-auto mb-4 opacity-60" />
-                              <p className="text-gray-500 font-medium text-lg">Workshop abgeschlossen</p>
+                              <p className="text-gray-500 font-medium text-lg">{isDe ? 'Workshop abgeschlossen' : 'Workshop completed'}</p>
                             </div>
                           </div>
                           <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                               <div className="inline-block mb-4">
                                 <span className="bg-gray-200 text-gray-600 text-sm font-medium px-4 py-1.5 rounded-full">
-                                  Abgeschlossen
+                                  {isDe ? 'Abgeschlossen' : 'Completed'}
                                 </span>
                               </div>
                               <div className="text-sm text-gray-500 mb-4">
-                                Donnerstag, 18.12.2025
+                                {isDe ? 'Donnerstag, 18.12.2025' : 'Thursday, 18.12.2025'}
                               </div>
                               <h3 className="text-2xl font-bold text-gray-700 mb-3">
-                                Perlen & Power Workshop Johanna Eck
+                                {isDe ? 'Perlen & Power Workshop Johanna Eck' : 'Pearls & Power workshop with Johanna Eck'}
                               </h3>
                             </div>
                           </div>
@@ -709,12 +748,14 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Workshops</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">Aus der Datenbank – oder Hinweis, wenn noch keine veröffentlicht sind.</p>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{isDe ? 'Workshops' : 'Workshops'}</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                {isDe ? 'Aus der Datenbank - oder Hinweis, wenn noch keine veroeffentlicht sind.' : 'From the database, or a notice when none are published yet.'}
+              </p>
             </motion.div>
 
             {(!dbWorkshops || dbWorkshops.length === 0) ? (
-              <div className="text-center text-gray-600">Aktuell sind keine Workshops verfügbar.</div>
+              <div className="text-center text-gray-600">{isDe ? 'Aktuell sind keine Workshops verfuegbar.' : 'No workshops are currently available.'}</div>
             ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
               {dbWorkshops.map((program: any, index: number) => (
@@ -735,7 +776,7 @@ export default function WorkshopsPage() {
                         {program.title || program.name}
                       </CardTitle>
                       <p className="text-gray-700 text-sm leading-relaxed">
-                        {program.description || 'Details folgen in Kürze.'}
+                        {program.description || (isDe ? 'Details folgen in Kuerze.' : 'Details coming soon.')}
                       </p>
                     </CardHeader>
                     
@@ -743,7 +784,7 @@ export default function WorkshopsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="h-4 w-4 mr-2 text-purple-600" />
-                          <span>{program.startDate || (program.startsAt ? new Date(program.startsAt).toLocaleDateString('de-DE') : 'tba')}</span>
+                          <span>{program.startDate || (program.startsAt ? new Date(program.startsAt).toLocaleDateString(isDe ? 'de-DE' : 'en-US') : 'tba')}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Clock className="h-4 w-4 mr-2 text-blue-600" />
@@ -751,18 +792,18 @@ export default function WorkshopsPage() {
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="h-4 w-4 mr-2 text-green-600" />
-                          <span>{program.participants || (program.capacity ? `${program.capacity} Plätze` : 'Kapazität tba')}</span>
+                          <span>{program.participants || (program.capacity ? `${program.capacity} ${isDe ? 'Plaetze' : 'spots'}` : isDe ? 'Kapazitaet tba' : 'capacity tba')}</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-                          <span>{program.location || 'Ort tba'}</span>
+                          <span>{program.location || (isDe ? 'Ort tba' : 'location tba')}</span>
                         </div>
                       </div>
 
                       <div className="pt-4">
                         <Link href="/sign-up">
                           <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                            Interesse bekunden
+                            {isDe ? 'Interesse bekunden' : 'Express interest'}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
                         </Link>
@@ -785,10 +826,10 @@ export default function WorkshopsPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Forschungsaktivitäten
+                {isDe ? 'Forschungsaktivitaeten' : 'Research activities'}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Wissenschaftliche Untersuchungen zu Barrieren, Erfolgsfaktoren und Resilienz
+                {isDe ? 'Wissenschaftliche Untersuchungen zu Barrieren, Erfolgsfaktoren und Resilienz' : 'Scientific studies on barriers, success factors, and resilience'}
               </p>
             </motion.div>
 
@@ -840,10 +881,10 @@ export default function WorkshopsPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Projektverlauf
+                {isDe ? 'Projektverlauf' : 'Project timeline'}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Building Bridges läuft über 36 Monate von September 2024 bis August 2027
+                {isDe ? 'Building Bridges laeuft ueber 36 Monate von September 2024 bis August 2027' : 'Building Bridges runs for 36 months from September 2024 to August 2027'}
               </p>
             </motion.div>
 
@@ -853,9 +894,24 @@ export default function WorkshopsPage() {
                 <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-purple-400 to-blue-400 rounded-full"></div>
                 
                 {[
-                  { phase: "Phase 1", period: "Sep 2024 - Aug 2025", title: "Projektstart & MEP-Entwicklung", description: "Entwicklung des Mentoring-Programms und erste Teilnehmerinnen-Kohorte" },
-                  { phase: "Phase 2", period: "Sep 2025 - Aug 2026", title: "Vollimplementierung & Forschung", description: "Vollständige Umsetzung aller Programme und intensive Datenerhebung" },
-                  { phase: "Phase 3", period: "Sep 2026 - Aug 2027", title: "Evaluation & Nachhaltigkeit", description: "Projektevaluation, Ergebnisverbreitung und Nachhaltigkeitsstrategie" }
+                  {
+                    phase: isDe ? 'Phase 1' : 'Phase 1',
+                    period: 'Sep 2024 - Aug 2025',
+                    title: isDe ? 'Projektstart & MEP-Entwicklung' : 'Project launch & MEP development',
+                    description: isDe ? 'Entwicklung des Mentoring-Programms und erste Teilnehmerinnen-Kohorte' : 'Development of the mentoring program and first participant cohort',
+                  },
+                  {
+                    phase: isDe ? 'Phase 2' : 'Phase 2',
+                    period: 'Sep 2025 - Aug 2026',
+                    title: isDe ? 'Vollimplementierung & Forschung' : 'Full implementation & research',
+                    description: isDe ? 'Vollstaendige Umsetzung aller Programme und intensive Datenerhebung' : 'Full delivery of all programs and intensive data collection',
+                  },
+                  {
+                    phase: isDe ? 'Phase 3' : 'Phase 3',
+                    period: 'Sep 2026 - Aug 2027',
+                    title: isDe ? 'Evaluation & Nachhaltigkeit' : 'Evaluation & sustainability',
+                    description: isDe ? 'Projektevaluation, Ergebnisverbreitung und Nachhaltigkeitsstrategie' : 'Project evaluation, dissemination, and sustainability strategy',
+                  }
                 ].map((item, index) => (
                   <motion.div
                     key={item.phase}

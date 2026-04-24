@@ -1,20 +1,30 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { getMemberBySlug } from '@/lib/content/team';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 const featuredSlugs = ['claudia-calvano', 'celiana-kiefer', 'hannes-rothe'] as const;
 
 export function LandingTeam() {
+  const { isDe } = useLanguage();
   const featured = featuredSlugs.map((s) => getMemberBySlug(s)).filter(Boolean);
 
   return (
     <section id="team" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-[1280px]">
-        <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Project Team</p>
+        <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Projektteam' : 'Project Team'}</p>
         <h2 className="mb-3 max-w-[720px] font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-          Meet the <em className="font-normal not-italic text-[#9152FF]">people</em> behind Building Bridges
+          {isDe ? (
+            <>Lernen Sie die <em className="font-normal not-italic text-[#9152FF]">Menschen</em> hinter Building Bridges kennen</>
+          ) : (
+            <>Meet the <em className="font-normal not-italic text-[#9152FF]">people</em> behind Building Bridges</>
+          )}
         </h2>
-        <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">Three partner institutions – one shared mission.</p>
+        <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">
+          {isDe ? 'Drei Partnerinstitutionen - eine gemeinsame Mission.' : 'Three partner institutions - one shared mission.'}
+        </p>
 
         <div className="mb-10 rounded-2xl border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF]/50 p-6">
           <div className="flex flex-wrap items-center gap-4 border-b border-[rgba(145,82,255,0.15)] pb-5">
@@ -22,9 +32,9 @@ export function LandingTeam() {
               TP
             </div>
             <div>
-              <h3 className="font-lora text-xl font-bold text-[#1A1033]">Universities &amp; partners</h3>
+              <h3 className="font-lora text-xl font-bold text-[#1A1033]">{isDe ? 'Hochschulen & Partner' : 'Universities & partners'}</h3>
               <span className="text-[0.83rem] font-medium text-[#6B5F8A]">
-                FU Berlin · SPI Foundation · University of Duisburg-Essen
+                {isDe ? 'FU Berlin · Stiftung SPI · Universitaet Duisburg-Essen' : 'FU Berlin · SPI Foundation · University of Duisburg-Essen'}
               </span>
             </div>
           </div>
@@ -49,7 +59,7 @@ export function LandingTeam() {
                 <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{m.name}</h4>
                 <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">{m.role}</p>
                 <p className="line-clamp-4 text-[0.83rem] leading-relaxed text-[#6B5F8A]">{m.org}</p>
-                <span className="mt-4 inline-block text-sm font-bold text-[#9152FF] group-hover:underline">View profile →</span>
+                <span className="mt-4 inline-block text-sm font-bold text-[#9152FF] group-hover:underline">{isDe ? 'Profil ansehen →' : 'View profile →'}</span>
               </Link>
             ) : null
           )}
@@ -60,7 +70,7 @@ export function LandingTeam() {
             href="/team"
             className="inline-flex rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-6 py-3 text-sm font-semibold text-[#9152FF] transition hover:bg-[#9152FF] hover:text-white"
           >
-            Full team directory
+            {isDe ? 'Gesamtes Teamverzeichnis' : 'Full team directory'}
           </Link>
         </div>
       </div>
