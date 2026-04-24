@@ -1,24 +1,41 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Sora, Lora, Fraunces, DM_Sans, DM_Mono } from 'next/font/google';
 import { UserProvider } from '@/lib/auth/index';
 import { getUser } from '@/lib/db/queries';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import Script from 'next/script';
 
-// Configure Inter font
-const inter = Inter({
+const sora = Sora({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-sora',
 });
 
-// Configure JetBrains Mono font
-const jetbrainsMono = JetBrains_Mono({
+const lora = Lora({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-jetbrains',
+  variable: '--font-lora',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-fraunces',
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-dm-sans',
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  display: 'swap',
+  variable: '--font-dm-mono',
 });
 
 export const metadata: Metadata = {
@@ -90,11 +107,11 @@ export default function RootLayout({
   let userPromise = getUser();
 
   return (
-    <html 
-      lang="de" 
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+    <html
+      lang="en"
+      className={`${sora.variable} ${lora.variable} ${fraunces.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
-      <body className="font-primary antialiased min-h-[100dvh]">
+      <body className="font-primary antialiased min-h-[100dvh] bg-[#F2EEFF] text-[#1A1033]">
         {/* Auto-reload on chunk load failure to avoid blank screen after deployments */}
         <Script id="chunk-error-reload" strategy="beforeInteractive">
           {`
@@ -115,7 +132,7 @@ export default function RootLayout({
         <UserProvider userPromise={userPromise}>
           <div className="min-h-screen flex flex-col">
             <Navbar />
-            <main className="flex-1 mt-16">{children}</main>
+            <main className="flex-1 pt-[70px]">{children}</main>
             <Footer />
           </div>
         </UserProvider>

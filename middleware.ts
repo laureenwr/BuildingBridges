@@ -33,6 +33,7 @@ const publicPaths = [
   '/roadmap',
   '/imprint',
   '/glossary',
+  '/story-tool',
   '/tos',
   '/privacy-policy',
   '/api/webhooks/stripe',

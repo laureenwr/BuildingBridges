@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    /* Brand Colors */
+    /* Building Bridges marketing palette (#9152FF lavender system) */
     --primary: 262 100% 66%;
-    --primary-light: 262 100% 75%;
-    --primary-dark: 262 57% 55%;
+    --primary-light: 265 100% 74%;
+    --primary-dark: 255 70% 55%;
     --primary-hover: 262 100% 60%;
     --primary-active: 262 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary Colors with States */
-    --secondary: 159 83% 39%;
-    --secondary-light: 159 83% 49%;
-    --secondary-dark: 159 83% 29%;
-    --secondary-hover: 159 83% 34%;
-    --secondary-active: 159 83% 32%;
+    /* Secondary / sage */
+    --secondary: 152 30% 54%;
+    --secondary-light: 152 35% 65%;
+    --secondary-dark: 152 32% 40%;
+    --secondary-hover: 152 30% 48%;
+    --secondary-active: 152 30% 44%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Background Colors */
-    --background: 0 0% 100%;
-    --background-subtle: 210 40% 98%;
-    --background-muted: 210 40% 96.1%;
-    --foreground: 222.2 84% 4.9%;
-    --foreground-muted: 215.4 16.3% 46.9%;
+    /* Background — lavender page, ink text */
+    --background: 260 100% 97%;
+    --background-subtle: 262 100% 95%;
+    --background-muted: 262 60% 94%;
+    --foreground: 258 52% 13%;
+    --foreground-muted: 252 18% 45%;
 
     /* Component Colors */
     --card: 0 0% 100%;
@@ -55,9 +55,9 @@
     --destructive-foreground: 210 40% 98%;
 
     /* UI Colors */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --border: 214.3 31.8% 91.4%;
+    --muted: 262 100% 96%;
+    --muted-foreground: 252 18% 45%;
+    --border: 262 100% 90%;
     --border-hover: 214.3 31.8% 85%;
     --input: 214.3 31.8% 91.4%;
     --input-hover: 214.3 31.8% 85%;
@@ -70,11 +70,11 @@
     --selection-background: 262 100% 90%;
     --selection-foreground: 262 100% 20%;
 
-    /* Radius */
-    --radius-sm: 0.25rem;
-    --radius: 0.5rem;
-    --radius-md: 0.75rem;
-    --radius-lg: 1rem;
+    /* Radius — softer cards like mock */
+    --radius-sm: 0.75rem;
+    --radius: 1rem;
+    --radius-md: 1.125rem;
+    --radius-lg: 1.5rem;
   }
 
   .dark {
@@ -157,7 +157,9 @@
     @apply bg-background text-foreground font-primary;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-primary font-semibold tracking-tight;
+    font-family: var(--font-lora), ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
   code {
     @apply font-mono;
