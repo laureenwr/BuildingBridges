@@ -1,14 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram } from 'lucide-react';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 const footerColumns = [
   {
     title: 'About',
     links: [
-      { label: 'Vision', href: '/vision' },
-      { label: 'Team', href: '/team' },
-      { label: 'Partners', href: '/partners' },
+      { label: 'Vision', href: '/#about' },
+      { label: 'Team', href: '/#team' },
+      { label: 'Partners', href: '/#partners' },
       { label: 'Contact', href: '/contact' },
     ],
   },
@@ -23,7 +26,7 @@ const footerColumns = [
   {
     title: 'Program',
     links: [
-      { label: 'Workshops', href: '/workshops' },
+      { label: 'Workshops', href: '/#events' },
       { label: 'Research', href: '/#events' },
       { label: 'Register', href: '/sign-up' },
     ],
@@ -41,6 +44,8 @@ const footerColumns = [
 const socialLinks = [{ Icon: Instagram, href: 'https://www.instagram.com/building_bridges_team/' }];
 
 export function Footer() {
+  const { isDe } = useLanguage();
+
   return (
     <footer className="bg-[#1A1033] px-6 py-12 text-[rgba(255,255,255,0.5)] sm:px-10">
       <div className="mx-auto max-w-[1280px]">
@@ -79,7 +84,15 @@ export function Footer() {
           {footerColumns.map((col) => (
             <div key={col.title}>
               <h4 className="mb-4 text-[0.78rem] font-bold uppercase tracking-[0.12em] text-[rgba(255,255,255,0.75)]">
-                {col.title}
+                {isDe
+                  ? col.title === 'About'
+                    ? 'Ueber'
+                    : col.title === 'Platform'
+                      ? 'Plattform'
+                      : col.title === 'Program'
+                        ? 'Programm'
+                        : 'Rechtliches'
+                  : col.title}
               </h4>
               <ul className="flex list-none flex-col gap-2">
                 {col.links.map((link) => (
@@ -88,7 +101,13 @@ export function Footer() {
                       href={link.href}
                       className="text-[0.875rem] text-[rgba(255,255,255,0.45)] transition hover:text-[rgba(255,255,255,0.9)]"
                     >
-                      {link.label}
+                      {isDe && col.title === 'Legal'
+                        ? link.label === 'Imprint'
+                          ? 'Impressum'
+                          : link.label === 'Privacy Policy'
+                            ? 'Datenschutz'
+                            : 'Nutzungsbedingungen'
+                        : link.label}
                     </Link>
                   </li>
                 ))}
@@ -101,12 +120,12 @@ export function Footer() {
           <span>© 2024–{new Date().getFullYear()} Building Bridges. Funded by BMBF, BMFSJ &amp; ESF+.</span>
           <div className="flex flex-wrap gap-6">
             <Link href="/imprint" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
-              Imprint
+              {isDe ? 'Impressum' : 'Imprint'}
             </Link>
             <Link href="/privacy-policy" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
-              Privacy
+              {isDe ? 'Datenschutz' : 'Privacy'}
             </Link>
-            <span className="text-[rgba(255,255,255,0.38)]">Accessibility</span>
+            <span className="text-[rgba(255,255,255,0.38)]">{isDe ? 'Barrierefreiheit' : 'Accessibility'}</span>
           </div>
           <div className="flex gap-4">
             {socialLinks.map(({ Icon, href }) => (

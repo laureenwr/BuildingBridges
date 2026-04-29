@@ -1,14 +1,72 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { teamMembers } from '@/lib/content/team';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+
+const roleOverrides: Record<string, { de: string; en: string }> = {
+  'claudia-calvano': {
+    de: 'Verbundleitung und Leitung Teilprojekt 1',
+    en: 'Consortium Lead and Head of Subproject 1',
+  },
+  'celiana-kiefer': {
+    de: 'Teilprojektleitung von Teilprojekt 2 „Ment2Power" (Mentoringprogramm)',
+    en: 'Lead of Subproject 2 "Ment2Power" (Mentoring Program)',
+  },
+  'susanne-birnkammer': {
+    de: 'Wissenschaftliche Mitarbeiterin, Doktorandin',
+    en: 'Research Associate, Doctoral Candidate',
+  },
+  'felicia-boma-lazaridou': {
+    de: 'Wissenschaftliche Mitarbeiterin (Drittmittelprojekt)',
+    en: 'Research Associate (Third-party Funded Project)',
+  },
+  'esther-kipnis': {
+    de: 'Studentische Hilfskraft im Teilprojekt 1',
+    en: 'Student Research Assistant in Subproject 1',
+  },
+  'dilara-yildirim': {
+    de: 'Studentische Hilfskraft',
+    en: 'Student Research Assistant',
+  },
+  'hannes-rothe': {
+    de: 'Projektleitung Digitale Plattform (TP3), Lehrstuhlinhaber',
+    en: 'Lead of Digital Platform (TP3), Chair Holder',
+  },
+  'daniel-courtney': {
+    de: 'Wissenschaftlicher Mitarbeiter (TP3)',
+    en: 'Research Associate (TP3)',
+  },
+  'laureen-warikoru': {
+    de: 'Wissenschaftliche Mitarbeiterin (TP3)',
+    en: 'Research Associate (TP3)',
+  },
+  'sumera-sajid': {
+    de: 'Studentische Hilfskraft (TP3)',
+    en: 'Research Assistant (TP3)',
+  },
+};
+
+const orgOverrides: Record<string, { de: string; en: string }> = {
+  'Universität Duisburg-Essen': {
+    de: 'Universität Duisburg-Essen',
+    en: 'University of Duisburg-Essen',
+  },
+  'Freie Universität Berlin': {
+    de: 'Freie Universität Berlin',
+    en: 'Freie University of Berlin',
+  },
+};
 
 export default function TeamPage() {
+  const { isDe } = useLanguage();
   const bySlug = new Map(teamMembers.map((m) => [m.slug, m] as const));
 
   const TP1 = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
   const TP2 = ['celiana-kiefer', 'dilara-yildirim'];
-  const TP3 = ['hannes-rothe', 'daniel-courtney', 'sumera-sajid', 'laureen-warikoru'];
+  const TP3 = ['hannes-rothe', 'daniel-courtney', 'laureen-warikoru', 'sumera-sajid'];
 
   function renderSection(title: string, slugs: string[]) {
     const members = slugs
@@ -38,9 +96,17 @@ export default function TeamPage() {
                 {member.degree && (
                   <p className="text-sm text-gray-500 mb-2">{member.degree}</p>
                 )}
-                <p className="text-purple-700 font-medium text-sm mb-1">{member.role}</p>
+                <p className="text-purple-700 font-medium text-sm mb-1">
+                  {roleOverrides[member.slug]
+                    ? (isDe ? roleOverrides[member.slug].de : roleOverrides[member.slug].en)
+                    : member.role}
+                </p>
                 {member.org ? (
-                  <p className="text-gray-600 text-sm">{member.org}</p>
+                  <p className="text-gray-600 text-sm">
+                    {orgOverrides[member.org]
+                      ? (isDe ? orgOverrides[member.org].de : orgOverrides[member.org].en)
+                      : member.org}
+                  </p>
                 ) : null}
               </Card>
             </Link>
@@ -54,14 +120,18 @@ export default function TeamPage() {
     <main className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Unser Team</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            {isDe ? 'Unser Team' : 'Our Team'}
+          </h1>
           <p className="text-gray-700 max-w-2xl mx-auto">
-            Wir sind ein vielfältiges Team mit einer gemeinsamen Vision: Brücken bauen – zwischen Bildung, Perspektiven und Möglichkeiten.
+            {isDe
+              ? 'Wir sind ein vielfaeltiges Team mit einer gemeinsamen Vision: Bruecken bauen - zwischen Bildung, Perspektiven und Moeglichkeiten.'
+              : 'We are a diverse team with one shared vision: building bridges between education, perspectives, and opportunities.'}
           </p>
         </div>
-        {renderSection('Teilprojekt 1 (TP1)', TP1)}
-        {renderSection('Teilprojekt 2 (TP2)', TP2)}
-        {renderSection('Teilprojekt 3 (TP3)', TP3)}
+        {renderSection(isDe ? 'Teilprojekt 1 (TP1)' : 'Subproject 1 (TP1)', TP1)}
+        {renderSection(isDe ? 'Teilprojekt 2 (TP2)' : 'Subproject 2 (TP2)', TP2)}
+        {renderSection(isDe ? 'Teilprojekt 3 (TP3)' : 'Subproject 3 (TP3)', TP3)}
       </div>
     </main>
   );

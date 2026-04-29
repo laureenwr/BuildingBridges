@@ -83,26 +83,6 @@ export function LandingKnowledge() {
           )}
         </div>
 
-        <div className="mt-6 flex flex-col flex-wrap items-start justify-between gap-4 rounded-[24px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-white p-8 sm:flex-row sm:items-center">
-          <div>
-            <strong className="block text-[0.95rem] text-[#1A1033]">{isDe ? 'Wie hilfreich war dieser Bereich?' : 'How helpful was this section?'}</strong>
-            <p className="text-[0.9rem] font-medium text-[#6B5F8A]">{isDe ? 'Ihr Feedback hilft uns bei der Verbesserung. Antworten sind anonym.' : 'Your feedback helps us improve. Responses are anonymous.'}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="rounded-full border-[1.5px] border-[rgba(145,82,255,0.15)] px-4 py-2 text-[0.83rem] font-semibold text-[#6B5F8A] hover:border-[#6BAA8A] hover:bg-[rgba(107,170,138,0.15)] hover:text-[#3d7a5c]"
-            >
-              {isDe ? '👍 Hilfreich' : '👍 Helpful'}
-            </button>
-            <button
-              type="button"
-              className="rounded-full border-[1.5px] border-[rgba(145,82,255,0.15)] px-4 py-2 text-[0.83rem] font-semibold text-[#6B5F8A] hover:border-[#9152FF] hover:bg-[#F5F0FF] hover:text-[#9152FF]"
-            >
-              {isDe ? '👎 Nicht hilfreich' : '👎 Not helpful'}
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -7,6 +7,17 @@ import { useLanguage } from '@/lib/hooks/useLanguage';
 
 const featuredSlugs = ['claudia-calvano', 'celiana-kiefer', 'hannes-rothe'] as const;
 
+const featuredRoleTranslations: Record<string, string> = {
+  'claudia-calvano': 'Consortium Lead & Lead of Subproject 1',
+  'celiana-kiefer': 'Lead of Subproject 2 "Ment2Power" (Mentoring Program)',
+  'hannes-rothe': 'Lead of Digital Platform (TP3), Chair Holder',
+};
+
+const orgTranslations: Record<string, string> = {
+  'Freie Universität Berlin': 'Freie University of Berlin',
+  'Universität Duisburg-Essen': 'University of Duisburg-Essen',
+};
+
 export function LandingTeam() {
   const { isDe } = useLanguage();
   const featured = featuredSlugs.map((s) => getMemberBySlug(s)).filter(Boolean);
@@ -26,20 +37,6 @@ export function LandingTeam() {
           {isDe ? 'Drei Partnerinstitutionen - eine gemeinsame Mission.' : 'Three partner institutions - one shared mission.'}
         </p>
 
-        <div className="mb-10 rounded-2xl border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF]/50 p-6">
-          <div className="flex flex-wrap items-center gap-4 border-b border-[rgba(145,82,255,0.15)] pb-5">
-            <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[14px] bg-[#9152FF] text-sm font-extrabold tracking-wide text-white">
-              TP
-            </div>
-            <div>
-              <h3 className="font-lora text-xl font-bold text-[#1A1033]">{isDe ? 'Hochschulen & Partner' : 'Universities & partners'}</h3>
-              <span className="text-[0.83rem] font-medium text-[#6B5F8A]">
-                {isDe ? 'FU Berlin · Stiftung SPI · Universitaet Duisburg-Essen' : 'FU Berlin · SPI Foundation · University of Duisburg-Essen'}
-              </span>
-            </div>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {featured.map((m) =>
             m ? (
@@ -57,8 +54,12 @@ export function LandingTeam() {
                   className="mb-4 h-[90px] w-[90px] rounded-full border-[3px] border-[#EDE5FF] object-cover object-top shadow-md"
                 />
                 <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{m.name}</h4>
-                <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">{m.role}</p>
-                <p className="line-clamp-4 text-[0.83rem] leading-relaxed text-[#6B5F8A]">{m.org}</p>
+                <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">
+                  {isDe ? m.role : featuredRoleTranslations[m.slug] ?? m.role}
+                </p>
+                <p className="line-clamp-4 text-[0.83rem] leading-relaxed text-[#6B5F8A]">
+                  {isDe ? m.org : orgTranslations[m.org] ?? m.org}
+                </p>
                 <span className="mt-4 inline-block text-sm font-bold text-[#9152FF] group-hover:underline">{isDe ? 'Profil ansehen →' : 'View profile →'}</span>
               </Link>
             ) : null

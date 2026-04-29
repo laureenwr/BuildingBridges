@@ -95,7 +95,7 @@ export const teamMembers: TeamMember[] = [
     room: 'JK27/228',
     image: '/Team/FeliciaLazaridou.png',
     links: [
-      { label: 'Profil', url: 'https://www.ewi-psy.fu-berlin.de/psychologie/arbeitsbereiche/klinische_kinder_jugend_psy_und-kinder_psytherapie/mitarbeiter/FeliciaL/index.html' },
+      { label: 'Profile', url: 'https://www.ewi-psy.fu-berlin.de/psychologie/arbeitsbereiche/klinische_kinder_jugend_psy_und-kinder_psytherapie/mitarbeiter/FeliciaL/index.html' },
     ],
   },
   {
@@ -123,7 +123,7 @@ export const teamMembers: TeamMember[] = [
     image: '/Team/HannesRothe.png',
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'hannes.rothe@ris.uni-due.de',
-    bio: 'I (he/him/his) am a dad of two, professor and Chair of Sustainability and Innovation in Digital Ecosystems at University of Duisburg-Essen, and head of the Place Beyond Bytes. I conduct teaching on Digital Innovation, Entrepreneurship, and Machine Learning. My fields of research are on the intersection of Digital Innovation & Entrepreneurship, Managing Digital Ecosystems, and Organizing Data & Knowledge.',
+    bio: 'Professor and Chair of Sustainability and Innovation in Digital Ecosystems at the University of Duisburg-Essen, and head of the Place Beyond Bytes. His work focuses on teaching Digital Innovation, Entrepreneurship, and Machine Learning. His research explores the intersection of digital innovation and entrepreneurship, the management of digital ecosystems, and the organization of data and knowledge.',
     links: [
       { label: 'Profil', url: 'https://sust.ris.uni-due.de/team/hannes-rothe/' },
       { label: 'LinkedIn', url: 'https://www.linkedin.com' },
@@ -137,10 +137,12 @@ export const teamMembers: TeamMember[] = [
     role: 'Wissenschaftlicher Mitarbeiter (TP3)',
     org: 'Universität Duisburg-Essen',
     image: '/Team/daniel.jpg',
-    bio: 'Brief bio coming soon. Daniel supports TP3 research and platform development activities.',
+    bio: 'Research Associate at the University of Duisburg-Essen, working at the Chair of Sustainability and Innovation in Digital Ecosystems. He contributes to projects such as Building Bridges and "EHDS for All." With a background in Human-Computer Interaction and Psychology, his work focuses on user experience, human-centered design, and the interaction between people and digital technologies. His research interests include UX design and research, human factors, and behavioral science.',
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'daniel.courtney@uni-due.de',
-    links: [],
+    links: [
+      { label: 'Profile', url: 'https://www.ris.uni-due.de/ueber-uns/personen/detailansicht/daniel-courtney/' },
+    ],
   },
   {
     slug: 'sumera-sajid',
@@ -150,10 +152,12 @@ export const teamMembers: TeamMember[] = [
     role: 'Studentische Hilfskraft (TP3)',
     org: 'Universität Duisburg-Essen',
     image: '/Team/SumeraSajid.jpg',
-    bio: 'Brief bio coming soon. Sumera supports the TP3 digital platform team and project coordination tasks.',
+    bio: "Master's student in Web & Data Science at the University of Koblenz. Originally from Gilgit, Pakistan. Contributing to the Building Bridges platform with a focus on user experience, storytelling, and inclusive digital design. Her work brings together data-driven thinking and user-centered design to support accessible and meaningful digital experiences. She is particularly interested in how technology can empower communities, amplify diverse voices, and create inclusive spaces for learning and exchange.",
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'sumera.sajid@uni-due.de',
-    links: [],
+    links: [
+      { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sumera56' },
+    ],
   },
   {
     slug: 'laureen-warikoru',
@@ -164,9 +168,12 @@ export const teamMembers: TeamMember[] = [
     role: 'Wissenschaftliche Mitarbeiterin (TP3)',
     org: 'Universität Duisburg-Essen',
     image: '/Team/LaureenWarikoru.png',
+    bio: 'Research Associate at the University of Duisburg-Essen, working at the Chair of Sustainability and Innovation in Digital Ecosystems. Her work focuses on Human-Computer Interaction, cognitive psychology, and behavioral science, with an interest in understanding how people interact with digital systems and how these experiences can be designed in a more intuitive and user-centered way.',
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'laureen.warikoru@uni-due.de',
-    links: [],
+    links: [
+      { label: 'Profile', url: 'https://www.ris.uni-due.de/ueber-uns/personen/detailansicht/laureen-warikoru/#research' },
+    ],
   },
 ];
 

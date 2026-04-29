@@ -9,7 +9,7 @@ const pillars = [
     icon: '📖',
     title: 'Scientific coordination',
     body:
-      'The entire project is being scientifically monitored by the Free University of Berlin. Interviews and questionnaires are being used to assess experiences of discrimination, mental health, stressors, resources, and academic participation among school and university students. The MEP (Measure for Educational Progress) will be evaluated for feasibility and acceptance.',
+      'The entire project is being scientifically monitored by the Freie University of Berlin. Interviews and questionnaires are being used to assess experiences of discrimination, mental health, stressors, resources, and academic participation among school and university students. The MEP (Measure for Educational Progress) will be evaluated for feasibility and acceptance.',
     cardClass: 'border-[#d8e7df] bg-[#cfe9db]',
     iconClass: 'text-[#2f9a78]',
     chip: 'TP1',
@@ -71,8 +71,8 @@ export function LandingAbout() {
           className="mx-auto mt-4 max-w-4xl text-center text-[clamp(1rem,1.7vw,1.1rem)] leading-relaxed text-[#3f3f52]"
         >
           {isDe
-            ? '&quot;Building Bridges&quot; ist ein 36-monatiges interdisziplinaeres Forschungs- und Entwicklungsprojekt zur Staerkung und Begleitung von Girls und FLINTA* of Colour ab der 10. Klasse. Das Projekt wird von der Freien Universitaet Berlin, der Stiftung SPI und der Universitaet Duisburg-Essen umgesetzt.'
-            : '&quot;Building Bridges&quot; is a 36-month interdisciplinary research and development project that aims to empower and mentor girls and FLINTA* of color from the 10th grade onwards. The project is being carried out by the Free University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.'}
+            ? 'Building Bridges ist ein 36-monatiges interdisziplinaeres Forschungs- und Entwicklungsprojekt zur Staerkung und Begleitung von Girls und FLINTA* of Colour ab der 10. Klasse. Das Projekt wird von der Freien Universitaet Berlin, der Stiftung SPI und der Universitaet Duisburg-Essen umgesetzt.'
+            : 'Building Bridges is a 36-month interdisciplinary research and development project to empower and mentor girls and FLINTA* of color from the 10th grade onward. It is carried out by the Freie University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.'}
         </motion.p>
 
         <div

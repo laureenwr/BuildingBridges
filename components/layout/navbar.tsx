@@ -38,7 +38,7 @@ function NavDrop({
       </Link>
       <div
         className={cn(
-          'pointer-events-none absolute left-1/2 top-full z-[999] mt-2 min-w-[215px] -translate-x-1/2 rounded-[14px] border border-[rgba(145,82,255,0.15)] bg-white p-1.5 opacity-0 shadow-lg transition',
+          'pointer-events-none absolute left-1/2 top-[calc(100%-1px)] z-[999] min-w-[215px] -translate-x-1/2 rounded-[14px] border border-[rgba(145,82,255,0.15)] bg-white p-1.5 opacity-0 shadow-lg transition',
           'group-hover:pointer-events-auto group-hover:opacity-100'
         )}
       >
@@ -203,7 +203,7 @@ export function Navbar() {
                 href="/contact"
                 className="whitespace-nowrap rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-4 py-2 text-[0.82rem] font-semibold text-[#9152FF] transition hover:border-[#9152FF] hover:bg-[#9152FF] hover:text-white"
               >
-                Contact
+                Contact us
               </Link>
               <Link
                 href="/sign-up"
@@ -237,12 +237,12 @@ export function Navbar() {
               ['Home', '/#home'],
               ['About the Project', '/#about'],
               ['Team', '/#team'],
-              ['Program & Goals', '/#program'],
+              ['Vision & Goals', '/#about'],
               ['Knowledge Platform', '/#knowledge'],
               ['Story Creation Tool', '/story-tool'],
               ['Workshops & Events', '/#events'],
               ['Partners', '/#partners'],
-              ['Contact', '/contact'],
+              ['Contact us', '/contact'],
             ].map(([label, href]) => (
               <Link
                 key={href + label}

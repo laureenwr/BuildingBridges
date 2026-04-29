@@ -100,6 +100,81 @@ const researchActivities = [
   }
 ];
 
+const upcomingWorkshopCards = [
+  {
+    key: 'online-intro',
+    icon: Users,
+    badge: { de: 'Networking & Austausch', en: 'Networking & Exchange' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'Mittwoch, 14. Jan 2026 · 18:00 Uhr · Online', en: 'Wednesday, 14 Jan 2026 · 6:00 PM · Online' },
+    title: { de: 'Online Kennenlernen Mentor:innen', en: 'Online introductions to mentors' },
+    description: {
+      de: 'Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr ueber das Mentoring-Programm. Mentor:innen stellen sich vor und beantworten Fragen.',
+      en: 'Get to know our mentors and learn more about the mentoring program. Mentors introduce themselves and answer your questions.',
+    },
+  },
+  {
+    key: 'individual-mentoring',
+    icon: Heart,
+    badge: { de: 'Individuelles Mentoring', en: 'Individual mentoring' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'Jan-Nov 2026', en: 'Jan-Nov 2026' },
+    title: { de: 'Einzelmentoring', en: 'Individual mentoring' },
+    description: {
+      de: 'Ein unterstuetzender Mentoring-Pfad fuer Teilnehmerinnen waehrend des gesamten Programmjahres.',
+      en: 'A supportive mentoring pathway for participants throughout the program year.',
+    },
+  },
+  {
+    key: 'mentoring-ii-johanna',
+    icon: BookOpen,
+    badge: { de: 'Workshop', en: 'Workshop' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'Maerz 2026', en: 'March 2026' },
+    title: { de: 'Mentoring Workshop II - Johanna Eck', en: 'Mentoring Workshop II - Johanna Eck' },
+    description: {
+      de: 'Ein angeleiteter Workshop mit Fokus auf Mentoring, Reflexion und Community-Austausch.',
+      en: 'A guided workshop focused on mentoring, reflection, and community exchange.',
+    },
+  },
+  {
+    key: 'self-care-i',
+    icon: Heart,
+    badge: { de: 'Self-care', en: 'Self-care' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'April 2026', en: 'April 2026' },
+    title: { de: 'SELF CARE I', en: 'SELF CARE I' },
+    description: {
+      de: 'Ein sicherer Raum, um Wohlbefinden, Grenzen und Resilienz-Praktiken gemeinsam zu staerken.',
+      en: 'A safe space to explore wellbeing, boundaries, and resilience practices together.',
+    },
+  },
+  {
+    key: 'vision-workshop',
+    icon: Target,
+    badge: { de: 'Vision & Ziele', en: 'Vision & Goals' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'Samstag, 25.04.2026 · ganztags', en: 'Saturday, 25.04.2026 · all day' },
+    title: { de: 'Mentoring Workshop II - Vision', en: 'Mentoring Workshop II - Vision' },
+    description: {
+      de: 'Ein Workshop fuer das Gestalten persoenlicher Ziele, geteilter Visionen und akademischer Wege.',
+      en: 'A workshop for shaping personal goals, shared visions, and academic pathways.',
+    },
+  },
+  {
+    key: 'self-care-ii',
+    icon: Heart,
+    badge: { de: 'Self-care', en: 'Self-care' },
+    audience: { de: 'fuer Teilnehmerinnen', en: 'for participants' },
+    date: { de: 'Freitag, 15.05.2026', en: 'Friday, 15.05.2026' },
+    title: { de: 'Self Care II', en: 'Self Care II' },
+    description: {
+      de: 'Fortsetzung der Self-care-Reihe mit praktischen Tools fuer Reflexion und gegenseitige Unterstuetzung.',
+      en: 'Continuing the self-care series with practical tools for reflection and support.',
+    },
+  },
+];
+
 export default function WorkshopsPage() {
   const [dbWorkshops, setDbWorkshops] = useState<any[]>([]);
   const [showPastWorkshops, setShowPastWorkshops] = useState(false);
@@ -143,9 +218,9 @@ export default function WorkshopsPage() {
     };
   }, []);
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-7xl mx-auto">
+    <main className="min-h-screen bg-[#F2EEFF]">
+      <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10">
+        <div className="mx-auto max-w-7xl">
           {/* Header */}
           <motion.div 
             className="text-center mb-20"
@@ -153,10 +228,10 @@ export default function WorkshopsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+            <h1 className="mb-8 font-lora text-[clamp(2rem,3vw,2.8rem)] font-bold text-[#1A1033]">
               {isDe ? 'Trainings & Events' : 'Training & Events'}
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-4xl text-[1.05rem] leading-relaxed text-[#6B5F8A] md:text-[1.15rem]">
               {isDe
                 ? 'Das Building Bridges Projekt bietet verschiedene Programme und Forschungsaktivitaeten zur Staerkung und Foerderung von Maedchen und FLINTA* of Colour in akademischen Laufbahnen.'
                 : 'The Building Bridges project offers programs and research activities to empower girls and FLINTA* of Colour in academic pathways.'}
@@ -166,399 +241,72 @@ export default function WorkshopsPage() {
           {/* Upcoming Workshops */}
           <section className="mb-20">
             <motion.div 
-              className="text-left mb-16"
+              className="mb-10 flex flex-wrap items-start justify-between gap-4"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{isDe ? 'Workshopangebote' : 'Workshop offerings'}</h2>
-              <p className="text-xl text-gray-600 max-w-3xl">
-                {isDe ? 'Die naechsten Termine fuer unsere Workshops und Veranstaltungen.' : 'The next dates for our workshops and events.'}
-              </p>
+              <div>
+                <h2 className="mb-3 font-lora text-[clamp(1.7rem,2.6vw,2.2rem)] font-bold text-[#1A1033]">{isDe ? 'Workshopangebote' : 'Workshop offerings'}</h2>
+                <p className="max-w-3xl text-[1rem] text-[#6B5F8A]">
+                  {isDe ? 'Die naechsten Termine fuer unsere Workshops und Veranstaltungen.' : 'The next dates for our workshops and events.'}
+                </p>
+              </div>
+              <Button
+                onClick={() => setShowPastWorkshops(!showPastWorkshops)}
+                variant="outline"
+                className="rounded-full border border-[rgba(145,82,255,0.28)] bg-white px-5 py-2 text-[0.78rem] font-semibold text-[#9152FF] hover:border-[#9152FF] hover:bg-[#F5F0FF]"
+              >
+                {showPastWorkshops
+                  ? (isDe ? 'Vergangene Workshops ausblenden' : 'Hide past workshops')
+                  : (isDe ? 'Vergangene Workshops anzeigen' : 'View past workshops')}
+              </Button>
             </motion.div>
 
-            <div className="space-y-6 max-w-5xl">
-              {/* First Workshop */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    {/* Image Section */}
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Users className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Networking & Austausch' : 'Networking & Exchange'}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Content Section */}
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        {/* Category Tag */}
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        
-                        {/* Date, Time, Format */}
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Mittwoch, 14.01.2026 | 18:00 Uhr | Online' : 'Wednesday, 14 Jan 2026 | 6:00 PM | Online'}
-                        </div>
-                        
-                        {/* Title */}
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          {isDe ? 'Online Kennenlernen Mentor:innen' : 'Online introductions to mentors'}
-                        </h3>
-                        
-                        {/* Description */}
-                        <p className="text-gray-700 leading-relaxed mb-6">
-                          {isDe
-                            ? 'Lernen Sie unsere Mentor:innen kennen und erfahren Sie mehr ueber das Mentoring-Programm. In dieser Online-Veranstaltung stellen sich die Mentor:innen vor und beantworten Ihre Fragen.'
-                            : 'Get to know our mentors and learn more about the mentoring program. In this online event, mentors introduce themselves and answer your questions.'}
-                        </p>
-                      </div>
-                      
-                      {/* Read More Link */}
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {upcomingWorkshopCards.map((card, index) => (
+                <motion.article
+                  key={card.key}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.04 }}
+                  viewport={{ once: true }}
+                  className="flex h-full flex-col rounded-[18px] border border-[rgba(145,82,255,0.15)] bg-white p-4 shadow-[0_6px_20px_rgba(145,82,255,0.08)]"
+                >
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[rgba(145,82,255,0.12)] px-2.5 py-1 text-[0.62rem] font-bold text-[#9152FF]">
+                      {isDe ? card.badge.de : card.badge.en}
+                    </span>
+                    <span className="rounded-full bg-[rgba(107,170,138,0.14)] px-2.5 py-1 text-[0.62rem] font-bold text-[#4d8e70]">
+                      {isDe ? card.audience.de : card.audience.en}
+                    </span>
                   </div>
-                </Card>
-              </motion.div>
 
-              {/* Einzelmentoring */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Individuelles Mentoring</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Jan-Nov. 2026' : 'Jan-Nov 2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          {isDe ? 'Einzelmentoring' : 'Individual mentoring'}
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
+                  <h3 className="font-lora text-[1.8rem] font-bold leading-tight text-[#1A1033]">
+                    {isDe ? card.title.de : card.title.en}
+                  </h3>
+                  <p className="mt-2 text-[0.8rem] font-medium text-[#6B5F8A]">
+                    {isDe ? card.date.de : card.date.en}
+                  </p>
+                  <p className="mt-4 flex-1 text-[0.9rem] leading-relaxed text-[#6B5F8A]">
+                    {isDe ? card.description.de : card.description.en}
+                  </p>
 
-              {/* Mentoring Workshop II Johanna Eck */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <BookOpen className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Workshop</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Maerz 2026' : 'March 2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          {isDe ? 'Mentoring Workshop II Johanna Eck' : 'Mentoring Workshop II - Johanna Eck'}
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* SELF CARE I */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Selbstfuersorge' : 'Self-care'}</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'April 2026' : 'April 2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          SELF CARE I
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Mentoring Workshop II- Vision */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Target className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Vision & Ziele</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Samstag, 25.04.2026, ganztaegig' : 'Saturday, 25.04.2026, all day'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          {isDe ? 'Mentoring Workshop II- Vision' : 'Mentoring Workshop II - Vision'}
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Self Care II */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Heart className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">{isDe ? 'Selbstfuersorge' : 'Self-care'}</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Freitag, 15.05.2026' : 'Friday, 15.05.2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Self Care II
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Skills Training I */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Freitag, 12.06.2026' : 'Friday, 12.06.2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Skills Training I
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Skills Training II */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Freitag, 03.08.2026' : 'Friday, 03.08.2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Skills Training II
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Skills Training III */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/2 h-64 md:h-auto relative bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 flex items-center justify-center">
-                      <div className="text-center p-8">
-                        <Lightbulb className="h-24 w-24 text-purple-600 mx-auto mb-4 opacity-80" />
-                        <p className="text-purple-700 font-medium text-lg">Kompetenzen</p>
-                      </div>
-                    </div>
-                    <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-between">
-                      <div>
-                        <div className="inline-block mb-4">
-                          <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1.5 rounded-full">
-                            {isDe ? 'fuer Teilnehmerinnen' : 'for participants'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 mb-4">
-                          {isDe ? 'Freitag, 09.10.2026' : 'Friday, 09.10.2026'}
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          Skills Training III
-                        </h3>
-                      </div>
-                      <Link href="/contact" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
-                        {isDe ? 'Weiterlesen' : 'Read more'} <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
+                  <Link
+                    href="/contact"
+                    className="mt-5 inline-flex w-fit items-center gap-1 rounded-full bg-[#9152FF] px-4 py-2 text-[0.84rem] font-semibold text-white shadow-[0_4px_14px_rgba(145,82,255,0.35)] transition hover:bg-[#7339E0]"
+                  >
+                    {isDe ? 'Mehr erfahren' : 'Read more'}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </motion.article>
+              ))}
             </div>
           </section>
 
           {/* Past Workshops */}
           <section className="mb-20">
-            <motion.div 
-              className="text-center mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <Button
-                onClick={() => setShowPastWorkshops(!showPastWorkshops)}
-                variant="outline"
-                className="text-lg px-8 py-6 border-2 border-gray-300 hover:border-purple-500 hover:text-purple-600"
-              >
-                {showPastWorkshops ? (
-                  <>
-                    {isDe ? 'Vergangene Workshops ausblenden' : 'Hide past workshops'}
-                    <ChevronUp className="h-5 w-5 ml-2" />
-                  </>
-                ) : (
-                  <>
-                    {isDe ? 'Vergangene Workshops anzeigen' : 'View past workshops'}
-                    <ChevronDown className="h-5 w-5 ml-2" />
-                  </>
-                )}
-              </Button>
-            </motion.div>
-
             <AnimatePresence>
               {showPastWorkshops && (
                 <motion.div
@@ -757,7 +505,7 @@ export default function WorkshopsPage() {
             {(!dbWorkshops || dbWorkshops.length === 0) ? (
               <div className="text-center text-gray-600">{isDe ? 'Aktuell sind keine Workshops verfuegbar.' : 'No workshops are currently available.'}</div>
             ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
               {dbWorkshops.map((program: any, index: number) => (
                 <motion.div
                   key={program.id}
@@ -767,15 +515,15 @@ export default function WorkshopsPage() {
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className={`h-full hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50`}>
+                  <Card className="h-full border border-[rgba(145,82,255,0.2)] bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
                     <CardHeader className="pb-4">
-                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-purple-100">
+                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F5F0FF]">
                         <GraduationCap className="h-8 w-8 text-purple-600" />
                       </div>
-                      <CardTitle className="text-xl font-bold text-gray-900 mb-3">
+                      <CardTitle className="mb-3 font-lora text-xl font-bold text-[#1A1033]">
                         {program.title || program.name}
                       </CardTitle>
-                      <p className="text-gray-700 text-sm leading-relaxed">
+                      <p className="text-sm leading-relaxed text-[#6B5F8A]">
                         {program.description || (isDe ? 'Details folgen in Kuerze.' : 'Details coming soon.')}
                       </p>
                     </CardHeader>
@@ -802,7 +550,7 @@ export default function WorkshopsPage() {
 
                       <div className="pt-4">
                         <Link href="/sign-up">
-                          <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                          <Button className="w-full bg-[#9152FF] text-white hover:bg-[#7339E0]">
                             {isDe ? 'Interesse bekunden' : 'Express interest'}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
@@ -825,10 +573,10 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="mb-6 font-lora text-[clamp(1.8rem,2.8vw,2.5rem)] font-bold text-[#1A1033]">
                 {isDe ? 'Forschungsaktivitaeten' : 'Research activities'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="mx-auto max-w-3xl text-[1rem] text-[#6B5F8A]">
                 {isDe ? 'Wissenschaftliche Untersuchungen zu Barrieren, Erfolgsfaktoren und Resilienz' : 'Scientific studies on barriers, success factors, and resilience'}
               </p>
             </motion.div>
@@ -843,15 +591,15 @@ export default function WorkshopsPage() {
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white">
+                  <Card className="h-full border border-[rgba(145,82,255,0.2)] bg-white shadow-md transition-all duration-300 hover:shadow-lg">
                     <CardContent className="p-8 text-center">
                       <div className="bg-gray-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <activity.icon className="h-8 w-8 text-gray-600" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+                      <h3 className="mb-4 font-lora text-xl font-bold text-[#1A1033]">
                         {activity.title}
                       </h3>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
+                      <p className="mb-4 leading-relaxed text-[#6B5F8A]">
                         {activity.description}
                       </p>
                       <div className="space-y-2 text-sm">
@@ -880,10 +628,10 @@ export default function WorkshopsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="mb-6 font-lora text-[clamp(1.8rem,2.8vw,2.5rem)] font-bold text-[#1A1033]">
                 {isDe ? 'Projektverlauf' : 'Project timeline'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="mx-auto max-w-3xl text-[1rem] text-[#6B5F8A]">
                 {isDe ? 'Building Bridges laeuft ueber 36 Monate von September 2024 bis August 2027' : 'Building Bridges runs for 36 months from September 2024 to August 2027'}
               </p>
             </motion.div>
@@ -922,7 +670,7 @@ export default function WorkshopsPage() {
                     viewport={{ once: true }}
                   >
                     <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                      <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+                      <Card className="border border-[rgba(145,82,255,0.2)] bg-white shadow-lg">
                         <CardContent className="p-6">
                           <div className="text-sm font-medium text-purple-600 mb-2">{item.phase}</div>
                           <div className="text-sm text-gray-500 mb-3">{item.period}</div>

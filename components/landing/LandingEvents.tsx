@@ -181,34 +181,6 @@ export function LandingEvents() {
           </div>
         </div>
 
-        <div className="mt-16 rounded-[32px] bg-[#9152FF] px-8 py-12 text-white">
-          <h3 className="font-lora text-3xl font-bold">Project progress</h3>
-          <p className="mt-2 text-[0.9rem] opacity-72">Building Bridges runs for 36 months, from September 2024 to August 2027.</p>
-          <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
-            {[
-              { n: '1', period: 'Sep 2024 – Aug 2025', title: 'Project launch & MEP development', desc: 'Development of the mentoring program and first cohort.', done: true },
-              { n: '2', period: 'Sep 2025 – Aug 2026', title: 'Full implementation & research', desc: 'Full implementation of programs and intensive data collection.', active: true },
-              { n: '3', period: 'Sep 2026 – Aug 2027', title: 'Evaluation & sustainability', desc: 'Evaluation, dissemination, and sustainability strategy.', upcoming: true },
-            ].map((ph) => (
-              <div key={ph.n} className="relative z-[1]">
-                <div
-                  className={`mb-4 flex h-[52px] w-[52px] items-center justify-center rounded-full border-2 font-lora text-lg font-bold ${
-                    ph.done
-                      ? 'border-[#6BAA8A] bg-[#6BAA8A] text-white'
-                      : ph.active
-                        ? 'border-white bg-white/95 font-extrabold text-[#9152FF]'
-                        : 'border-white/25 bg-white/10 text-white/45'
-                  }`}
-                >
-                  {ph.n}
-                </div>
-                <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.08em] text-[#EDE5FF]/85">{ph.period}</p>
-                <p className="font-lora text-base font-bold">{ph.title}</p>
-                <p className="mt-2 text-[0.84rem] opacity-65 leading-relaxed">{ph.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -12,11 +12,11 @@ export function LandingHero() {
   ];
 
   return (
-    <section id="home" className="relative min-h-[calc(100dvh-70px)] overflow-hidden">
+    <section id="home" className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 bg-[url('/coverimage.png')] bg-cover bg-center" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/45" />
 
-      <div className="relative z-[1] mx-auto flex min-h-[calc(100dvh-70px)] max-w-[1280px] flex-col items-center justify-center px-6 py-16 text-center sm:px-10">
+      <div className="relative z-[1] mx-auto flex min-h-screen max-w-[1280px] flex-col items-center justify-center px-6 pb-16 pt-24 text-center sm:px-10">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#9152FF]/90 px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.09em] text-white shadow-[0_3px_14px_rgba(145,82,255,0.35)]">
           <span className="text-[0.45rem] opacity-60" aria-hidden>
             ●

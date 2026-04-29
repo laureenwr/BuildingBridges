@@ -4,11 +4,11 @@ import Link from 'next/link';
 
 export function NavigationLinks({ mobile }: { mobile?: boolean }) {
   const links = [
-    { href: '/vision', label: 'Vision' },
-    { href: '/workshops', label: 'Veranstaltungen' },
-    { href: '/roadmap', label: 'Roadmap' },
-    { href: '/partners', label: 'Partner' },
-    { href: '/team', label: 'Über uns' },
+    { href: '/#about', label: 'Vision' },
+    { href: '/#events', label: 'Veranstaltungen' },
+    { href: '/#events', label: 'Roadmap' },
+    { href: '/#partners', label: 'Partner' },
+    { href: '/#team', label: 'Über uns' },
   ];
 
   return (
