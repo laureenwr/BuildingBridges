@@ -7,13 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, Users, AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
+import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
 import { signUpAction } from './actions';
 import { signIn as nextAuthSignIn } from 'next-auth/react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useState } from 'react';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
+  const { isDe } = useLanguage();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
   const priceId = searchParams.get('priceId');
@@ -30,22 +31,64 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const getErrorMessage = (errorCode: string | null) => {
     switch (errorCode) {
       case 'missing-credentials':
-        return 'Bitte geben Sie E-Mail und Passwort ein.';
+        return isDe
+          ? 'Bitte geben Sie E-Mail und Passwort ein.'
+          : 'Please enter your email and password.';
       case 'invalid-credentials':
-        return 'Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.';
+        return isDe
+          ? 'Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.'
+          : 'Invalid email or password. Please try again.';
       case 'exists':
-        return 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.';
+        return isDe
+          ? 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an.'
+          : 'An account with this email already exists. Please sign in instead.';
       case 'server-error':
-        return 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.';
+        return isDe
+          ? 'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
+          : 'Something went wrong on our side. Please try again later.';
       case 'password-too-short':
-        return 'Das Passwort muss mindestens 8 Zeichen lang sein.';
+        return isDe
+          ? 'Das Passwort muss mindestens 8 Zeichen lang sein.'
+          : 'Your password must be at least 8 characters long.';
       case 'password-no-uppercase':
-        return 'Das Passwort muss mindestens einen Großbuchstaben enthalten.';
+        return isDe
+          ? 'Das Passwort muss mindestens einen Großbuchstaben enthalten.'
+          : 'Your password must include at least one uppercase letter.';
       case 'password-no-number':
-        return 'Das Passwort muss mindestens eine Zahl enthalten.';
+        return isDe
+          ? 'Das Passwort muss mindestens eine Zahl enthalten.'
+          : 'Your password must include at least one number.';
       default:
         return null;
     }
+  };
+
+  const t = {
+    signupTitle: isDe ? 'Konto erstellen' : 'Create account',
+    signupSubtitle: isDe
+      ? 'Werden Sie Teil unserer Community und starten Sie Ihre Reise'
+      : 'Join our community and start your journey',
+    signinTitle: isDe ? 'Willkommen zurück' : 'Welcome back',
+    signinSubtitle: isDe
+      ? 'Melden Sie sich an, um auf Ihr Konto zuzugreifen'
+      : 'Sign in to access your account',
+    accountCreatedToast: isDe
+      ? 'Konto erstellt. Bitte melden Sie sich an.'
+      : 'Account created. Please sign in.',
+    emailLabel: isDe ? 'E-Mail-Adresse' : 'Email address',
+    emailPlaceholder: isDe ? 'ihre.email@beispiel.de' : 'you@example.com',
+    passwordLabel: isDe ? 'Passwort' : 'Password',
+    passwordHintSignup: isDe
+      ? 'Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten'
+      : 'Password must be at least 8 characters and include one uppercase letter and one number',
+    submitSignin: isDe ? 'Anmelden' : 'Sign in',
+    submitSignup: isDe ? 'Konto erstellen' : 'Create account',
+    forgotPassword: isDe ? 'Passwort vergessen?' : 'Forgot password?',
+    linkToSignin: isDe ? 'Bereits ein Konto? Anmelden' : 'Already have an account? Sign in',
+    linkToSignup: isDe ? 'Noch kein Konto? Registrieren' : 'No account yet? Register',
+    tagline: isDe
+      ? 'Stärkung von Girls und FLINTA* of Colour'
+      : 'Empowering girls and FLINTA* of Colour',
   };
 
   return (
@@ -73,21 +116,17 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Building Bridges
           </h1>
-          <p className="text-sm text-gray-600">
-            Empowering Girls and FLINTA* of Colour
-          </p>
+          <p className="text-sm text-gray-600">{t.tagline}</p>
         </div>
 
         <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
           <CardContent className="pt-8 pb-8">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                {mode === 'signup' ? 'Konto erstellen' : 'Willkommen zurück'}
+                {mode === 'signup' ? t.signupTitle : t.signinTitle}
               </h2>
               <p className="text-gray-600">
-                {mode === 'signup'
-                  ? 'Werden Sie Teil unserer Community und starten Sie Ihre Reise'
-                  : 'Melden Sie sich an, um auf Ihr Konto zuzugreifen'}
+                {mode === 'signup' ? t.signupSubtitle : t.signinSubtitle}
               </p>
             </div>
 
@@ -137,12 +176,14 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"
                 >
-                  Konto erstellt. Bitte melden Sie sich an.
+                  {t.accountCreatedToast}
                 </motion.div>
               )}
               
               <div>
-                <Label htmlFor="email" className="text-gray-700 font-medium">E-Mail-Adresse</Label>
+                <Label htmlFor="email" className="text-gray-700 font-medium">
+                  {t.emailLabel}
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -152,7 +193,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   className={`mt-2 border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-lg ${
                     validationErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                   }`}
-                  placeholder="ihre.email@beispiel.de"
+                  placeholder={t.emailPlaceholder}
                   onChange={() => {
                     if (validationErrors.email) {
                       setValidationErrors(prev => ({ ...prev, email: undefined }));
@@ -196,9 +237,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   </div>
                 )}
                 {mode === 'signup' && (
-                  <p className="mt-2 text-xs text-gray-500">
-                    Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten
-                  </p>
+                  <p className="mt-2 text-xs text-gray-500">{t.passwordHintSignup}</p>
                 )}
               </div>
 
@@ -208,14 +247,14 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 type="submit"
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg py-3 font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
               >
-                {mode === 'signin' ? 'Anmelden' : 'Konto erstellen'}
+                {mode === 'signin' ? t.submitSignin : t.submitSignup}
               </Button>
             </form>
 
             <div className="mt-4 text-center">
               {mode === 'signin' && (
                 <Link href="/reset-password" className="text-sm text-gray-600 hover:text-gray-800">
-                  Passwort vergessen?
+                  {t.forgotPassword}
                 </Link>
               )}
             </div>
@@ -225,9 +264,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 href={mode === 'signup' ? '/sign-in' : '/sign-up'}
                 className="text-purple-600 hover:text-purple-700 transition-colors duration-200 font-medium"
               >
-                {mode === 'signup'
-                  ? 'Bereits ein Konto? Anmelden'
-                  : 'Noch kein Konto? Registrieren'}
+                {mode === 'signup' ? t.linkToSignin : t.linkToSignup}
               </Link>
             </div>
 

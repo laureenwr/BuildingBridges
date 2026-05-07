@@ -1,155 +1,111 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { ArrowUpRight, Clock3, MapPin, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
-type EventTypeStyle = 'sage' | 'amber' | 'muted';
-
-type UpcomingEvent = {
-  type: string;
-  audience: string;
-  date: string;
-  title: string;
-  typeStyle?: EventTypeStyle;
-};
-
-const upcoming: UpcomingEvent[] = [
-  { type: 'Networking & Exchange', audience: 'For participants', date: 'Wednesday, January 14, 2026 · 6:00 PM · Online', title: 'Online introductions to mentors' },
-  { type: 'Individual Mentoring', audience: 'For participants', date: 'January – November 2026', title: 'Individual Mentoring' },
-  { type: 'Workshop', audience: 'For participants', date: 'March 2026', title: 'Mentoring Workshop II – Johanna Eck' },
-  { type: 'Self-care', audience: 'For participants', date: 'April 2026', title: 'SELF CARE I', typeStyle: 'sage' },
-  { type: 'Vision & Goals', audience: 'For participants', date: 'Saturday, April 25, 2026 · All day', title: 'Mentoring Workshop II – Vision', typeStyle: 'amber' },
-  { type: 'Self-care', audience: 'For participants', date: 'Friday, May 15, 2026', title: 'Self Care II', typeStyle: 'sage' },
-  { type: 'Skills', audience: 'For participants', date: 'Friday, June 12, 2026', title: 'Skills Training I', typeStyle: 'muted' },
-  { type: 'Skills', audience: 'For participants', date: 'Friday, August 3, 2026', title: 'Skills Training II', typeStyle: 'muted' },
-  { type: 'Skills', audience: 'For participants', date: 'Friday, October 9, 2026', title: 'Skills Training III', typeStyle: 'muted' },
+const homepageWorkshopTeasers = [
+  {
+    title: 'Fruehlingsfest',
+    date: '20.03.2026',
+    time: '15:00-19:00',
+    location: 'Maedea',
+    description: 'Spring celebration with food, henna, self-care impulses, flowers, and community activities.',
+    category: 'Community Event',
+    href: '/workshops',
+  },
+  {
+    title: 'Mentoring: Was tut mir gut?',
+    date: '02.03.2026',
+    time: '16:00-19:00',
+    location: 'Johanna-Eck',
+    description: 'Empowerment workshop for Maedchen* with racism experiences, focused on wellbeing and reflection.',
+    category: 'Mentoring',
+    href: '/workshops',
+  },
+  {
+    title: 'Perlen & Power',
+    date: '18.12.2025',
+    time: '13:00-16:00',
+    location: 'Johanna-Eck',
+    description: 'Reflection, exchange, pearl necklaces, pizza, snacks, and community connection.',
+    category: 'Empowerment',
+    href: '/workshops',
+  },
 ];
-
-const completed = [
-  { date: 'Friday, June 20–22, 2025', title: 'Basic Training Group I' },
-  { date: 'Wednesday, October 8, 2025 · 1–4 PM', title: 'Introductory Workshop with Johanna Eck' },
-  { date: 'Saturday, November 22, 2025', title: 'Opening Event' },
-  { date: 'Tuesday, December 9, 2025 · 6–8 PM', title: 'Get-together' },
-  { date: 'Thursday, December 18, 2025', title: 'Pearls & Power Workshop – Johanna Eck' },
-];
-
-function TypeBadge({ label, variant }: { label: string; variant?: EventTypeStyle }) {
-  const styles =
-    variant === 'sage'
-      ? 'bg-[rgba(107,170,138,0.15)] text-[#4a9470]'
-      : variant === 'amber'
-        ? 'bg-[rgba(240,165,0,0.12)] text-[#c08800]'
-        : variant === 'muted'
-          ? 'bg-[rgba(145,82,255,0.08)] text-[#7339E0]'
-          : 'bg-[#EDE5FF] text-[#9152FF]';
-  return (
-    <span className={`inline-flex w-fit items-center gap-1 rounded-full px-3 py-1 text-[0.69rem] font-bold uppercase tracking-[0.09em] ${styles}`}>
-      {label}
-    </span>
-  );
-}
 
 export function LandingEvents() {
   const { isDe } = useLanguage();
-  const [showPast, setShowPast] = useState(false);
 
   return (
     <section id="events" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-16 grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-20">
-          <div>
-            <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">
-              {isDe ? 'Trainings & Veranstaltungen' : 'Training & Events'}
-            </p>
-            <h2 className="font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-              {isDe ? (
-                <>
-                  Workshops &amp; <em className="font-normal not-italic text-[#9152FF]">Programmaktionen</em>
-                </>
-              ) : (
-                <>
-                  Workshops &amp; <em className="font-normal not-italic text-[#9152FF]">program activities</em>
-                </>
-              )}
-            </h2>
-            <p className="mt-4 max-w-[420px] text-base leading-relaxed text-[#6B5F8A]">
-              {isDe
-                ? 'Das Projekt Building Bridges bietet Programme und Forschungsaktivitaeten, um Girls und FLINTA* of Colour auf akademischen Wegen zu staerken.'
-                : 'The Building Bridges project offers programs and research activities to empower girls and FLINTA* of Colour in academic careers.'}
-            </p>
-            <Link href="/workshops" className="mt-6 inline-block text-sm font-bold text-[#9152FF] hover:underline">
-              {isDe ? 'Vollstaendiger Workshop-Plan →' : 'Full workshop schedule →'}
-            </Link>
-          </div>
-          <div className="rounded-[24px] bg-[#9152FF] p-8 text-white shadow-[0_12px_48px_rgba(145,82,255,0.18)]">
-            <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-white/65">{isDe ? 'Als naechstes' : 'Next up'}</p>
-            <h3 className="font-lora text-xl font-bold">Networking &amp; Exchange</h3>
-            <p className="mt-1 text-[0.84rem] opacity-72">Wednesday, January 14, 2026 · 6:00 PM · Online</p>
-            <p className="mt-3 text-[0.88rem] leading-relaxed opacity-80">
-              Online introductions to mentors. Get to know our mentors and learn more about the mentoring program.
-            </p>
-            <Link href="/workshops" className="mt-4 inline-block text-[0.84rem] font-bold text-[#EDE5FF] hover:underline">
-              {isDe ? 'Mehr erfahren →' : 'Read more →'}
-            </Link>
-          </div>
-        </div>
+        <div className="mb-16 overflow-hidden rounded-[30px] border border-[rgba(145,82,255,0.14)] bg-[#F7F2FF] px-5 py-7 shadow-[0_10px_30px_rgba(145,82,255,0.1)] sm:px-7 sm:py-8">
+          <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.15fr)] lg:gap-8">
+            <div className="pointer-events-none absolute -left-16 top-12 h-36 w-36 rounded-full bg-gradient-to-br from-[#DCCBFF] to-transparent blur-2xl" />
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-[#B98DFF] to-transparent opacity-50 blur-2xl" />
 
-        <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Workshop-Angebote' : 'Workshop offerings'}</p>
-        <p className="mb-8 text-[0.95rem] text-[#6B5F8A]">
-          {isDe ? 'Die naechsten Termine fuer Workshops und Veranstaltungen.' : 'The next dates for workshops and events.'}
-        </p>
+            <div className="relative z-[1]">
+              <p className="mb-3 inline-flex items-center gap-1 rounded-full border border-[#D8CAFB] bg-white px-3 py-1 text-[0.66rem] font-bold uppercase tracking-[0.11em] text-[#7443D4]">
+                <Sparkles className="h-3 w-3" />
+                Community Program
+              </p>
+              <h2 className="font-lora text-[clamp(1.75rem,2.8vw,2.35rem)] font-bold tracking-tight text-[#1A1033]">
+                Workshops &amp; Events
+              </h2>
+              <p className="mt-3 max-w-md text-[0.95rem] leading-relaxed text-[#5F4F84]">
+                Safe spaces for exchange, mentoring, empowerment, and shared learning.
+              </p>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {upcoming.slice(0, 3).map((e) => (
-            <article
-              key={e.title}
-              className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-white p-6 shadow-[0_2px_12px_rgba(145,82,255,0.08)] transition hover:-translate-y-1 hover:shadow-[0_6px_28px_rgba(145,82,255,0.13)]"
-            >
-              <TypeBadge label={e.type} variant={e.typeStyle} />
-              <span className="text-[0.72rem] font-semibold uppercase tracking-[0.07em] text-[#aaa]">{e.audience}</span>
-              <p className="text-[0.82rem] font-semibold text-[#7339E0]">{e.date}</p>
-              <h4 className="font-lora text-base font-bold leading-snug text-[#1A1033]">{e.title}</h4>
-              <Link href="/workshops" className="mt-auto text-[0.82rem] font-bold text-[#9152FF] hover:underline">
-                {isDe ? 'Mehr erfahren →' : 'Read more →'}
-              </Link>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-8 text-center">
-          <Link
-            href="/workshops"
-            className="inline-flex items-center justify-center rounded-full bg-[#9152FF] px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:bg-[#7d41eb]"
-          >
-            {isDe ? 'Alle Workshops ansehen →' : 'View all workshops →'}
-          </Link>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowPast(!showPast)}
-          className="mb-6 mt-10 flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-[rgba(145,82,255,0.15)] bg-transparent px-5 py-2.5 font-primary text-[0.875rem] font-semibold text-[#6B5F8A] transition hover:border-[#9152FF] hover:bg-[#F5F0FF] hover:text-[#9152FF]"
-        >
-          <span>📋</span> {showPast ? (isDe ? 'Ausblenden' : 'Hide') : isDe ? 'Anzeigen' : 'View'} {isDe ? 'vergangene Workshops' : 'past workshops'}
-        </button>
-
-        {showPast && (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {completed.map((c) => (
-              <div
-                key={c.title}
-                className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-5"
-              >
-                <span className="inline-flex w-fit items-center gap-1 text-[0.69rem] font-bold uppercase tracking-[0.08em] text-[#6BAA8A]">
-                  ✓ Completed
-                </span>
-                <p className="text-[0.8rem] font-medium text-[#6B5F8A]">{c.date}</p>
-                <p className="font-lora text-[0.98rem] font-bold text-[#666]">{c.title}</p>
+              <div className="mt-5">
+                <Link
+                  href="/workshops"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(145,82,255,0.33)] transition hover:brightness-[1.03]"
+                >
+                  {isDe ? 'Workshop-Archiv erkunden' : 'Explore workshop archive'}
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
               </div>
-            ))}
+            </div>
+
+            <div className="relative z-[1] space-y-3">
+              {homepageWorkshopTeasers.map((workshop) => (
+                <article
+                  key={workshop.title}
+                  className="rounded-2xl border border-[rgba(145,82,255,0.18)] bg-white/95 p-3.5 shadow-[0_6px_18px_rgba(145,82,255,0.09)]"
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-[#F1E8FF] px-2 py-0.5 text-[0.7rem] font-semibold text-[#6D40C9]">
+                      {workshop.date}
+                    </span>
+                    <span className="rounded-full border border-[#DDCCFF] bg-white px-2 py-0.5 text-[0.7rem] font-semibold text-[#6B5F8A]">
+                      {workshop.category}
+                    </span>
+                  </div>
+                  <h3 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{workshop.title}</h3>
+                  <div className="mt-1 flex flex-wrap items-center gap-3 text-[0.78rem] text-[#705B9A]">
+                    <span className="inline-flex items-center gap-1">
+                      <Clock3 className="h-3.5 w-3.5 text-[#9152FF]" />
+                      {workshop.time}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-[#9152FF]" />
+                      {workshop.location}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[0.84rem] leading-relaxed text-[#5E5677]">{workshop.description}</p>
+                  <Link
+                    href={workshop.href}
+                    className="mt-2 inline-flex items-center gap-1 text-[0.8rem] font-semibold text-[#6D40C9] transition hover:text-[#5E33BC]"
+                  >
+                    View details
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
+                </article>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
 
         <div className="mt-16">
           <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Research activities</p>

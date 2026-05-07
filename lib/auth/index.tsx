@@ -1,5 +1,6 @@
 'use client';
 
+import type { Dispatch, SetStateAction } from 'react';
 import {
   createContext,
   useContext,
@@ -12,7 +13,7 @@ import { User } from '@/lib/db/schema';
 
 type UserContextType = {
   user: User | null;
-  setUser: (user: User | null) => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
