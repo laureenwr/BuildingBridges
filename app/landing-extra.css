@@ -1,0 +1,44 @@
+/* Homepage prototype: animations & shapes hard to express in Tailwind */
+@keyframes bb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes bb-gen-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.bb-landing-pulse {
+  animation: bb-pulse 2s infinite;
+}
+
+.bb-landing-gen-spin {
+  animation: bb-gen-spin 3s linear infinite;
+}
+
+.bb-about-curve::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #f2eeff;
+  clip-path: ellipse(55% 100% at 50% 0%);
+  pointer-events: none;
+}

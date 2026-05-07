@@ -3,8 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Sora, Lora, Fraunces, DM_Sans, DM_Mono } from 'next/font/google';
 import { UserProvider } from '@/lib/auth/index';
 import { getUser } from '@/lib/db/queries';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
+import { AppChrome } from '@/components/layout/AppChrome';
 import Script from 'next/script';
 
 const sora = Sora({
@@ -130,11 +129,7 @@ export default function RootLayout({
           `}
         </Script>
         <UserProvider userPromise={userPromise}>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 pt-[70px]">{children}</main>
-            <Footer />
-          </div>
+          <AppChrome>{children}</AppChrome>
         </UserProvider>
       </body>
     </html>

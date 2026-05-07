@@ -42,13 +42,13 @@ export function LandingHero() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/workshops"
-            className="rounded-full bg-[#9152FF] px-8 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:bg-[#7d41eb]"
+            className="rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-8 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:brightness-[1.05]"
           >
             {isDe ? 'Angebote entdecken ↓' : 'Discover offers ↓'}
           </Link>
           <Link
             href="/sign-up"
-            className="rounded-full bg-[#9152FF] px-8 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:bg-[#7d41eb]"
+            className="rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-8 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.45)] transition hover:brightness-[1.05]"
           >
             {isDe ? 'Jetzt registrieren' : 'Register now'}
           </Link>

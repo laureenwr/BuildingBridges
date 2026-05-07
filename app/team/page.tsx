@@ -82,7 +82,7 @@ export default function TeamPage() {
           {members.map((member) => (
             <Link key={member.slug} href={`/team/${member.slug}`}>
               <Card className="p-6 hover:shadow-lg transition-shadow duration-200 h-full">
-                <div className="w-full aspect-square relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                <div className="w-full h-80 md:h-96 relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
                   <Image
                     src={member.image}
                     alt={member.name || `${member.firstName} ${member.lastName}`}

@@ -5,23 +5,23 @@ test.describe('Login Flow', () => {
     await page.goto('/sign-in');
 
     // Check page heading
-    await expect(page.locator('h1, h2')).toContainText(/Building Bridges|Willkommen zurück/i);
+    await expect(page.locator('h1, h2')).toContainText(/Building Bridges|Willkommen zurück|Welcome back/i);
   });
 
   test('should display login form', async ({ page }) => {
     await page.goto('/sign-in');
 
     // Check for form fields
-    await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
-    await expect(page.getByLabel(/Passwort/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Anmelden/i })).toBeVisible();
+    await expect(page.getByLabel(/E-Mail|Email/i)).toBeVisible();
+    await expect(page.getByLabel(/Passwort|Password/i)).toBeVisible();
+    await expect(page.getByRole('button', { name: /Anmelden|Sign in/i })).toBeVisible();
   });
 
   test('should show error for missing credentials', async ({ page }) => {
     await page.goto('/sign-in');
 
     // Try to submit empty form
-    await page.getByRole('button', { name: /Anmelden/i }).click();
+    await page.getByRole('button', { name: /Anmelden|Sign in/i }).click();
 
     // Wait a bit for any validation
     await page.waitForTimeout(500);
@@ -35,9 +35,9 @@ test.describe('Login Flow', () => {
     await page.goto('/sign-in');
 
     // Fill in invalid credentials
-    await page.getByLabel(/E-Mail/i).fill('[email protected]');
-    await page.getByLabel(/Passwort/i).fill('wrongpassword123');
-    await page.getByRole('button', { name: /Anmelden/i }).click();
+    await page.getByLabel(/E-Mail|Email/i).fill('[email protected]');
+    await page.getByLabel(/Passwort|Password/i).fill('wrongpassword123');
+    await page.getByRole('button', { name: /Anmelden|Sign in/i }).click();
 
     // Wait for response
     await page.waitForTimeout(2000);
@@ -54,7 +54,9 @@ test.describe('Login Flow', () => {
     await page.goto('/sign-in');
 
     // Check for sign up link
-    const signUpLink = page.getByRole('link', { name: /Registrieren|Konto/i });
+    const signUpLink = page.getByRole('link', {
+      name: /Registrieren|Register|No account|Konto/i,
+    });
     await expect(signUpLink).toBeVisible();
     await expect(signUpLink).toHaveAttribute('href', '/sign-up');
   });
@@ -63,7 +65,7 @@ test.describe('Login Flow', () => {
     await page.goto('/sign-in');
 
     // Check for password reset link
-    const resetLink = page.getByRole('link', { name: /Passwort vergessen/i });
+    const resetLink = page.getByRole('link', { name: /Passwort vergessen|Forgot password/i });
     await expect(resetLink).toBeVisible();
     await expect(resetLink).toHaveAttribute('href', '/reset-password');
   });
@@ -71,7 +73,7 @@ test.describe('Login Flow', () => {
   test('should navigate to password reset', async ({ page }) => {
     await page.goto('/sign-in');
 
-    await page.getByRole('link', { name: /Passwort vergessen/i }).click();
+    await page.getByRole('link', { name: /Passwort vergessen|Forgot password/i }).click();
     await expect(page).toHaveURL('/reset-password');
   });
 
@@ -79,7 +81,7 @@ test.describe('Login Flow', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/sign-in');
 
-    await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
-    await expect(page.getByLabel(/Passwort/i)).toBeVisible();
+    await expect(page.getByLabel(/E-Mail|Email/i)).toBeVisible();
+    await expect(page.getByLabel(/Passwort|Password/i)).toBeVisible();
   });
 });

@@ -1,4 +1,5 @@
 import { LandingHero } from '@/components/landing/LandingHero';
+import { LandingPlatformAccessPreview } from '@/components/landing/LandingPlatformAccessPreview';
 import { LandingAbout } from '@/components/landing/LandingAbout';
 import { LandingVideo } from '@/components/landing/LandingVideo';
 import { LandingTeam } from '@/components/landing/LandingTeam';
@@ -13,6 +14,7 @@ export default function HomePage() {
   return (
     <div className="overflow-x-hidden">
       <LandingHero />
+      <LandingPlatformAccessPreview />
       <LandingAbout />
       <LandingVideo />
       <LandingTeam />
