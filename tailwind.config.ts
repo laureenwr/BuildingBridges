@@ -19,8 +19,12 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        primary: ['var(--font-inter)', ...fontFamily.sans],
-        mono: ['var(--font-jetbrains)', ...fontFamily.mono],
+        primary: ['var(--font-sora)', ...fontFamily.sans],
+        lora: ['var(--font-lora)', ...fontFamily.serif],
+        fraunces: ['var(--font-fraunces)', ...fontFamily.serif],
+        dmSans: ['var(--font-dm-sans)', ...fontFamily.sans],
+        dmMono: ['var(--font-dm-mono)', ...fontFamily.mono],
+        mono: ['var(--font-dm-mono)', ...fontFamily.mono],
       },
       colors: {
         // Brand Colors

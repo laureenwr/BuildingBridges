@@ -1,41 +1,51 @@
 'use client';
 
+import { useLanguage } from '@/lib/hooks/useLanguage';
+
 export default function ImprintPage() {
+  const { isDe } = useLanguage();
+
   return (
-    <section className="py-16">
+    <section className="min-h-screen bg-[#F2EEFF] py-16">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-6">Impressum</h1>
+        <h1 className="mb-8 text-center font-lora text-4xl font-bold text-[#1A1033]">{isDe ? 'Impressum' : 'Imprint'}</h1>
 
-        <div className="prose prose-gray max-w-none">
-          <h2>Angaben gemäß § 5 TMG</h2>
+        <div className="rounded-[24px] border border-[rgba(145,82,255,0.15)] bg-white p-8 shadow-[0_8px_32px_rgba(145,82,255,0.13)]">
+          <div className="prose max-w-none prose-headings:font-lora prose-headings:text-[#1A1033] prose-p:text-[#6B5F8A] prose-li:text-[#6B5F8A]">
+          <h2>{isDe ? 'Angaben gemaess § 5 TMG' : 'Information according to § 5 TMG'}</h2>
           <p>
-            Building Bridges – Verbundprojekt aus Freie Universität Berlin, Stiftung SPI und
-            Universität Duisburg‑Essen. Diese Website dient der Information über das Projekt.
+            {isDe
+              ? 'Building Bridges - Verbundprojekt aus Freie Universitaet Berlin, Stiftung SPI und Universitaet Duisburg-Essen. Diese Website dient der Information ueber das Projekt.'
+              : 'Building Bridges is a joint project of Freie University Berlin, SPI Foundation, and the University of Duisburg-Essen. This website provides information about the project.'}
           </p>
 
-          <h3>Kontakt</h3>
+          <h3>{isDe ? 'Kontakt' : 'Contact'}</h3>
           <p>
-            E-Mail: info@building-bridges.example<br />
-            Postanschrift: Habelschwerdter Allee 45, 14195 Berlin (Projektkoordination)
+            {isDe ? 'E-Mail' : 'Email'}: team@buildingbridges.de<br />
+            {isDe ? 'Postanschrift' : 'Postal address'}: Habelschwerdter Allee 45, 14195 Berlin ({isDe ? 'Projektkoordination' : 'Project coordination'})
           </p>
 
-          <h3>Verantwortlich für den Inhalt</h3>
+          <h3>{isDe ? 'Verantwortlich fuer den Inhalt' : 'Responsible for content'}</h3>
           <p>
-            Freie Universität Berlin – Professur Klinische Kinder- und Jugendpsychologie
-            und -psychotherapie (Projektleitung): Univ.-Prof. Dr. Claudia Calvano
+            {isDe
+              ? 'Freie Universitaet Berlin - Professur Klinische Kinder- und Jugendpsychologie und -psychotherapie (Projektleitung): Univ.-Prof. Dr. Claudia Calvano'
+              : 'Freie University Berlin - Chair of Clinical Child and Adolescent Psychology and Psychotherapy (Project lead): Univ.-Prof. Dr. Claudia Calvano'}
           </p>
 
-          <h3>Haftungsausschluss</h3>
+          <h3>{isDe ? 'Haftungsausschluss' : 'Disclaimer'}</h3>
           <p>
-            Für Inhalte externer Links übernehmen wir keine Haftung. Für den Inhalt der verlinkten
-            Seiten sind ausschließlich deren Betreiber verantwortlich.
+            {isDe
+              ? 'Fuer Inhalte externer Links uebernehmen wir keine Haftung. Fuer den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich.'
+              : 'We assume no liability for the content of external links. The operators of linked pages are solely responsible for their content.'}
           </p>
 
-          <h3>Urheberrecht</h3>
+          <h3>{isDe ? 'Urheberrecht' : 'Copyright'}</h3>
           <p>
-            Die Inhalte dieser Seite sind urheberrechtlich geschützt. Eine Vervielfältigung oder
-            Verbreitung bedarf der vorherigen Zustimmung.
+            {isDe
+              ? 'Die Inhalte dieser Seite sind urheberrechtlich geschuetzt. Eine Vervielfaeltigung oder Verbreitung bedarf der vorherigen Zustimmung.'
+              : 'The content of this website is protected by copyright. Reproduction or distribution requires prior permission.'}
           </p>
+          </div>
         </div>
       </div>
     </section>

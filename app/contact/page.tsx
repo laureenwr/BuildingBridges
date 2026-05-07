@@ -1,73 +1,79 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Phone, MapPin, Send, University, Users, FileText } from 'lucide-react';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export default function ContactPage() {
+  const { isDe } = useLanguage();
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-      <div className="container mx-auto px-4 py-24">
+    <main className="min-h-screen bg-[#F2EEFF]">
+      <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Kontakt
+              {isDe ? 'Kontakt' : 'Contact us'}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Haben Sie Fragen zum Building Bridges Projekt oder möchten Sie mehr über unsere Forschung erfahren? 
-              Wir freuen uns auf Ihre Nachricht.
+              {isDe
+                ? 'Haben Sie Fragen zum Building Bridges Projekt oder moechten Sie mehr ueber unsere Forschung erfahren? Wir freuen uns auf Ihre Nachricht.'
+                : 'Do you have questions about the Building Bridges project or want to learn more about our research? We look forward to your message.'}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg border border-[rgba(145,82,255,0.15)]">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
                   <Send className="h-6 w-6 mr-2 text-purple-600" />
-                  Nachricht senden
+                  {isDe ? 'Nachricht senden' : 'Send message'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">Vorname</Label>
-                    <Input id="firstName" placeholder="Ihr Vorname" />
+                    <Label htmlFor="firstName">{isDe ? 'Vorname' : 'First name'}</Label>
+                    <Input id="firstName" placeholder={isDe ? 'Ihr Vorname' : 'Your first name'} />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Nachname</Label>
-                    <Input id="lastName" placeholder="Ihr Nachname" />
+                    <Label htmlFor="lastName">{isDe ? 'Nachname' : 'Last name'}</Label>
+                    <Input id="lastName" placeholder={isDe ? 'Ihr Nachname' : 'Your last name'} />
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="email">E-Mail-Adresse</Label>
-                  <Input id="email" type="email" placeholder="ihre.email@beispiel.de" />
+                  <Label htmlFor="email">{isDe ? 'E-Mail-Adresse' : 'Email address'}</Label>
+                  <Input id="email" type="email" placeholder={isDe ? 'ihre.email@beispiel.de' : 'your.email@example.com'} />
                 </div>
                 
                 <div>
-                  <Label htmlFor="organization">Institution/Organisation</Label>
-                  <Input id="organization" placeholder="Ihre Institution oder Organisation" />
+                  <Label htmlFor="organization">{isDe ? 'Institution/Organisation' : 'Institution/organization'}</Label>
+                  <Input id="organization" placeholder={isDe ? 'Ihre Institution oder Organisation' : 'Your institution or organization'} />
                 </div>
                 
                 <div>
-                  <Label htmlFor="subject">Betreff</Label>
-                  <Input id="subject" placeholder="Worum geht es?" />
+                  <Label htmlFor="subject">{isDe ? 'Betreff' : 'Subject'}</Label>
+                  <Input id="subject" placeholder={isDe ? 'Worum geht es?' : 'What is this about?'} />
                 </div>
                 
                 <div>
-                  <Label htmlFor="message">Nachricht</Label>
+                  <Label htmlFor="message">{isDe ? 'Nachricht' : 'Message'}</Label>
                   <Textarea 
                     id="message" 
-                    placeholder="Ihre Nachricht an das Building Bridges Team..."
+                    placeholder={isDe ? 'Ihre Nachricht an das Building Bridges Team...' : 'Your message to the Building Bridges team...'}
                     rows={6}
                   />
                 </div>
                 
                 <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3">
-                  Nachricht senden
+                  {isDe ? 'Nachricht senden' : 'Send message'}
                   <Send className="h-4 w-4 ml-2" />
                 </Button>
               </CardContent>
@@ -75,11 +81,11 @@ export default function ContactPage() {
 
             {/* Project Partners Contact Info */}
             <div className="space-y-8">
-              <Card className="shadow-lg border-0">
+              <Card className="shadow-lg border border-[rgba(145,82,255,0.15)]">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
                     <University className="h-6 w-6 mr-2 text-purple-600" />
-                    Projektleitung
+                    {isDe ? 'Projektleitung' : 'Project lead'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -101,11 +107,11 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg border-0">
+              <Card className="shadow-lg border border-[rgba(145,82,255,0.15)]">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
                     <Users className="h-6 w-6 mr-2 text-blue-600" />
-                    Projektpartner
+                    {isDe ? 'Projektpartner' : 'Project partners'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -128,17 +134,18 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg border-0">
+              <Card className="shadow-lg border border-[rgba(145,82,255,0.15)]">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
                     <FileText className="h-6 w-6 mr-2 text-green-600" />
-                    Für Medien & Presse
+                    {isDe ? 'Fuer Medien & Presse' : 'For media & press'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Für Presseanfragen und Medieninformationen zum Building Bridges Projekt 
-                    wenden Sie sich bitte an unser Kommunikationsteam.
+                    {isDe
+                      ? 'Fuer Presseanfragen und Medieninformationen zum Building Bridges Projekt wenden Sie sich bitte an unser Kommunikationsteam.'
+                      : 'For press inquiries and media information about Building Bridges, please contact our communications team.'}
                   </p>
                   <div className="flex items-center text-gray-600">
                     <Mail className="h-4 w-4 mr-2 text-green-600" />
@@ -151,43 +158,43 @@ export default function ContactPage() {
 
           {/* Additional Information */}
           <div className="mt-16">
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-blue-50">
+            <Card className="shadow-lg border border-[rgba(145,82,255,0.15)] bg-gradient-to-br from-purple-50 to-blue-50">
               <CardContent className="p-8">
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Interesse am Projekt?
+                    {isDe ? 'Interesse am Projekt?' : 'Interested in the project?'}
                   </h3>
                   <p className="text-gray-700 mb-6 max-w-3xl mx-auto">
-                    Das Building Bridges Projekt läuft von September 2024 bis August 2027. 
-                    Wenn Sie als Teilnehmerin, Mentorin oder Kooperationspartnerin mitwirken möchten, 
-                    freuen wir uns über Ihre Kontaktaufnahme.
+                    {isDe
+                      ? 'Das Building Bridges Projekt laeuft von September 2024 bis August 2027. Wenn Sie als Teilnehmerin, Mentorin oder Kooperationspartnerin mitwirken moechten, freuen wir uns ueber Ihre Kontaktaufnahme.'
+                      : 'The Building Bridges project runs from September 2024 to August 2027. If you would like to participate as a participant, mentor, or cooperation partner, we would love to hear from you.'}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="text-center">
                       <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Users className="h-8 w-8 text-purple-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Für Teilnehmerinnen</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Teilnehmerinnen' : 'For participants'}</h4>
                       <p className="text-sm text-gray-600">
-                        Mädchen und FLINTA* of Colour ab der 10. Klasse
+                        {isDe ? 'Maedchen und FLINTA* of Colour ab der 10. Klasse' : 'Girls and FLINTA* of Colour from grade 10 onward'}
                       </p>
                     </div>
                     <div className="text-center">
                       <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <University className="h-8 w-8 text-blue-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Für Mentorinnen</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Mentorinnen' : 'For mentors'}</h4>
                       <p className="text-sm text-gray-600">
-                        Studierende und Role Models of Colour
+                        {isDe ? 'Studierende und Role Models of Colour' : 'Students and role models of colour'}
                       </p>
                     </div>
                     <div className="text-center">
                       <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FileText className="h-8 w-8 text-green-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Für Partner</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Partner' : 'For partners'}</h4>
                       <p className="text-sm text-gray-600">
-                        Schulen, Organisationen und Institutionen
+                        {isDe ? 'Schulen, Organisationen und Institutionen' : 'Schools, organizations, and institutions'}
                       </p>
                     </div>
                   </div>

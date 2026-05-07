@@ -5,23 +5,25 @@ test.describe('Sign Up Flow', () => {
     await page.goto('/sign-up');
 
     // Check page heading
-    await expect(page.locator('h1, h2')).toContainText(/Konto erstellen|Registrier/i);
+    await expect(page.locator('h1, h2')).toContainText(/Konto erstellen|Create account|Registrier/i);
   });
 
   test('should display sign up form', async ({ page }) => {
     await page.goto('/sign-up');
 
     // Check for form fields
-    await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
-    await expect(page.getByLabel(/Passwort/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Konto erstellen/i })).toBeVisible();
+    await expect(page.getByLabel(/E-Mail|Email/i)).toBeVisible();
+    await expect(page.getByLabel(/Passwort|Password/i)).toBeVisible();
+    await expect(page.getByRole('button', { name: /Konto erstellen|Create account/i })).toBeVisible();
   });
 
   test('should show password requirements', async ({ page }) => {
     await page.goto('/sign-up');
 
     // Check for password hint
-    await expect(page.getByText(/8 Zeichen|Großbuchstaben|Zahl/i)).toBeVisible();
+    await expect(
+      page.getByText(/8 Zeichen|characters|Großbuchstaben|uppercase|Zahl|number/i)
+    ).toBeVisible();
   });
 
   test('should validate password too short', async ({ page }) => {
@@ -30,9 +32,9 @@ test.describe('Sign Up Flow', () => {
     const uniqueEmail = `test-${Date.now()}@example.com`;
 
     // Fill in form with short password
-    await page.getByLabel(/E-Mail/i).fill(uniqueEmail);
-    await page.getByLabel(/Passwort/i).fill('Short1');
-    await page.getByRole('button', { name: /Konto erstellen/i }).click();
+    await page.getByLabel(/E-Mail|Email/i).fill(uniqueEmail);
+    await page.getByLabel(/Passwort|Password/i).fill('Short1');
+    await page.getByRole('button', { name: /Konto erstellen|Create account/i }).click();
 
     // Wait for response
     await page.waitForTimeout(2000);
@@ -42,7 +44,9 @@ test.describe('Sign Up Flow', () => {
     expect(url).toContain('sign-up');
 
     // Check for error about password length
-    await expect(page.locator('text=/8 Zeichen|zu kurz|too short/i')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=/8 Zeichen|characters|zu kurz|too short/i')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('should validate password missing uppercase', async ({ page }) => {
@@ -51,9 +55,9 @@ test.describe('Sign Up Flow', () => {
     const uniqueEmail = `test-${Date.now()}@example.com`;
 
     // Fill in form with no uppercase
-    await page.getByLabel(/E-Mail/i).fill(uniqueEmail);
-    await page.getByLabel(/Passwort/i).fill('password123');
-    await page.getByRole('button', { name: /Konto erstellen/i }).click();
+    await page.getByLabel(/E-Mail|Email/i).fill(uniqueEmail);
+    await page.getByLabel(/Passwort|Password/i).fill('password123');
+    await page.getByRole('button', { name: /Konto erstellen|Create account/i }).click();
 
     // Wait for response
     await page.waitForTimeout(2000);
@@ -69,9 +73,9 @@ test.describe('Sign Up Flow', () => {
     const uniqueEmail = `test-${Date.now()}@example.com`;
 
     // Fill in form with no number
-    await page.getByLabel(/E-Mail/i).fill(uniqueEmail);
-    await page.getByLabel(/Passwort/i).fill('PasswordOnly');
-    await page.getByRole('button', { name: /Konto erstellen/i }).click();
+    await page.getByLabel(/E-Mail|Email/i).fill(uniqueEmail);
+    await page.getByLabel(/Passwort|Password/i).fill('PasswordOnly');
+    await page.getByRole('button', { name: /Konto erstellen|Create account/i }).click();
 
     // Wait for response
     await page.waitForTimeout(2000);
@@ -85,9 +89,9 @@ test.describe('Sign Up Flow', () => {
     await page.goto('/sign-up');
 
     // Try to register with an email that might exist
-    await page.getByLabel(/E-Mail/i).fill('[email protected]');
-    await page.getByLabel(/Passwort/i).fill('ValidPass123');
-    await page.getByRole('button', { name: /Konto erstellen/i }).click();
+    await page.getByLabel(/E-Mail|Email/i).fill('[email protected]');
+    await page.getByLabel(/Passwort|Password/i).fill('ValidPass123');
+    await page.getByRole('button', { name: /Konto erstellen|Create account/i }).click();
 
     // Wait for response
     await page.waitForTimeout(2000);
@@ -104,14 +108,20 @@ test.describe('Sign Up Flow', () => {
     await page.goto('/sign-up');
 
     // Check for sign in link
-    const signInLink = page.getByRole('link', { name: /Anmelden|bereits ein Konto/i });
+    const signInLink = page.getByRole('link', {
+      name: /Anmelden|Sign in|bereits ein Konto|Already have an account/i,
+    });
     await expect(signInLink).toBeVisible();
   });
 
   test('should navigate to sign in', async ({ page }) => {
     await page.goto('/sign-up');
 
-    await page.getByRole('link', { name: /Anmelden|bereits ein Konto/i }).click();
+    await page
+      .getByRole('link', {
+        name: /Anmelden|Sign in|bereits ein Konto|Already have an account/i,
+      })
+      .click();
     await expect(page).toHaveURL('/sign-in');
   });
 
@@ -119,7 +129,7 @@ test.describe('Sign Up Flow', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/sign-up');
 
-    await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
-    await expect(page.getByLabel(/Passwort/i)).toBeVisible();
+    await expect(page.getByLabel(/E-Mail|Email/i)).toBeVisible();
+    await expect(page.getByLabel(/Passwort|Password/i)).toBeVisible();
   });
 });

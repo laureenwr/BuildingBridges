@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import {
+  isDashboardPreviewModeEnabled,
+  isPortalRoutePath,
+} from '@/lib/dev/dashboard-preview-mode';
 
 // Define protected paths by role
 const adminOnlyPaths = [
   '/dashboard/admin',
-  '/dashboard/settings/users'
+  '/dashboard/settings/users',
+  '/portal/admin',
 ];
 
 const mentorOnlyPaths = [
@@ -33,6 +38,7 @@ const publicPaths = [
   '/roadmap',
   '/imprint',
   '/glossary',
+  '/story-tool',
   '/tos',
   '/privacy-policy',
   '/api/webhooks/stripe',
@@ -81,7 +87,25 @@ export async function middleware(request: NextRequest) {
   if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
-  
+
+  // TEMP: Dashboard preview mode (remove before production) — /portal unauthenticated while preview is enabled
+  if (
+    isDashboardPreviewModeEnabled({
+      hostname: request.nextUrl.hostname,
+      hostHeader: request.headers.get('host'),
+    }) &&
+    isPortalRoutePath(pathname)
+  ) {
+    const tokenEarly = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    const previewRole = tokenEarly ? (tokenEarly as { role?: string }).role || 'STUDENT' : null;
+
+    if (isAdminOnlyPath(pathname) && previewRole != null && previewRole !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    return NextResponse.next();
+  }
+
   // For all other paths, check authentication (edge-safe)
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
@@ -108,5 +132,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|api/auth).*)'],
+  matcher: [
+    '/portal',
+    '/portal/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico|api/auth).*)',
+  ],
 };
