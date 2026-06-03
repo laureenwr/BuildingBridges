@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useUser } from '@/lib/auth/index';
 import { signOut } from 'next-auth/react';
 import { useLandingLocale } from '@/lib/landing/locale';
+import { setStoredLanguage } from '@/lib/i18n/language';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,7 +96,7 @@ export function LandingNav() {
           </li>
           <NavDrop label={L.about}>
             <NavDropLink href="/#about">{L.aboutProject}</NavDropLink>
-            <NavDropLink href="/#about">{L.vision}</NavDropLink>
+            <NavDropLink href="/vision">{L.vision}</NavDropLink>
             <NavDropLink href="/#team">{L.teamPartners}</NavDropLink>
           </NavDrop>
           <NavDrop label={L.program}>
@@ -122,7 +123,10 @@ export function LandingNav() {
           <div className="flex items-center gap-0.5 rounded-full border border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-[3px]">
             <button
               type="button"
-              onClick={() => setLocale('en')}
+              onClick={() => {
+                setLocale('en');
+                setStoredLanguage('en');
+              }}
               className={`rounded-full px-2.5 py-1 font-[family-name:var(--font-sora)] text-xs font-bold leading-snug transition-colors ${
                 locale === 'en' ? 'bg-[#9152FF] text-white' : 'bg-transparent text-[#6B5F8A]'
               }`}
@@ -131,7 +135,10 @@ export function LandingNav() {
             </button>
             <button
               type="button"
-              onClick={() => setLocale('de')}
+              onClick={() => {
+                setLocale('de');
+                setStoredLanguage('de');
+              }}
               className={`rounded-full px-2.5 py-1 font-[family-name:var(--font-sora)] text-xs font-bold leading-snug transition-colors ${
                 locale === 'de' ? 'bg-[#9152FF] text-white' : 'bg-transparent text-[#6B5F8A]'
               }`}
@@ -205,6 +212,7 @@ export function LandingNav() {
           {[
             ['/#home', L.home],
             ['/#about', L.aboutProject],
+            ['/vision', L.vision],
             ['/#team', L.teamPartners],
             ['/workshops', L.workshops],
             ['/workshops#project-timeline', L.progress],
@@ -225,14 +233,20 @@ export function LandingNav() {
           <div className="mt-3 flex gap-2">
             <button
               type="button"
-              onClick={() => setLocale('en')}
+              onClick={() => {
+                setLocale('en');
+                setStoredLanguage('en');
+              }}
               className={`rounded-full px-3 py-1 text-xs font-bold ${locale === 'en' ? 'bg-[#9152FF] text-white' : 'bg-[#F5F0FF]'}`}
             >
               EN
             </button>
             <button
               type="button"
-              onClick={() => setLocale('de')}
+              onClick={() => {
+                setLocale('de');
+                setStoredLanguage('de');
+              }}
               className={`rounded-full px-3 py-1 text-xs font-bold ${locale === 'de' ? 'bg-[#9152FF] text-white' : 'bg-[#F5F0FF]'}`}
             >
               DE

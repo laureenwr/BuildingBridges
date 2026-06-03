@@ -125,7 +125,7 @@ export default function TeamPage() {
           </h1>
           <p className="text-gray-700 max-w-2xl mx-auto">
             {isDe
-              ? 'Wir sind ein vielfaeltiges Team mit einer gemeinsamen Vision: Bruecken bauen - zwischen Bildung, Perspektiven und Moeglichkeiten.'
+              ? 'Wir sind ein vielfältiges Team mit einer gemeinsamen Vision: Bruecken bauen - zwischen Bildung, Perspektiven und Moeglichkeiten.'
               : 'We are a diverse team with one shared vision: building bridges between education, perspectives, and opportunities.'}
           </p>
         </div>

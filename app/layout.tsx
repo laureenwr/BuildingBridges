@@ -4,34 +4,35 @@ import { Sora, Lora, Fraunces, DM_Sans, DM_Mono } from 'next/font/google';
 import { UserProvider } from '@/lib/auth/index';
 import { getUser } from '@/lib/db/queries';
 import { AppChrome } from '@/components/layout/AppChrome';
+import { AppI18nProvider } from '@/components/providers/AppI18nProvider';
 import Script from 'next/script';
 
 const sora = Sora({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-sora',
 });
 
 const lora = Lora({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-lora',
 });
 
 const fraunces = Fraunces({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-fraunces',
 });
 
 const dmSans = DM_Sans({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-dm-sans',
 });
 
 const dmMono = DM_Mono({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400'],
   display: 'swap',
   variable: '--font-dm-mono',
@@ -110,6 +111,9 @@ export default function RootLayout({
       lang="en"
       className={`${sora.variable} ${lora.variable} ${fraunces.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
+      <head>
+        <meta charSet="UTF-8" />
+      </head>
       <body className="font-primary antialiased min-h-[100dvh] bg-[#F2EEFF] text-[#1A1033]">
         {/* Auto-reload on chunk load failure to avoid blank screen after deployments */}
         <Script id="chunk-error-reload" strategy="beforeInteractive">
@@ -129,7 +133,9 @@ export default function RootLayout({
           `}
         </Script>
         <UserProvider userPromise={userPromise}>
-          <AppChrome>{children}</AppChrome>
+          <AppI18nProvider>
+            <AppChrome>{children}</AppChrome>
+          </AppI18nProvider>
         </UserProvider>
       </body>
     </html>

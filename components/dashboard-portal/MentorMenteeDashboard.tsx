@@ -119,7 +119,7 @@ export function MentorMenteeDashboard({
             ) : null}
           </div>
           <div className="relative hidden min-h-[200px] w-full max-w-sm shrink-0 overflow-hidden rounded-2xl border border-white/70 bg-white/70 p-5 shadow-inner backdrop-blur-md lg:flex lg:flex-col lg:justify-center">
-            <div className="font-lora text-lg font-semibold text-[#1A1033]">Today&apos;s invitation</div>
+            <div className="font-lora text-lg font-semibold text-[#1A1033]">Today's invitation</div>
             <ul className="mt-4 space-y-3 text-[0.9rem] text-[#5C5275]">
               <li className="flex gap-2">
                 <HeartHandshake className="mt-0.5 h-4 w-4 shrink-0 text-[#9152FF]" aria-hidden />
@@ -238,7 +238,7 @@ export function MentorMenteeDashboard({
             </dl>
           </div>
           <blockquote className="mt-6 border-l-4 border-[#9152FF] pl-4 text-[0.95rem] italic leading-relaxed text-[#4B4266]">
-            “Every story you share can inspire someone&apos;s journey.”
+            “Every story you share can inspire someone's journey.”
           </blockquote>
         </div>
       </section>

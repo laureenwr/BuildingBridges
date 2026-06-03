@@ -9,11 +9,11 @@ export function LandingVideo() {
     <section id="project-video" className="bg-[#F2EEFF] px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-[1000px] text-center">
         <h2 className="font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-          {isDe ? 'Projekt Building Bridges erklaert' : 'Project Building Bridges explained'}
+          {isDe ? 'Projekt Building Bridges erklärt' : 'Project Building Bridges explained'}
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-[#6B5F8A]">
           {isDe
-            ? 'Erfahren Sie mehr ueber unser interdisziplinaeres Forschungsprojekt zur Unterstuetzung von Girls und FLINTA* of Colour auf akademischen Wegen.'
+            ? 'Erfahren Sie mehr über unser interdisziplinäres Forschungsprojekt zur Unterstützung von Girls und FLINTA* of Colour auf akademischen Wegen.'
             : 'Learn more about our interdisciplinary research project to support girls and FLINTA* of Colour in academic paths.'}
         </p>
 
@@ -22,7 +22,7 @@ export function LandingVideo() {
             <iframe
               className="h-full w-full"
               src="https://www.youtube-nocookie.com/embed/txvwXWRwxyI"
-              title={isDe ? 'Erklaervideo: Building Bridges' : 'Explainer video: Building Bridges'}
+              title={isDe ? 'Erklärvideo: Building Bridges' : 'Explainer video: Building Bridges'}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"

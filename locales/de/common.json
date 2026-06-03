@@ -1,0 +1,75 @@
+{
+  "vision": {
+    "badge": "Unsere Vision",
+    "heading": "Vielfalt in der Bildung",
+    "paragraph": "Wir setzen uns für mehr Diversität und Repräsentation in psychosozialen Studiengängen ein. Unsere Vision ist es, dass die Universitäten die Vielfalt unserer Gesellschaft widerspiegeln.",
+    "sectionTwoHeading": "Empowerment",
+    "sectionTwoText": "Durch Mentoring, Workshops und Community-Building stärken wir Mädchen und FLINTA* of Colour auf ihrem Bildungs- und Karriereweg.",
+    "cta": "Mach mit!"
+  },
+  "nav": {
+    "home": "Start",
+    "about": "Über uns",
+    "aboutProject": "Über das Projekt",
+    "vision": "Vision & Ziele",
+    "teamPartners": "Team & Partner",
+    "program": "Programm",
+    "workshopsEvents": "Workshops & Veranstaltungen",
+    "researchActivities": "Forschungsaktivitäten",
+    "projectProgress": "Projektverlauf",
+    "platform": "Plattform",
+    "knowledgeResources": "Wissen & Ressourcen",
+    "storyTool": "Story-Werkzeug",
+    "digitalToolkit": "Digitales Toolkit",
+    "partners": "Partner",
+    "contact": "Kontakt",
+    "dashboard": "Dashboard",
+    "registerNow": "Jetzt registrieren →",
+    "team": "Team"
+  },
+  "footer": {
+    "vision": "Vision",
+    "about": "Über",
+    "platform": "Plattform",
+    "program": "Programm",
+    "legal": "Rechtliches",
+    "team": "Team",
+    "partners": "Partner",
+    "contact": "Kontakt",
+    "knowledgeHub": "Wissensplattform",
+    "storyTool": "Story-Werkzeug",
+    "glossary": "Glossar",
+    "workshops": "Workshops",
+    "research": "Forschung",
+    "register": "Registrieren",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "accessibilityBanner": "Diese Plattform orientiert sich an den Barrierefreiheitsstandards WCAG 2.1.",
+    "wcag": "WCAG 2.1 AA",
+    "inclusiveLanguage": "Geschlechtergerechte Sprache",
+    "tagline": "Wir stärken FLINTA-Personen und Girls of Colour auf ihrem Weg in psychosozialen und bildungsbezogenen Feldern. 2024–2027.",
+    "copyright": "© 2024–{{year}} Building Bridges. Gefördert durch BMBF, BMFSJ & ESF+.",
+    "accessibility": "Barrierefreiheit"
+  },
+  "account": {
+    "myAccount": "Mein Konto",
+    "workshopsDashboard": "Workshop-Dashboard",
+    "settings": "Einstellungen",
+    "logOut": "Abmelden",
+    "register": "Registrieren →",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
+  },
+  "platformPreview": {
+    "title": "Plattformzugang (Vorschaumodus)",
+    "userDashboard": "Nutzer-Dashboard",
+    "adminDashboard": "Admin-Dashboard"
+  },
+  "story": {
+    "shareStory": "Teile deine Geschichte",
+    "toolLabel": "Story-Werkzeug",
+    "softPrompt1": "Welche Herausforderungen hast du erlebt?",
+    "softPrompt2": "Was möchtest du über diese Erfahrung teilen?"
+  }
+}

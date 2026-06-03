@@ -3,48 +3,49 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram } from 'lucide-react';
-import { useLanguage } from '@/lib/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const footerColumns = [
   {
-    title: 'About',
+    titleKey: 'footer.about',
     links: [
-      { label: 'Vision', href: '/#about' },
-      { label: 'Team', href: '/#team' },
-      { label: 'Partners', href: '/#partners' },
-      { label: 'Contact', href: '/contact' },
+      { labelKey: 'footer.vision', href: '/vision' },
+      { labelKey: 'footer.team', href: '/#team' },
+      { labelKey: 'footer.partners', href: '/#partners' },
+      { labelKey: 'footer.contact', href: '/contact' },
     ],
   },
   {
-    title: 'Platform',
+    titleKey: 'footer.platform',
     links: [
-      { label: 'Knowledge Hub', href: '/#knowledge' },
-      { label: 'Story Tool', href: '/story-tool' },
-      { label: 'Glossary', href: '/glossary' },
+      { labelKey: 'footer.knowledgeHub', href: '/#knowledge' },
+      { labelKey: 'footer.storyTool', href: '/story-tool' },
+      { labelKey: 'footer.glossary', href: '/glossary' },
     ],
   },
   {
-    title: 'Program',
+    titleKey: 'footer.program',
     links: [
-      { label: 'Workshops', href: '/#events' },
-      { label: 'Research', href: '/#events' },
-      { label: 'Register', href: '/sign-up' },
+      { labelKey: 'footer.workshops', href: '/#events' },
+      { labelKey: 'footer.research', href: '/#events' },
+      { labelKey: 'footer.register', href: '/sign-up' },
     ],
   },
   {
-    title: 'Legal',
+    titleKey: 'footer.legal',
     links: [
-      { label: 'Imprint', href: '/imprint' },
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms of Service', href: '/tos' },
+      { labelKey: 'footer.imprint', href: '/imprint' },
+      { labelKey: 'footer.privacy', href: '/privacy-policy' },
+      { labelKey: 'footer.terms', href: '/tos' },
     ],
   },
-];
+] as const;
 
 const socialLinks = [{ Icon: Instagram, href: 'https://www.instagram.com/building_bridges_team/' }];
 
 export function Footer() {
-  const { isDe } = useLanguage();
+  const { t } = useTranslation('common');
+  const year = new Date().getFullYear();
 
   return (
     <footer className="bg-[#1A1033] px-6 py-12 text-[rgba(255,255,255,0.5)] sm:px-10">
@@ -53,14 +54,12 @@ export function Footer() {
           <span className="text-lg" aria-hidden>
             ♿
           </span>
-          <span className="text-[rgba(255,255,255,0.75)]">
-            This platform is built to WCAG 2.1 accessibility standards.
+          <span className="text-[rgba(255,255,255,0.75)]">{t('footer.accessibilityBanner')}</span>
+          <span className="rounded-full bg-[rgba(255,255,255,0.12)] px-2.5 py-1 text-[0.72rem] font-bold text-[rgba(255,255,255,0.7)]">
+            {t('footer.wcag')}
           </span>
           <span className="rounded-full bg-[rgba(255,255,255,0.12)] px-2.5 py-1 text-[0.72rem] font-bold text-[rgba(255,255,255,0.7)]">
-            WCAG 2.1 AA
-          </span>
-          <span className="rounded-full bg-[rgba(255,255,255,0.12)] px-2.5 py-1 text-[0.72rem] font-bold text-[rgba(255,255,255,0.7)]">
-            Gender-inclusive language
+            {t('footer.inclusiveLanguage')}
           </span>
           <span className="rounded-full bg-[rgba(255,255,255,0.12)] px-2.5 py-1 text-[0.72rem] font-bold text-[rgba(255,255,255,0.7)]">
             DE / EN
@@ -76,38 +75,23 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-3 max-w-[280px] text-[0.875rem] leading-relaxed text-[rgba(255,255,255,0.5)]">
-              Empowering FLINTA individuals and girls of color to achieve their full potential in psychosocial and
-              educational fields. 2024–2027.
+              {t('footer.tagline')}
             </p>
           </div>
 
           {footerColumns.map((col) => (
-            <div key={col.title}>
+            <div key={col.titleKey}>
               <h4 className="mb-4 text-[0.78rem] font-bold uppercase tracking-[0.12em] text-[rgba(255,255,255,0.75)]">
-                {isDe
-                  ? col.title === 'About'
-                    ? 'Ueber'
-                    : col.title === 'Platform'
-                      ? 'Plattform'
-                      : col.title === 'Program'
-                        ? 'Programm'
-                        : 'Rechtliches'
-                  : col.title}
+                {t(col.titleKey)}
               </h4>
               <ul className="flex list-none flex-col gap-2">
                 {col.links.map((link) => (
-                  <li key={link.href + link.label}>
+                  <li key={link.href + link.labelKey}>
                     <Link
                       href={link.href}
                       className="text-[0.875rem] text-[rgba(255,255,255,0.45)] transition hover:text-[rgba(255,255,255,0.9)]"
                     >
-                      {isDe && col.title === 'Legal'
-                        ? link.label === 'Imprint'
-                          ? 'Impressum'
-                          : link.label === 'Privacy Policy'
-                            ? 'Datenschutz'
-                            : 'Nutzungsbedingungen'
-                        : link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -117,15 +101,15 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col flex-wrap items-start justify-between gap-4 pt-8 text-[0.83rem] sm:flex-row sm:items-center">
-          <span>© 2024–{new Date().getFullYear()} Building Bridges. Funded by BMBF, BMFSJ &amp; ESF+.</span>
+          <span>{t('footer.copyright', { year })}</span>
           <div className="flex flex-wrap gap-6">
             <Link href="/imprint" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
-              {isDe ? 'Impressum' : 'Imprint'}
+              {t('footer.imprint')}
             </Link>
             <Link href="/privacy-policy" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
-              {isDe ? 'Datenschutz' : 'Privacy'}
+              {t('footer.privacy')}
             </Link>
-            <span className="text-[rgba(255,255,255,0.38)]">{isDe ? 'Barrierefreiheit' : 'Accessibility'}</span>
+            <span className="text-[rgba(255,255,255,0.38)]">{t('footer.accessibility')}</span>
           </div>
           <div className="flex gap-4">
             {socialLinks.map(({ Icon, href }) => (

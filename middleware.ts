@@ -39,6 +39,7 @@ const publicPaths = [
   '/imprint',
   '/glossary',
   '/story-tool',
+  '/stories',
   '/tos',
   '/privacy-policy',
   '/api/webhooks/stripe',

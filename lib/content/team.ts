@@ -141,7 +141,7 @@ export const teamMembers: TeamMember[] = [
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'daniel.courtney@uni-due.de',
     links: [
-      { label: 'Profile', url: 'https://www.ris.uni-due.de/ueber-uns/personen/detailansicht/daniel-courtney/' },
+      { label: 'Profile', url: 'https://www.ris.uni-due.de/über-uns/personen/detailansicht/daniel-courtney/' },
     ],
   },
   {
@@ -152,7 +152,7 @@ export const teamMembers: TeamMember[] = [
     role: 'Studentische Hilfskraft (TP3)',
     org: 'Universität Duisburg-Essen',
     image: '/Team/SumeraSajid.jpg',
-    bio: "Master's student in Web & Data Science at the University of Koblenz. Originally from Gilgit, Pakistan. Contributing to the Building Bridges platform with a focus on user experience, storytelling, and inclusive digital design. Her work brings together data-driven thinking and user-centered design to support accessible and meaningful digital experiences. She is particularly interested in how technology can empower communities, amplify diverse voices, and create inclusive spaces for learning and exchange.",
+    bio: "Master's student in Web & Data Science at the University of Koblenz. Contributing to the Building Bridges platform with a focus on user experience, storytelling, and inclusive digital design. Her work brings together data-driven thinking and user-centered design to support accessible and meaningful digital experiences. She is particularly interested in how technology can empower communities, amplify diverse voices, and create inclusive spaces for learning and exchange.",
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'sumera.sajid@uni-due.de',
     links: [
@@ -172,7 +172,7 @@ export const teamMembers: TeamMember[] = [
     address: 'Universitätsstraße 9, 45151 Essen',
     email: 'laureen.warikoru@uni-due.de',
     links: [
-      { label: 'Profile', url: 'https://www.ris.uni-due.de/ueber-uns/personen/detailansicht/laureen-warikoru/#research' },
+      { label: 'Profile', url: 'https://www.ris.uni-due.de/über-uns/personen/detailansicht/laureen-warikoru/#research' },
     ],
   },
 ];

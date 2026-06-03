@@ -1,66 +1,29 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+import { setStoredLanguage } from '@/lib/i18n/language';
 
 export type LandingLocale = 'en' | 'de';
 
-type Ctx = {
-  locale: LandingLocale;
-  setLocale: (l: LandingLocale) => void;
-  t: (en: string, de: string) => string;
-};
-
-const LandingLocaleContext = createContext<Ctx | null>(null);
-
-const STORAGE_KEY = 'bb_lang_v1';
-
 export function LandingLocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<LandingLocale>('en');
-
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v === 'de' || v === 'en') {
-        setLocaleState(v);
-        document.documentElement.lang = v;
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const setLocale = useCallback((l: LandingLocale) => {
-    setLocaleState(l);
-    try {
-      localStorage.setItem(STORAGE_KEY, l);
-    } catch {
-      /* ignore */
-    }
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = l;
-    }
-  }, []);
-
-  const t = useCallback(
-    (en: string, de: string) => (locale === 'de' ? de : en),
-    [locale]
-  );
-
-  const value = useMemo(() => ({ locale, setLocale, t }), [locale, setLocale, t]);
-
-  return (
-    <LandingLocaleContext.Provider value={value}>{children}</LandingLocaleContext.Provider>
-  );
+  return <>{children}</>;
 }
 
 export function useLandingLocale() {
-  const ctx = useContext(LandingLocaleContext);
-  if (!ctx) {
-    return {
-      locale: 'en' as const,
-      setLocale: () => {},
-      t: (en: string) => en,
-    };
-  }
-  return ctx;
+  const { lang } = useLanguage();
+  const { t: i18nT, i18n } = useTranslation('common');
+  const locale: LandingLocale = lang === 'de' ? 'de' : 'en';
+
+  useEffect(() => {
+    void i18n.changeLanguage(locale);
+  }, [i18n, locale]);
+
+  return {
+    locale,
+    setLocale: (l: LandingLocale) => setStoredLanguage(l),
+    t: (en: string, de: string) => (locale === 'de' ? de : en),
+    tk: (key: string, fallback?: string) => i18nT(key, { defaultValue: fallback ?? key }),
+  };
 }

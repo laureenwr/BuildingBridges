@@ -32,20 +32,20 @@ export function LandingKnowledge() {
         <p className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Informationsplattform' : 'Information Platform'}</p>
         <h2 className="mb-3 max-w-[720px] font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
           {isDe ? (
-            <>Wissen, <em className="font-normal not-italic text-[#9152FF]">Ressourcen &amp; Lernen</em></>
+            <>Wissen, <em className="font-normal not-italic text-[#9152FF]">Ressourcen & Lernen</em></>
           ) : (
-            <>Knowledge, <em className="font-normal not-italic text-[#9152FF]">resources &amp; learning</em></>
+            <>Knowledge, <em className="font-normal not-italic text-[#9152FF]">resources & learning</em></>
           )}
         </h2>
         <p className="mb-8 max-w-[680px] text-[0.97rem] text-[#6B5F8A]">
           {isDe
-            ? 'Eine wachsende, lebendige Wissensbasis mit multimodalen Inhalten - Text, Video, Infografiken und Beispielgeschichten - in verstaendlicher Sprache auf Deutsch und Englisch.'
+            ? 'Eine wachsende Wissensplattform mit multimodalen Inhalten – Texten, Videos, Infografiken und Beispielgeschichten – in verständlicher Sprache auf Deutsch und Englisch.'
             : 'A growing, living resource hub with multimodal content - text, video, infographics, and example stories - in accessible language in both German and English.'}
         </p>
 
         <div className="mt-12 rounded-[24px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-8">
-          <h4 className="font-lora text-xl font-bold text-[#1A1033]">📖 {isDe ? 'Glossar - Zentrale Begriffe' : 'Glossary - Key Terms'}</h4>
-          <p className="mb-4 mt-1 text-[0.85rem] text-[#6B5F8A]">{isDe ? 'Tippen Sie einen Begriff fuer eine kurze Definition (EN + DE).' : 'Tap a term for a short definition (EN + DE).'}</p>
+          <h4 className="font-lora text-xl font-bold text-[#1A1033]">📖 {isDe ? 'Glossar – zentrale Begriffe' : 'Glossary - Key Terms'}</h4>
+          <p className="mb-4 mt-1 text-[0.85rem] text-[#6B5F8A]">{isDe ? 'Tippe auf einen Begriff für eine kurze Definition.' : 'Tap a term for a short definition.'}</p>
           <div className="flex flex-wrap gap-2">
             {glossary.map((g) => (
               <button
@@ -61,7 +61,7 @@ export function LandingKnowledge() {
               href="/glossary"
               className="rounded-xl border-[1.5px] border-dashed border-[#9152FF]/40 px-4 py-2 text-[0.83rem] font-semibold text-[#6B5F8A] hover:text-[#9152FF]"
             >
-              {isDe ? 'Vollstaendiges Glossar →' : 'Full glossary →'}
+              {isDe ? 'Zum vollständigen Glossar →' : 'Full glossary →'}
             </a>
           </div>
           {glossaryOpen && (
@@ -75,10 +75,12 @@ export function LandingKnowledge() {
                 ✕
               </button>
               <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#9152FF]">{glossaryOpen.term}</p>
-              <p className="text-[0.9rem] leading-relaxed text-[#1A1033]">{glossaryOpen.en}</p>
-              <p className="mt-3 border-t border-[rgba(145,82,255,0.15)] pt-3 text-[0.85rem] italic leading-relaxed text-[#6B5F8A]">
-                🇩🇪 {glossaryOpen.de}
-              </p>
+              <p className="text-[0.9rem] leading-relaxed text-[#1A1033]">{isDe ? glossaryOpen.de : glossaryOpen.en}</p>
+              {!isDe && (
+                <p className="mt-3 border-t border-[rgba(145,82,255,0.15)] pt-3 text-[0.85rem] italic leading-relaxed text-[#6B5F8A]">
+                  🇩🇪 {glossaryOpen.de}
+                </p>
+              )}
             </div>
           )}
         </div>

@@ -27,15 +27,15 @@ export function LandingHero() {
           Building Bridges
         </h1>
         <p className="mt-4 max-w-3xl text-[clamp(1.1rem,2.8vw,1.6rem)] font-semibold leading-snug text-white">
-          {isDe ? 'Mentoring & Empowerment fuer Girls und ' : 'Mentoring & empowerment for girls and '}
+          {isDe ? 'Mentoring & Empowerment für Girls und ' : 'Mentoring & empowerment for girls and '}
           <span className="text-[#d8c4ff]">FLINTA* of Colour</span>
         </p>
         <p className="mt-2 max-w-3xl text-[clamp(1rem,2.2vw,1.35rem)] text-white/95">
-          {isDe ? 'Ein interdisziplinaeres Forschungsprojekt fuer Bildungsgerechtigkeit' : 'An interdisciplinary research project for educational equity'}
+          {isDe ? 'Ein interdisziplinäres Forschungsprojekt für Bildungsgerechtigkeit' : 'An interdisciplinary research project for educational equity'}
         </p>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/90">
           {isDe
-            ? 'Ein interdisziplinaeres Forschungs- und Entwicklungsprojekt zur Staerkung von Girls und FLINTA* of Colour fuer Teilhabe an Hochschulbildung und akademischen Wegen im psychosozialen Feld.'
+            ? 'Ein interdisziplinäres Forschungs- und Entwicklungsprojekt zur Stärkung von Girls und FLINTA* of Colour und zur Förderung ihrer Teilhabe an Hochschulbildung und akademischen Wegen im psychosozialen Bereich.'
             : 'An interdisciplinary research and development project to empower girls and FLINTA* of Colour to participate in higher education and academic careers in the psychosocial field.'}
         </p>
 

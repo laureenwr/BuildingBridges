@@ -13,7 +13,7 @@ export function LandingProgram() {
       <div className="mx-auto max-w-[1280px]">
         <p className="mb-3 text-center text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">Project Goals</p>
         <h2 className="mb-14 text-center font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
-          Our main goals are to <em className="font-normal not-italic text-[#9152FF]">promote &amp; empower</em>
+          Our main goals are to <em className="font-normal not-italic text-[#9152FF]">promote & empower</em>
         </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {goals.map((g) => (

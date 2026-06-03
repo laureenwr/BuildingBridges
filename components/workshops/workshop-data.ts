@@ -1,3 +1,9 @@
+import type { AppLanguage } from '@/lib/hooks/useLanguage';
+
+type L<T> = { en: T; de: T };
+
+const pick = <T>(value: L<T>, lang: AppLanguage): T => (lang === 'de' ? value.de : value.en);
+
 export type WorkshopItem = {
   id: string;
   title: string;
@@ -6,7 +12,9 @@ export type WorkshopItem = {
   time: string;
   location: string;
   mode: 'Online' | 'In Person' | 'Hybrid';
+  modeLabel: string;
   category: 'Mentoring' | 'Workshop' | 'Research' | 'Community' | 'Networking';
+  categoryLabel: string;
   image: string;
   tags: string[];
 };
@@ -16,7 +24,7 @@ export type ArchiveItem = {
   title: string;
   type: string;
   date: string;
-  status: 'Past Workshop' | 'Community Event' | 'Flyer' | 'Research Activity';
+  status: string;
   image: string;
   href: string;
 };
@@ -27,159 +35,368 @@ export type ReflectionItem = {
   role: string;
 };
 
-// Future integration point: replace static arrays with CMS/DB workshop uploads.
-export const featuredWorkshop: WorkshopItem = {
-  id: 'featured-mentor-intro',
-  title: 'Online introductions to mentors',
-  description:
-    'A welcoming online session where participants meet mentors, ask questions, and co-create safer pathways into academic and psychosocial fields.',
-  date: '14.01.2026',
-  time: '18:00 - 19:30',
-  location: 'Online',
-  mode: 'Online',
-  category: 'Mentoring',
-  image: '/workshops/fruehlingsfest-2026.png',
-  tags: ['Workshop', 'Mentoring', 'Community', 'Networking'],
+type WorkshopSource = {
+  id: string;
+  title: L<string>;
+  description: L<string>;
+  date: string;
+  time: L<string>;
+  location: L<string>;
+  mode: WorkshopItem['mode'];
+  category: WorkshopItem['category'];
+  image: string;
+  tags: L<string[]>;
 };
 
-// Future integration point: feed from workshop management backend.
-export const workshopFeed: WorkshopItem[] = [
+const MODE_LABELS: Record<WorkshopItem['mode'], L<string>> = {
+  Online: { en: 'Online', de: 'Online' },
+  'In Person': { en: 'In person', de: 'Vor Ort' },
+  Hybrid: { en: 'Hybrid', de: 'Hybrid' },
+};
+
+const CATEGORY_LABELS: Record<WorkshopItem['category'], L<string>> = {
+  Mentoring: { en: 'Mentoring', de: 'Mentoring' },
+  Workshop: { en: 'Workshop', de: 'Workshop' },
+  Research: { en: 'Research', de: 'Forschung' },
+  Community: { en: 'Community', de: 'Community' },
+  Networking: { en: 'Networking', de: 'Networking' },
+};
+
+function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem {
+  return {
+    id: source.id,
+    title: pick(source.title, lang),
+    description: pick(source.description, lang),
+    date: source.date,
+    time: pick(source.time, lang),
+    location: pick(source.location, lang),
+    mode: source.mode,
+    modeLabel: pick(MODE_LABELS[source.mode], lang),
+    category: source.category,
+    categoryLabel: pick(CATEGORY_LABELS[source.category], lang),
+    image: source.image,
+    tags: pick(source.tags, lang),
+  };
+}
+
+const featuredSource: WorkshopSource = {
+  id: 'featured-self-care',
+  title: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
+  description: {
+    en: 'An upcoming in-person workshop for BIPoC FLINTA* teenagers: explore what self-care means, who and what supports you, and how to recharge for good and challenging times. With role model Shirley (Black feminist self-care perspective) and mentor Luca (psychology student) — practical tools and a relaxed gathering at Mädea.',
+    de: 'Ein bevorstehender Workshop vor Ort für BIPoC FLINTA* Teenager:innen: Was ist Self Care, wer und was tut uns gut, und wie tanken wir Kraft für gute und herausfordernde Zeiten? Mit Role Model Shirley (schwarz-feministische Self-Care-Perspektive) und Mentorin Luca (Psychologie-Studium) — mit Tools, Infos und einem entspannten Treffen im Mädea.',
+  },
+  date: '13.06.2026',
+  time: { en: '14:00 - 17:00', de: '14:00 - 17:00 Uhr' },
+  location: {
+    en: 'Mädea, Grüntaler Str. 21, 13357 Berlin',
+    de: 'Mädea, Grüntaler Str. 21, 13357 Berlin',
+  },
+  mode: 'In Person',
+  category: 'Community',
+  image: '/workshops/Self-care.jpeg',
+  tags: {
+    en: ['Upcoming', 'Self-care', 'Community', 'Empowerment'],
+    de: ['Bevorstehend', 'Self-Care', 'Community', 'Empowerment'],
+  },
+};
+
+const feedSources: WorkshopSource[] = [
+  featuredSource,
   {
     id: 'individual-mentoring',
-    title: 'Individual mentoring',
-    description: 'Ongoing one-to-one support with mentors aligned to participant goals and wellbeing.',
+    title: { en: 'Individual mentoring', de: 'Individuelles Mentoring' },
+    description: {
+      en: 'Ongoing one-to-one support with mentors aligned to participant goals and wellbeing.',
+      de: 'Fortlaufende 1:1-Begleitung durch Mentor:innen — abgestimmt auf Ziele und Wohlbefinden der Teilnehmenden.',
+    },
     date: 'Jan-Nov 2026',
-    time: 'Flexible',
-    location: 'Berlin + Online',
+    time: { en: 'Flexible', de: 'Flexibel' },
+    location: { en: 'Berlin + Online', de: 'Berlin + Online' },
     mode: 'Hybrid',
     category: 'Mentoring',
     image: '/workshops/mentoring-programm-2025.png',
-    tags: ['Community'],
+    tags: { en: ['Community'], de: ['Community'] },
   },
   {
     id: 'mentoring-workshop-ii',
-    title: 'Mentoring Workshop II - Johanna Eck',
-    description: 'Guided workshop focused on reflection, confidence, and practical support strategies.',
+    title: { en: 'Mentoring Workshop II — Johanna-Eck', de: 'Mentoring-Workshop II — Johanna-Eck' },
+    description: {
+      en: 'Guided workshop focused on reflection, confidence, and practical support strategies.',
+      de: 'Geführter Workshop zu Reflexion, Selbstvertrauen und praktischen Unterstützungsstrategien.',
+    },
     date: '03.2026',
-    time: '16:00 - 19:00',
-    location: 'Johanna-Eck',
+    time: { en: '16:00 - 19:00', de: '16:00 - 19:00 Uhr' },
+    location: { en: 'Johanna-Eck', de: 'Johanna-Eck' },
     mode: 'In Person',
     category: 'Workshop',
     image: '/workshops/mentoring-was-tut-mir-gut-2026.png',
-    tags: ['Mentoring', 'Community'],
+    tags: { en: ['Mentoring', 'Community'], de: ['Mentoring', 'Community'] },
   },
   {
     id: 'digital-storytelling',
-    title: 'Digital storytelling workshop',
-    description: 'Participants co-create stories and media narratives that center lived experiences.',
+    title: { en: 'Digital storytelling workshop', de: 'Digital-Storytelling-Workshop' },
+    description: {
+      en: 'Participants co-create stories and media narratives that center lived experiences.',
+      de: 'Gemeinsames Erzählen von Stories und Medienformaten, die gelebte Erfahrungen in den Mittelpunkt stellen.',
+    },
     date: '04.2026',
-    time: '13:00 - 17:00',
-    location: 'UDE + Online',
+    time: { en: '13:00 - 17:00', de: '13:00 - 17:00 Uhr' },
+    location: { en: 'UDE + Online', de: 'UDE + Online' },
     mode: 'Hybrid',
     category: 'Research',
     image: '/workshops/kennenlerntreffen-2025.png',
-    tags: ['Storytelling', 'Research'],
+    tags: { en: ['Storytelling', 'Research'], de: ['Storytelling', 'Forschung'] },
   },
   {
     id: 'research-exchange',
-    title: 'Research exchange session',
-    description: 'Collaborative dialogue between participants and researchers on barriers and resilience.',
+    title: { en: 'Research exchange session', de: 'Forschungsaustausch' },
+    description: {
+      en: 'Collaborative dialogue between participants and researchers on barriers and resilience.',
+      de: 'Gemeinsamer Austausch zwischen Teilnehmenden und Forschenden zu Barrieren und Resilienz.',
+    },
     date: '05.2026',
-    time: '15:00 - 17:00',
-    location: 'FU Berlin',
+    time: { en: '15:00 - 17:00', de: '15:00 - 17:00 Uhr' },
+    location: { en: 'FU Berlin', de: 'FU Berlin' },
     mode: 'In Person',
     category: 'Research',
     image: '/workshops/perlen-power-2025.png',
-    tags: ['Research', 'Exchange'],
+    tags: { en: ['Research', 'Exchange'], de: ['Forschung', 'Austausch'] },
   },
   {
     id: 'empowerment-networking',
-    title: 'Empowerment & networking event',
-    description: 'A warm community space for new connections, peer support, and shared resources.',
+    title: { en: 'Empowerment & networking event', de: 'Empowerment- & Networking-Event' },
+    description: {
+      en: 'A warm community space for new connections, peer support, and shared resources.',
+      de: 'Ein warmer Community-Raum für neue Kontakte, Peer-Support und geteilte Ressourcen.',
+    },
     date: '06.2026',
-    time: '17:00 - 20:00',
-    location: 'Maedea',
+    time: { en: '17:00 - 20:00', de: '17:00 - 20:00 Uhr' },
+    location: { en: 'Mädea', de: 'Mädea' },
     mode: 'In Person',
     category: 'Community',
     image: '/workshops/fruehlingsfest-2026.png',
-    tags: ['Networking', 'Community'],
+    tags: { en: ['Networking', 'Community'], de: ['Networking', 'Community'] },
   },
   {
     id: 'fruehlingsfest',
-    title: 'Fruehlingsfest',
-    description: 'Spring celebration with food, henna, flowers, and community care activities.',
+    title: { en: 'Frühlingsfest', de: 'Frühlingsfest' },
+    description: {
+      en: 'Spring celebration with food, henna, flowers, and community care activities.',
+      de: 'Frühlingsfest mit Essen, Henna, Blumen und gemeinschaftlichen Care-Aktivitäten.',
+    },
     date: '20.03.2026',
-    time: '15:00 - 19:00',
-    location: 'Maedea',
+    time: { en: '15:00 - 19:00', de: '15:00 - 19:00 Uhr' },
+    location: { en: 'Mädea', de: 'Mädea' },
     mode: 'In Person',
     category: 'Community',
     image: '/workshops/fruehlingsfest-2026.png',
-    tags: ['Self-care'],
+    tags: { en: ['Self-care'], de: ['Self-Care'] },
   },
 ];
 
-export const archiveItems: ArchiveItem[] = [
+type ArchiveSource = {
+  id: string;
+  title: L<string>;
+  type: L<string>;
+  date: string;
+  status: L<string>;
+  image: string;
+  href: string;
+};
+
+const archiveSources: ArchiveSource[] = [
+  {
+    id: 'archive-self-care',
+    title: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
+    type: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
+    date: '13.06.2026',
+    status: { en: 'Upcoming event', de: 'Bevorstehende Veranstaltung' },
+    image: '/workshops/Self-care.jpeg',
+    href: '/workshops/Self-care.jpeg',
+  },
   {
     id: 'archive-fruehlingsfest',
-    title: 'Fruehlingsfest',
-    type: 'Community Celebration',
+    title: { en: 'Frühlingsfest', de: 'Frühlingsfest' },
+    type: { en: 'Community celebration', de: 'Community-Fest' },
     date: '20.03.2026',
-    status: 'Community Event',
+    status: { en: 'Community event', de: 'Community-Event' },
     image: '/workshops/fruehlingsfest-2026.png',
     href: '/workshops/fruehlingsfest-2026.png',
   },
   {
     id: 'archive-mentoring-wellbeing',
-    title: 'Mentoring: Was tut mir gut?',
-    type: 'Empowerment Workshop',
+    title: { en: 'Mentoring: Was tut mir gut?', de: 'Mentoring: Was tut mir gut?' },
+    type: { en: 'Empowerment workshop', de: 'Empowerment-Workshop' },
     date: '02.03.2026',
-    status: 'Past Workshop',
+    status: { en: 'Past workshop', de: 'Vergangener Workshop' },
     image: '/workshops/mentoring-was-tut-mir-gut-2026.png',
     href: '/workshops/mentoring-was-tut-mir-gut-2026.png',
   },
   {
     id: 'archive-perlen-power',
-    title: 'Perlen & Power',
-    type: 'Reflection Event',
+    title: { en: 'Perlen & Power', de: 'Perlen & Power' },
+    type: { en: 'Reflection event', de: 'Reflexions-Event' },
     date: '18.12.2025',
-    status: 'Flyer',
+    status: { en: 'Flyer', de: 'Flyer' },
     image: '/workshops/perlen-power-2025.png',
     href: '/workshops/perlen-power-2025.png',
   },
   {
     id: 'archive-kennenlernen',
-    title: 'Kennenlerntreffen',
-    type: 'Introduction Session',
+    title: { en: 'Kennenlerntreffen', de: 'Kennenlerntreffen' },
+    type: { en: 'Introduction session', de: 'Kennenlernen' },
     date: '08.10.2025',
-    status: 'Past Workshop',
+    status: { en: 'Past workshop', de: 'Vergangener Workshop' },
     image: '/workshops/kennenlerntreffen-2025.png',
     href: '/workshops/kennenlerntreffen-2025.png',
   },
   {
     id: 'archive-programm',
-    title: 'Mentoring-Programm 2025/26',
-    type: 'Program Flyer',
+    title: { en: 'Mentoring programme 2025/26', de: 'Mentoring-Programm 2025/26' },
+    type: { en: 'Programme flyer', de: 'Programm-Flyer' },
     date: '2025 - 2026',
-    status: 'Research Activity',
+    status: { en: 'Programme', de: 'Programm' },
     image: '/workshops/mentoring-programm-2025.png',
     href: '/workshops/mentoring-programm-2025.png',
   },
 ];
 
-export const reflections: ReflectionItem[] = [
+const reflectionSources: { id: string; quote: L<string>; role: L<string> }[] = [
   {
     id: 'reflection-1',
-    quote: 'This workshop helped me feel represented and heard.',
-    role: 'Participant',
+    quote: {
+      en: 'This workshop helped me feel represented and heard.',
+      de: 'Durch diesen Workshop habe ich mich gesehen und gehört gefühlt.',
+    },
+    role: { en: 'Participant', de: 'Teilnehmerin' },
   },
   {
     id: 'reflection-2',
-    quote: 'Meeting mentors with similar experiences inspired me to continue.',
-    role: 'Mentee',
+    quote: {
+      en: 'Meeting mentors with similar experiences inspired me to continue.',
+      de: 'Mentor:innen mit ähnlichen Erfahrungen haben mich inspiriert, weiterzumachen.',
+    },
+    role: { en: 'Mentee', de: 'Mentee' },
   },
   {
     id: 'reflection-3',
-    quote: 'I found practical tools for self-care and confidence in academic spaces.',
-    role: 'Workshop attendee',
+    quote: {
+      en: 'I found practical tools for self-care and confidence in academic spaces.',
+      de: 'Ich habe praktische Tools für Self-Care und Selbstvertrauen im Studium gefunden.',
+    },
+    role: { en: 'Workshop attendee', de: 'Workshop-Teilnehmerin' },
   },
 ];
+
+export function getFeaturedWorkshop(lang: AppLanguage): WorkshopItem {
+  return toWorkshopItem(featuredSource, lang);
+}
+
+export type UpcomingWorkshopAlertData = {
+  badge: string;
+  headline: string;
+  title: string;
+  dateLine: string;
+  location: string;
+  cta: string;
+  dismissLabel: string;
+};
+
+/** Copy for the upcoming-workshop alert (featured Self-Care workshop). */
+export function getUpcomingWorkshopAlert(lang: AppLanguage): UpcomingWorkshopAlertData {
+  const w = toWorkshopItem(featuredSource, lang);
+  if (lang === 'de') {
+    return {
+      badge: 'Neu im Kalender',
+      headline: 'Bevorstehender Workshop',
+      title: w.title,
+      dateLine: `${w.date} · ${w.time}`,
+      location: w.location,
+      cta: 'Details ansehen',
+      dismissLabel: 'Schließen',
+    };
+  }
+  return {
+    badge: 'New on the calendar',
+    headline: 'Upcoming workshop',
+    title: w.title,
+    dateLine: `${w.date} · ${w.time}`,
+    location: w.location,
+    cta: 'View details',
+    dismissLabel: 'Dismiss',
+  };
+}
+
+export function getWorkshopFeed(lang: AppLanguage): WorkshopItem[] {
+  return feedSources.map((s) => toWorkshopItem(s, lang));
+}
+
+export function getArchiveItems(lang: AppLanguage): ArchiveItem[] {
+  return archiveSources.map((s) => ({
+    id: s.id,
+    title: pick(s.title, lang),
+    type: pick(s.type, lang),
+    date: s.date,
+    status: pick(s.status, lang),
+    image: s.image,
+    href: s.href,
+  }));
+}
+
+export function getReflections(lang: AppLanguage): ReflectionItem[] {
+  return reflectionSources.map((s) => ({
+    id: s.id,
+    quote: pick(s.quote, lang),
+    role: pick(s.role, lang),
+  }));
+}
+
+export type WorkshopPageLabels = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  feedEyebrow: string;
+  feedTitle: string;
+  archiveEyebrow: string;
+  archiveTitle: string;
+  reflectionEyebrow: string;
+  reflectionTitle: string;
+};
+
+export function getWorkshopPageLabels(lang: AppLanguage): WorkshopPageLabels {
+  return lang === 'de'
+    ? {
+        eyebrow: 'Angebote & Veranstaltungen',
+        title: 'Workshops & Community-Lernen',
+        intro:
+          'Mentoring, Empowerment, Forschungsaustausch und inklusives Community-Lernen — mit Storytelling im Mittelpunkt.',
+        feedEyebrow: 'Workshop-Übersicht',
+        feedTitle: 'Bevorstehende & laufende Formate',
+        archiveEyebrow: 'Archiv',
+        archiveTitle: 'Workshop-Archiv',
+        reflectionEyebrow: 'Stimmen aus der Community',
+        reflectionTitle: 'Momente aus unseren Workshops',
+      }
+    : {
+        eyebrow: 'Training & Events',
+        title: 'Workshops & Community Learning',
+        intro:
+          'A storytelling-focused space for mentoring, empowerment, research exchange, and inclusive community building.',
+        feedEyebrow: 'Workshop feed',
+        feedTitle: 'Browse upcoming sessions',
+        archiveEyebrow: 'Archive',
+        archiveTitle: 'Curated workshop archive',
+        reflectionEyebrow: 'Community reflection',
+        reflectionTitle: 'Moments from our workshops',
+      };
+}
+
+/** @deprecated Use getFeaturedWorkshop(lang) */
+export const featuredWorkshop = getFeaturedWorkshop('en');
+/** @deprecated Use getWorkshopFeed(lang) */
+export const workshopFeed = getWorkshopFeed('en');
+/** @deprecated Use getArchiveItems(lang) */
+export const archiveItems = getArchiveItems('en');
+/** @deprecated Use getReflections(lang) */
+export const reflections = getReflections('en');

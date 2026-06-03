@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { StoryToolPageContent } from '@/components/landing/StoryToolPageContent';
 
 export const metadata: Metadata = {
-  title: 'Story Creation Tool',
+  title: 'Story Creation Tool (in development)',
   description:
-    'Building Bridges story creation — optional AI support, privacy by default, built with the community.',
+    'Building Bridges co-creation story tool — currently under development. Browse published community stories in the meantime.',
 };
 
 export default function StoryToolPage() {

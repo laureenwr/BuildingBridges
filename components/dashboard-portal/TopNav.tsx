@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, ChevronDown } from 'lucide-react';
@@ -16,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
+import { setStoredLanguage } from '@/lib/i18n/language';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type RoleLabel = 'Mentee' | 'Mentor' | 'Admin';
 
@@ -74,25 +75,7 @@ export function TopNav({
   onMenuClick,
   dashboardHref = '/portal',
 }: TopNavProps) {
-  const [lang, setLang] = useState<'en' | 'de'>('en');
-
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem('bb_lang_v1');
-      if (v === 'de' || v === 'en') setLang(v);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('bb_lang_v1', lang);
-    } catch {
-      /* ignore */
-    }
-    window.dispatchEvent(new CustomEvent('bb-lang-change', { detail: lang }));
-  }, [lang]);
+  const { lang, isDe } = useLanguage();
 
   const initials = userName
     .split(/\s+/)
@@ -132,30 +115,30 @@ export function TopNav({
               href="/#home"
               className="rounded-lg px-3 py-1.5 text-[0.8rem] font-medium text-[#6B5F8A] transition hover:bg-[#F5F0FF] hover:text-[#9152FF]"
             >
-              Home
+              {isDe ? 'Start' : 'Home'}
             </Link>
           </li>
-          <NavDrop label="About" href="/#about">
-            <NavDropLink href="/#about">About the Project</NavDropLink>
-            <NavDropLink href="/#about">Vision &amp; Goals</NavDropLink>
-            <NavDropLink href="/#team">Team &amp; Partners</NavDropLink>
+          <NavDrop label={isDe ? 'Über uns' : 'About'} href="/#about">
+            <NavDropLink href="/#about">{isDe ? 'Über das Projekt' : 'About the Project'}</NavDropLink>
+            <NavDropLink href="/vision">{isDe ? 'Vision & Ziele' : 'Vision & Goals'}</NavDropLink>
+            <NavDropLink href="/#team">{isDe ? 'Team & Partner' : 'Team & Partners'}</NavDropLink>
           </NavDrop>
-          <NavDrop label="Program" href="/#program">
-            <NavDropLink href="/#events">Workshops &amp; Events</NavDropLink>
-            <NavDropLink href="/#events">Research Activities</NavDropLink>
-            <NavDropLink href="/#events">Project Progress</NavDropLink>
+          <NavDrop label={isDe ? 'Programm' : 'Program'} href="/#program">
+            <NavDropLink href="/#events">{isDe ? 'Workshops & Veranstaltungen' : 'Workshops & Events'}</NavDropLink>
+            <NavDropLink href="/#events">{isDe ? 'Forschungsaktivitäten' : 'Research Activities'}</NavDropLink>
+            <NavDropLink href="/#events">{isDe ? 'Projektverlauf' : 'Project Progress'}</NavDropLink>
           </NavDrop>
-          <NavDrop label="Platform" href="/#knowledge">
-            <NavDropLink href="/#knowledge">Knowledge &amp; Resources</NavDropLink>
-            <NavDropLink href="/story-tool">Story Creation Tool</NavDropLink>
-            <NavDropLink href="/story-tool">Digital Toolkit</NavDropLink>
+          <NavDrop label={isDe ? 'Plattform' : 'Platform'} href="/#knowledge">
+            <NavDropLink href="/#knowledge">{isDe ? 'Wissen & Ressourcen' : 'Knowledge & Resources'}</NavDropLink>
+            <NavDropLink href="/story-tool">{isDe ? 'Story-Werkzeug' : 'Story Creation Tool'}</NavDropLink>
+            <NavDropLink href="/story-tool">{isDe ? 'Digitales Toolkit' : 'Digital Toolkit'}</NavDropLink>
           </NavDrop>
           <li>
             <Link
               href="/#partners"
               className="rounded-lg px-3 py-1.5 text-[0.8rem] font-medium text-[#6B5F8A] transition hover:bg-[#F5F0FF] hover:text-[#9152FF]"
             >
-              Partners
+              {isDe ? 'Partner' : 'Partners'}
             </Link>
           </li>
         </ul>
@@ -164,7 +147,7 @@ export function TopNav({
           <div className="hidden items-center gap-0.5 rounded-full border border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-0.5 sm:flex">
             <button
               type="button"
-              onClick={() => setLang('en')}
+              onClick={() => setStoredLanguage('en')}
               className={cn(
                 'rounded-full px-2.5 py-0.5 font-primary text-[0.68rem] font-bold transition md:text-xs',
                 lang === 'en' ? 'bg-[#9152FF] text-white' : 'text-[#6B5F8A]'
@@ -174,7 +157,7 @@ export function TopNav({
             </button>
             <button
               type="button"
-              onClick={() => setLang('de')}
+              onClick={() => setStoredLanguage('de')}
               className={cn(
                 'rounded-full px-2.5 py-0.5 font-primary text-[0.68rem] font-bold transition md:text-xs',
                 lang === 'de' ? 'bg-[#9152FF] text-white' : 'text-[#6B5F8A]'
@@ -189,7 +172,7 @@ export function TopNav({
             href="/contact"
             className="hidden whitespace-nowrap rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-3 py-1.5 text-[0.75rem] font-semibold text-[#9152FF] transition hover:border-[#9152FF] hover:bg-[#9152FF] hover:text-white lg:inline-flex"
           >
-            Contact
+            {isDe ? 'Kontakt' : 'Contact'}
           </Link>
 
           <Link
@@ -199,7 +182,7 @@ export function TopNav({
               'bg-[#9152FF] text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)] hover:-translate-y-px hover:bg-[#7339E0]'
             )}
           >
-            Dashboard
+            {isDe ? 'Dashboard' : 'Dashboard'}
           </Link>
 
           <div className="flex items-center gap-2 pl-1">
@@ -211,7 +194,17 @@ export function TopNav({
                   : 'border-[rgba(145,82,255,0.2)] bg-[#F5F0FF] text-[#7339E0]'
               )}
             >
-              {roleLabel}
+              {roleLabel === 'Admin'
+                ? isDe
+                  ? 'Admin'
+                  : 'Admin'
+                : roleLabel === 'Mentor'
+                  ? isDe
+                    ? 'Mentor:in'
+                    : 'Mentor'
+                  : isDe
+                    ? 'Mentee'
+                    : 'Mentee'}
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -231,16 +224,26 @@ export function TopNav({
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{userName}</p>
-                    <p className="text-muted-foreground text-xs">{roleLabel}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {roleLabel === 'Admin'
+                        ? 'Admin'
+                        : roleLabel === 'Mentor'
+                          ? isDe
+                            ? 'Mentor:in'
+                            : 'Mentor'
+                          : isDe
+                            ? 'Mentee'
+                            : 'Mentee'}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <Link href={dashboardHref} className="block">
-                    <DropdownMenuItem className="cursor-pointer">My dashboard</DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">{isDe ? 'Mein Dashboard' : 'My dashboard'}</DropdownMenuItem>
                   </Link>
                   <Link href="/dashboard/general" className="block">
-                    <DropdownMenuItem className="cursor-pointer">Account settings</DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">{isDe ? 'Kontoeinstellungen' : 'Account settings'}</DropdownMenuItem>
                   </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -250,7 +253,7 @@ export function TopNav({
                     await signOut({ callbackUrl: '/' });
                   }}
                 >
-                  Log out
+                  {isDe ? 'Abmelden' : 'Log out'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

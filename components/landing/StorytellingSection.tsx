@@ -23,16 +23,16 @@ export function StorytellingSection() {
       <div className="relative z-[1] mx-auto max-w-[1280px]">
         <div className="mb-16 max-w-[640px]">
           <div className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#B580FF]">
-            {t('Story Creation Tool — TP3', 'Story-Creation-Tool — TP3')}
+            {t('Story Creation Tool — TP3', 'Story-Werkzeug — TP3')}
           </div>
           <h2 className="font-[family-name:var(--font-lora)] text-[clamp(2rem,3vw,2.8rem)] font-bold leading-tight tracking-tight">
-            {t('A co-creative space for ', 'Ein ko-kreativer Raum für ')}
+            {t('A co-creative space for ', 'Ein gemeinsam gestalteter Raum für ')}
             <em className="font-normal italic text-[#B580FF]">{t('your story', 'deine Geschichte')}</em>
           </h2>
           <p className="mt-4 text-[0.97rem] leading-relaxed text-white/70">
             {t(
               'The core innovation of Building Bridges: a digital storytelling tool where you control how much you share, whether to publish, and how AI assists your creative process. Built with and for the community.',
-              'Die zentrale Innovation: ein digitales Storytelling-Tool, in dem du steuerst, wie viel du teilst, ob du veröffentlichst und wie KI deinen Prozess unterstützt — mit und für die Community.'
+              'Die zentrale Innovation: ein digitales Story-Werkzeug, in dem du steuerst, wie viel du teilst, ob du veröffentlichst und wie KI deinen Prozess unterstützt — mit und für die Community.'
             )}
           </p>
         </div>
@@ -57,14 +57,20 @@ export function StorytellingSection() {
                 },
                 {
                   n: '3',
-                  title: t('Share your experience', 'Teile deine Erfahrung'),
-                  body: t('What happened? Use prompts, templates, or free text.', 'Was ist passiert? Nutze Leitfragen oder freien Text.'),
+                  title: t('Share your experience', 'Teile deine Geschichte'),
+                  body: t(
+                    'What would you like to share about this experience? Use prompts, templates, or free text.',
+                    'Was möchtest du über diese Erfahrung teilen? Nutze Leitfragen, Vorlagen oder freien Text.'
+                  ),
                   opts: [t('⚠️ Skip sensitive sections', '⚠️ Sensible Teile überspringen')],
                 },
                 {
                   n: '4',
-                  title: t('Add your empowerment message', 'Empowerment-Botschaft'),
-                  body: t('What would you like others to know?', 'Was sollen andere wissen?'),
+                  title: t('Add your empowerment message', 'Empowerment-Botschaft hinzufügen'),
+                  body: t(
+                    'What would you like others to know?',
+                    'Welche ermutigende Botschaft möchtest du anderen mitgeben?'
+                  ),
                   opts: [],
                 },
                 {

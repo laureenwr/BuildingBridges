@@ -132,7 +132,7 @@ export function CommunityStories() {
   const filters: { id: StoryFilter; label: string }[] = [
     { id: 'all', label: t('All', 'Alle') },
     { id: 'mentor', label: t('Mentors', 'Mentorinnen') },
-    { id: 'participant', label: t('Participants', 'Teilnehmerinnen') },
+    { id: 'participant', label: t('Participants', 'Teilnehmende') },
     { id: 'researcher', label: t('Researchers', 'Forschende') },
   ];
 
@@ -168,7 +168,7 @@ export function CommunityStories() {
         <p className="cs-subtitle">
           {t(
             'Real experiences from mentors, researchers and participants — shared to inspire, connect and empower. More stories are added as interviews are conducted.',
-            'Echte Erfahrungen von Mentorinnen, Forschenden und Teilnehmerinnen — geteilt, um zu inspirieren, zu verbinden und zu stärken. Weitere Stories werden mit laufenden Interviews ergänzt.'
+            'Echte Erfahrungen von Mentorinnen, Forschenden und Teilnehmende — geteilt, um zu inspirieren, zu verbinden und zu stärken. Weitere Stories werden mit laufenden Interviews ergänzt.'
           )}
         </p>
 
@@ -256,7 +256,12 @@ export function CommunityStories() {
                     <div className="cs-av">👩🏻</div>
                   </div>
                   <div className="cta-meta">
-                    {t('1 story · more coming soon', '1 Story · weitere demnächst')}
+                    {publishedCount === 1
+                      ? t('1 story · more coming soon', '1 Story · weitere demnächst')
+                      : t(
+                          `${publishedCount} stories · more coming soon`,
+                          `${publishedCount} Stories · weitere demnächst`
+                        )}
                   </div>
                 </div>
                 <button type="button" className="cta-btn" onClick={scrollToStoryTool}>

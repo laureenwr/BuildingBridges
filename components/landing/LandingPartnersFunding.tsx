@@ -5,7 +5,16 @@ import Link from 'next/link';
 import { FundingBanner } from '@/components/partners/FundingBanner';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
-const partners = [
+type PartnerCard = {
+  tag: string;
+  name: string;
+  role: string;
+  body: string;
+  href: string;
+  logo: string;
+};
+
+const partnersEn: PartnerCard[] = [
   {
     tag: 'Network Coordination · TP1',
     name: 'Freie University of Berlin',
@@ -32,17 +41,46 @@ const partners = [
   },
 ];
 
+const partnersDe: PartnerCard[] = [
+  {
+    tag: 'Netzwerkkoordination · TP1',
+    name: 'Freie Universität Berlin',
+    role: 'Projektleitung & Forschung',
+    body: 'Gesamtkoordination und wissenschaftliche Leitung unter Prof. Dr. Claudia Calvano.',
+    href: 'https://www.fu-berlin.de',
+    logo: '/Projektpartner Logos/FU Berlin logo.png',
+  },
+  {
+    tag: 'MEP-Entwicklung · TP2',
+    name: 'Stiftung SPI',
+    role: 'Mentoring- & Empowerment-Programm',
+    body: 'Praxisnahe Entwicklung des MEP unter MA Celiana Kiefer.',
+    href: '/partners',
+    logo: '/Projektpartner Logos/Stiftung SPI Logo.png',
+  },
+  {
+    tag: 'Digitale Plattform · TP3',
+    name: 'Universität Duisburg-Essen',
+    role: 'Digitale Plattform & Forschung',
+    body: 'Partizipative Entwicklung der digitalen Storytelling-Plattform unter Prof. Dr. Hannes Rothe.',
+    href: 'https://www.uni-due.de',
+    logo: '/Projektpartner Logos/UDE_Logo.png',
+  },
+];
+
 export function LandingPartnersFunding() {
   const { isDe } = useLanguage();
+  const partners = isDe ? partnersDe : partnersEn;
+
   return (
     <section id="partners" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-[1280px]">
         <p className="mb-3 text-center text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">{isDe ? 'Projektpartner' : 'Project Partners'}</p>
         <h2 className="mb-12 text-center font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold leading-tight tracking-tight text-[#1A1033]">
           {isDe ? (
-            <>Eine starke <em className="font-normal not-italic text-[#9152FF]">Allianz</em> aus Hochschulen &amp; Stiftungen</>
+            <>Eine starke <em className="font-normal not-italic text-[#9152FF]">Allianz</em> aus Hochschulen & Stiftungen</>
           ) : (
-            <>A strong <em className="font-normal not-italic text-[#9152FF]">alliance</em> of universities &amp; foundations</>
+            <>A strong <em className="font-normal not-italic text-[#9152FF]">alliance</em> of universities & foundations</>
           )}
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -73,7 +111,7 @@ export function LandingPartnersFunding() {
 
         <div className="mt-14">
           <FundingBanner
-            heading={isDe ? 'Gefoerdert durch' : 'Funded by'}
+            heading={isDe ? 'Gefördert durch' : 'Funded by'}
             logos={[
               { src: '/BMBF/NewLogo%20without%20bg.png', alt: 'Building Bridges', width: 220, height: 70, scale: 0.95 },
               { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Empirical Educational Research', width: 220, height: 70, scale: 0.9 },

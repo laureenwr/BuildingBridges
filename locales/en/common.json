@@ -1,0 +1,75 @@
+{
+  "vision": {
+    "badge": "Our Vision",
+    "heading": "Diversity in Education",
+    "paragraph": "We advocate for more diversity and representation in psychosocial study programs. Our vision is that universities reflect the diversity of our society.",
+    "sectionTwoHeading": "Empowerment",
+    "sectionTwoText": "Through mentoring, workshops, and community building, we strengthen girls and FLINTA* of Colour on their educational and career paths.",
+    "cta": "Join us"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "aboutProject": "About the Project",
+    "vision": "Vision & Goals",
+    "teamPartners": "Team & Partners",
+    "program": "Program",
+    "workshopsEvents": "Workshops & Events",
+    "researchActivities": "Research Activities",
+    "projectProgress": "Project Progress",
+    "platform": "Platform",
+    "knowledgeResources": "Knowledge & Resources",
+    "storyTool": "Story Creation Tool",
+    "digitalToolkit": "Digital Toolkit",
+    "partners": "Partners",
+    "contact": "Contact us",
+    "dashboard": "Dashboard",
+    "registerNow": "Register Now →",
+    "team": "Team"
+  },
+  "footer": {
+    "vision": "Vision",
+    "about": "About",
+    "platform": "Platform",
+    "program": "Program",
+    "legal": "Legal",
+    "team": "Team",
+    "partners": "Partners",
+    "contact": "Contact",
+    "knowledgeHub": "Knowledge Hub",
+    "storyTool": "Story Tool",
+    "glossary": "Glossary",
+    "workshops": "Workshops",
+    "research": "Research",
+    "register": "Register",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "accessibilityBanner": "This platform is built to WCAG 2.1 accessibility standards.",
+    "wcag": "WCAG 2.1 AA",
+    "inclusiveLanguage": "Gender-inclusive language",
+    "tagline": "Empowering FLINTA individuals and girls of color to achieve their full potential in psychosocial and educational fields. 2024–2027.",
+    "copyright": "© 2024–{{year}} Building Bridges. Funded by BMBF, BMFSJ & ESF+.",
+    "accessibility": "Accessibility"
+  },
+  "account": {
+    "myAccount": "My Account",
+    "workshopsDashboard": "Workshops dashboard",
+    "settings": "Settings",
+    "logOut": "Log out",
+    "register": "Register →",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "platformPreview": {
+    "title": "Platform Access (Preview Mode)",
+    "userDashboard": "User Dashboard",
+    "adminDashboard": "Admin Dashboard"
+  },
+  "story": {
+    "shareStory": "Share your story",
+    "toolLabel": "Story Tool",
+    "softPrompt1": "Which challenges have you experienced?",
+    "softPrompt2": "What would you like to share about this experience?"
+  }
+}

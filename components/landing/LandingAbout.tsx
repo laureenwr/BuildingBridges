@@ -61,7 +61,7 @@ export function LandingAbout() {
           transition={{ duration: 0.45 }}
           className="text-center font-lora text-[clamp(2rem,3.4vw,3rem)] font-bold text-[#12162b]"
         >
-          {isDe ? 'Ueber das Projekt' : 'About the project'}
+          {isDe ? 'Über das Projekt' : 'About the project'}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 14 }}
@@ -71,7 +71,7 @@ export function LandingAbout() {
           className="mx-auto mt-4 max-w-4xl text-center text-[clamp(1rem,1.7vw,1.1rem)] leading-relaxed text-[#3f3f52]"
         >
           {isDe
-            ? 'Building Bridges ist ein 36-monatiges interdisziplinaeres Forschungs- und Entwicklungsprojekt zur Staerkung und Begleitung von Girls und FLINTA* of Colour ab der 10. Klasse. Das Projekt wird von der Freien Universitaet Berlin, der Stiftung SPI und der Universitaet Duisburg-Essen umgesetzt.'
+            ? 'Building Bridges ist ein 36-monatiges interdisziplinäres Forschungs- und Entwicklungsprojekt zur Stärkung und Begleitung von Girls und FLINTA* of Colour ab der 10. Klasse. Das Projekt wird von der Freien Universität Berlin, der Stiftung SPI und der Universität Duisburg-Essen umgesetzt.'
             : 'Building Bridges is a 36-month interdisciplinary research and development project to empower and mentor girls and FLINTA* of color from the 10th grade onward. It is carried out by the Freie University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.'}
         </motion.p>
 
@@ -111,10 +111,10 @@ export function LandingAbout() {
                 <p className="mt-3 text-[0.98rem] leading-relaxed text-[#30404f]">
                   {isDe
                     ? pillar.chip === 'TP1'
-                      ? 'Das Projekt wird wissenschaftlich durch die Freie Universitaet Berlin begleitet. Interviews und Frageboegen erfassen Diskriminierungserfahrungen, mentale Gesundheit, Stressoren, Ressourcen und Bildungsbeteiligung. Das MEP wird hinsichtlich Machbarkeit und Akzeptanz evaluiert.'
+                      ? 'Das Projekt wird wissenschaftlich durch die Freie Universität Berlin begleitet. Interviews und Fragebögen erfassen Diskriminierungserfahrungen, mentale Gesundheit, Stressoren, Ressourcen und Bildungsbeteiligung. Das MEP wird hinsichtlich Machbarkeit und Akzeptanz evaluiert.'
                       : pillar.chip === 'TP2'
-                        ? 'Entwicklung des Mentoring-Empowerment-Programms (MEP), das BIPoC Girls und FLINTA* ab Klasse 10 auf dem akademischen Weg in psychosoziale Felder begleitet. Das MEP bietet Mentoring und Workshops zu Empowerment, Self-Care und Uebergang Schule-Hochschule.'
-                        : 'Partizipative Entwicklung einer lebendigen digitalen Plattform fuer kontextsensitive Erzaehlformate mit audiovisuellen Erfahrungsberichten und nachhaltigem Peer-to-Peer-Austausch.'
+                        ? 'Entwicklung des Mentoring-Empowerment-Programms (MEP), das BIPoC Girls und FLINTA* ab Klasse 10 auf ihrem akademischen Weg in psychosoziale Felder begleitet. Das MEP bietet Mentoring und Workshops zu Empowerment, Self-Care und dem Übergang von Schule zu Hochschule.'
+                        : 'Partizipative Entwicklung einer digitalen Plattform für kontextsensible Erzählformate mit audiovisuellen Erfahrungsberichten und nachhaltigem Peer-to-Peer-Austausch.'
                     : pillar.body}
                 </p>
               </motion.article>

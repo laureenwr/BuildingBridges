@@ -12,10 +12,10 @@ export default function ImprintPage() {
 
         <div className="rounded-[24px] border border-[rgba(145,82,255,0.15)] bg-white p-8 shadow-[0_8px_32px_rgba(145,82,255,0.13)]">
           <div className="prose max-w-none prose-headings:font-lora prose-headings:text-[#1A1033] prose-p:text-[#6B5F8A] prose-li:text-[#6B5F8A]">
-          <h2>{isDe ? 'Angaben gemaess § 5 TMG' : 'Information according to § 5 TMG'}</h2>
+          <h2>{isDe ? 'Angaben gemäß § 5 TMG' : 'Information according to § 5 TMG'}</h2>
           <p>
             {isDe
-              ? 'Building Bridges - Verbundprojekt aus Freie Universitaet Berlin, Stiftung SPI und Universitaet Duisburg-Essen. Diese Website dient der Information ueber das Projekt.'
+              ? 'Building Bridges - Verbundprojekt aus Freie Universität Berlin, Stiftung SPI und Universität Duisburg-Essen. Diese Website dient der Information über das Projekt.'
               : 'Building Bridges is a joint project of Freie University Berlin, SPI Foundation, and the University of Duisburg-Essen. This website provides information about the project.'}
           </p>
 
@@ -25,17 +25,17 @@ export default function ImprintPage() {
             {isDe ? 'Postanschrift' : 'Postal address'}: Habelschwerdter Allee 45, 14195 Berlin ({isDe ? 'Projektkoordination' : 'Project coordination'})
           </p>
 
-          <h3>{isDe ? 'Verantwortlich fuer den Inhalt' : 'Responsible for content'}</h3>
+          <h3>{isDe ? 'Verantwortlich für den Inhalt' : 'Responsible for content'}</h3>
           <p>
             {isDe
-              ? 'Freie Universitaet Berlin - Professur Klinische Kinder- und Jugendpsychologie und -psychotherapie (Projektleitung): Univ.-Prof. Dr. Claudia Calvano'
+              ? 'Freie Universität Berlin - Professur Klinische Kinder- und Jugendpsychologie und -psychotherapie (Projektleitung): Univ.-Prof. Dr. Claudia Calvano'
               : 'Freie University Berlin - Chair of Clinical Child and Adolescent Psychology and Psychotherapy (Project lead): Univ.-Prof. Dr. Claudia Calvano'}
           </p>
 
           <h3>{isDe ? 'Haftungsausschluss' : 'Disclaimer'}</h3>
           <p>
             {isDe
-              ? 'Fuer Inhalte externer Links uebernehmen wir keine Haftung. Fuer den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich.'
+              ? 'Für Inhalte externer Links übernehmen wir keine Haftung. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.'
               : 'We assume no liability for the content of external links. The operators of linked pages are solely responsible for their content.'}
           </p>
 

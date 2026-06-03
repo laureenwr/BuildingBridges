@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Menu, X, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,6 +18,9 @@ import {
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { getMarketingDashboardHref } from '@/lib/nav/dashboard-href';
+import { useTranslation } from 'react-i18next';
+import { setStoredLanguage } from '@/lib/i18n/language';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 function NavDrop({
   label,
@@ -67,26 +70,8 @@ export function Navbar() {
   const { user } = useUser();
   const dashboardHref = getMarketingDashboardHref(user);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [lang, setLang] = useState<'en' | 'de'>('en');
-
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem('bb_lang_v1');
-      if (v === 'de' || v === 'en') setLang(v);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    try {
-      localStorage.setItem('bb_lang_v1', lang);
-    } catch {
-      /* ignore */
-    }
-    window.dispatchEvent(new CustomEvent('bb-lang-change', { detail: lang }));
-  }, [lang]);
+  const { lang } = useLanguage();
+  const { t } = useTranslation('common');
 
   return (
     <header className="fixed left-0 right-0 top-0 z-[9999] border-b border-[rgba(145,82,255,0.15)] bg-[rgba(255,255,255,0.97)] shadow-[0_1px_20px_rgba(145,82,255,0.06)] backdrop-blur-xl">
@@ -110,31 +95,31 @@ export function Navbar() {
               href="/#home"
               className="rounded-lg px-3 py-1.5 text-[0.835rem] font-medium text-[#6B5F8A] transition hover:bg-[#F5F0FF] hover:text-[#9152FF]"
             >
-              Home
+              {t('nav.home', { defaultValue: 'Home' })}
             </Link>
           </li>
-          <NavDrop label="About" href="/#about">
-            <NavDropLink href="/#about">About the Project</NavDropLink>
-            <NavDropLink href="/#about">Vision &amp; Goals</NavDropLink>
-            <NavDropLink href="/#team">Team &amp; Partners</NavDropLink>
+          <NavDrop label={t('nav.about', { defaultValue: 'About' })} href="/#about">
+            <NavDropLink href="/#about">{t('nav.aboutProject', { defaultValue: 'About the Project' })}</NavDropLink>
+            <NavDropLink href="/vision">{t('nav.vision', { defaultValue: 'Vision & Goals' })}</NavDropLink>
+            <NavDropLink href="/#team">{t('nav.teamPartners', { defaultValue: 'Team & Partners' })}</NavDropLink>
           </NavDrop>
-          <NavDrop label="Program" href="/#program">
-            <NavDropLink href="/#events">Workshops &amp; Events</NavDropLink>
-            <NavDropLink href="/#events">Research Activities</NavDropLink>
-            <NavDropLink href="/#events">Project Progress</NavDropLink>
+          <NavDrop label={t('nav.program', { defaultValue: 'Program' })} href="/#program">
+            <NavDropLink href="/#events">{t('nav.workshopsEvents', { defaultValue: 'Workshops & Events' })}</NavDropLink>
+            <NavDropLink href="/#events">{t('nav.researchActivities', { defaultValue: 'Research Activities' })}</NavDropLink>
+            <NavDropLink href="/#events">{t('nav.projectProgress', { defaultValue: 'Project Progress' })}</NavDropLink>
           </NavDrop>
-          <NavDrop label="Platform" href="/#knowledge">
-            <NavDropLink href="/#knowledge">Knowledge &amp; Resources</NavDropLink>
-            <NavDropLink href={dashboardHref}>Dashboard</NavDropLink>
-            <NavDropLink href="/story-tool">Story Creation Tool</NavDropLink>
-            <NavDropLink href="/story-tool">Digital Toolkit</NavDropLink>
+          <NavDrop label={t('nav.platform', { defaultValue: 'Platform' })} href="/#knowledge">
+            <NavDropLink href="/#knowledge">{t('nav.knowledgeResources', { defaultValue: 'Knowledge & Resources' })}</NavDropLink>
+            <NavDropLink href={dashboardHref}>{t('nav.dashboard', { defaultValue: 'Dashboard' })}</NavDropLink>
+            <NavDropLink href="/story-tool">{t('nav.storyTool', { defaultValue: 'Story Creation Tool' })}</NavDropLink>
+            <NavDropLink href="/story-tool">{t('nav.digitalToolkit', { defaultValue: 'Digital Toolkit' })}</NavDropLink>
           </NavDrop>
           <li>
             <Link
               href="/#partners"
               className="rounded-lg px-3 py-1.5 text-[0.835rem] font-medium text-[#6B5F8A] transition hover:bg-[#F5F0FF] hover:text-[#9152FF]"
             >
-              Partners
+              {t('nav.partners', { defaultValue: 'Partners' })}
             </Link>
           </li>
         </ul>
@@ -143,7 +128,7 @@ export function Navbar() {
           <div className="flex items-center gap-0.5 rounded-full border border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-0.5">
             <button
               type="button"
-              onClick={() => setLang('en')}
+              onClick={() => setStoredLanguage('en')}
               className={cn(
                 'rounded-full px-2.5 py-0.5 font-primary text-xs font-bold transition',
                 lang === 'en' ? 'bg-[#9152FF] text-white' : 'text-[#6B5F8A]'
@@ -153,7 +138,7 @@ export function Navbar() {
             </button>
             <button
               type="button"
-              onClick={() => setLang('de')}
+              onClick={() => setStoredLanguage('de')}
               className={cn(
                 'rounded-full px-2.5 py-0.5 font-primary text-xs font-bold transition',
                 lang === 'de' ? 'bg-[#9152FF] text-white' : 'text-[#6B5F8A]'
@@ -168,10 +153,10 @@ export function Navbar() {
             href="/contact"
             className="whitespace-nowrap rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-4 py-2 text-[0.82rem] font-semibold text-[#9152FF] transition hover:border-[#9152FF] hover:bg-[#9152FF] hover:text-white"
           >
-            Contact us
+            {t('nav.contact', { defaultValue: 'Contact us' })}
           </Link>
           <Link href={dashboardHref} className={gradientBtn}>
-            Dashboard
+            {t('nav.dashboard', { defaultValue: 'Dashboard' })}
           </Link>
           {user ? (
             <DropdownMenu>
@@ -185,19 +170,19 @@ export function Navbar() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('account.myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <Link href="/dashboard" className="block">
                     <DropdownMenuItem className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Workshops dashboard</span>
+                      <span>{t('account.workshopsDashboard')}</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/dashboard/general" className="block">
                     <DropdownMenuItem className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                      <span>{t('account.settings')}</span>
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuGroup>
@@ -209,7 +194,7 @@ export function Navbar() {
                   }}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>{t('account.logOut')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -218,7 +203,7 @@ export function Navbar() {
               href="/sign-up"
               className="whitespace-nowrap rounded-full bg-[#9152FF] px-4 py-2 text-[0.82rem] font-semibold text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)] transition hover:-translate-y-px hover:bg-[#7339E0] hover:shadow-[0_6px_20px_rgba(145,82,255,0.45)]"
             >
-              Register →
+              {t('account.register')}
             </Link>
           )}
         </div>
@@ -226,7 +211,7 @@ export function Navbar() {
         <button
           type="button"
           className="flex flex-col justify-center gap-1.5 rounded-lg p-1.5 md:hidden"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-label={mobileOpen ? t('account.closeMenu') : t('account.openMenu')}
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="h-6 w-6 text-[#1A1033]" /> : <Menu className="h-6 w-6 text-[#1A1033]" />}
@@ -242,16 +227,16 @@ export function Navbar() {
             className="fixed left-0 right-0 top-[70px] z-[9998] flex flex-col gap-0.5 overflow-hidden border-b border-[rgba(145,82,255,0.15)] bg-white px-4 py-4 shadow-lg md:hidden"
           >
             {[
-              ['Dashboard', dashboardHref],
-              ['Home', '/#home'],
-              ['About the Project', '/#about'],
-              ['Team', '/#team'],
-              ['Vision & Goals', '/#about'],
-              ['Knowledge Platform', '/#knowledge'],
-              ['Story Creation Tool', '/story-tool'],
-              ['Workshops & Events', '/#events'],
-              ['Partners', '/#partners'],
-              ['Contact us', '/contact'],
+              [t('nav.dashboard'), dashboardHref],
+              [t('nav.home'), '/#home'],
+              [t('nav.aboutProject'), '/#about'],
+              [t('nav.team'), '/#team'],
+              [t('nav.vision'), '/vision'],
+              [t('nav.knowledgeResources'), '/#knowledge'],
+              [t('nav.storyTool'), '/story-tool'],
+              [t('nav.workshopsEvents'), '/#events'],
+              [t('nav.partners'), '/#partners'],
+              [t('nav.contact'), '/contact'],
             ].map(([label, href]) => (
               <Link
                 key={href + label}
@@ -268,7 +253,7 @@ export function Navbar() {
                 className="mt-3 rounded-full bg-[#9152FF] py-3 text-center text-[0.95rem] font-semibold text-white shadow-md"
                 onClick={() => setMobileOpen(false)}
               >
-                Register Now →
+                {t('nav.registerNow')}
               </Link>
             ) : (
               <button
@@ -279,7 +264,7 @@ export function Navbar() {
                   setMobileOpen(false);
                 }}
               >
-                Log out
+                {t('account.logOut')}
               </button>
             )}
           </motion.div>

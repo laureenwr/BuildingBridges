@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type Variant = 'user' | 'admin';
 
@@ -76,6 +77,7 @@ function NavButton({
 
 export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: SidebarProps) {
   const pathname = usePathname();
+  const { isDe } = useLanguage();
   const belowHeaderTop = developmentPreviewBanner ? 'calc(70px + 2.75rem)' : '70px';
 
   const adminSections: {
@@ -83,34 +85,60 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
     items: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[];
   }[] = [
     {
-      heading: 'Overview',
-      items: [{ href: '/portal/admin', label: 'Dashboard', icon: LayoutDashboard }],
+      heading: isDe ? 'Überblick' : 'Overview',
+      items: [{ href: '/portal/admin', label: isDe ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard }],
     },
     {
-      heading: 'Users',
+      heading: isDe ? 'Nutzer:innen' : 'Users',
       items: [
-        { href: '/portal/admin/users/pending', label: 'Pending Approvals', icon: UserPlus },
-        { href: '/portal/admin/users/approved', label: 'Approved Users', icon: UserCheck },
-        { href: '/portal/admin/users/rejected', label: 'Rejected Users', icon: UserX },
+        { href: '/portal/admin/users/pending', label: isDe ? 'Ausstehende Freigaben' : 'Pending Approvals', icon: UserPlus },
+        { href: '/portal/admin/users/approved', label: isDe ? 'Freigegebene Nutzer:innen' : 'Approved Users', icon: UserCheck },
+        { href: '/portal/admin/users/rejected', label: isDe ? 'Abgelehnte Nutzer:innen' : 'Rejected Users', icon: UserX },
       ],
     },
     {
-      heading: 'Stories',
+      heading: isDe ? 'Stories' : 'Stories',
       items: [
-        { href: '/portal/admin/stories/review', label: 'Stories for Review', icon: FileSearch },
-        { href: '/portal/admin/stories/published', label: 'Published Stories', icon: Globe },
+        { href: '/portal/admin/stories/review', label: isDe ? 'Stories zur Prüfung' : 'Stories for Review', icon: FileSearch },
+        { href: '/portal/admin/stories/published', label: isDe ? 'Veröffentlichte Stories' : 'Published Stories', icon: Globe },
       ],
     },
     {
-      heading: 'System',
-      items: [{ href: '/portal/admin/settings', label: 'Settings', icon: Settings }],
+      heading: isDe ? 'System' : 'System',
+      items: [{ href: '/portal/admin/settings', label: isDe ? 'Einstellungen' : 'Settings', icon: Settings }],
     },
   ];
+
+  const localizedUserLinks = userLinks.map((item) => ({
+    ...item,
+    label:
+      !isDe
+        ? item.label
+        : item.href === '/portal'
+          ? 'Dashboard'
+          : item.href === '/portal/profile'
+            ? 'Mein Profil'
+            : item.href === '/story-tool'
+              ? 'Story-Werkzeug'
+              : item.href === '/portal/stories'
+                ? 'Meine Stories'
+                : item.href === '/portal/messages'
+                  ? 'Nachrichten'
+                  : item.href === '/portal/community'
+                    ? 'Community'
+                    : item.href === '/portal/events'
+                      ? 'Events & Workshops'
+                      : item.href === '/portal/resources'
+                        ? 'Ressourcen'
+                        : item.href === '/portal/settings'
+                          ? 'Einstellungen'
+                          : item.label,
+  }));
 
   const shell = (
     <>
       <div className="flex items-center justify-between px-2 pb-4 lg:hidden">
-        <span className="font-lora text-lg font-semibold text-[#1A1033]">Menu</span>
+        <span className="font-lora text-lg font-semibold text-[#1A1033]">{isDe ? 'Menü' : 'Menu'}</span>
         <button
           type="button"
           aria-label="Close sidebar"
@@ -127,15 +155,15 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
         </div>
         <div>
           <p className="text-[0.7rem] font-bold uppercase tracking-wider text-[#9152FF]/90">
-            {variant === 'admin' ? 'Admin portal' : 'Your space'}
+            {variant === 'admin' ? (isDe ? 'Admin-Portal' : 'Admin portal') : isDe ? 'Dein Bereich' : 'Your space'}
           </p>
           <p className="text-[0.8rem] text-[#6B5F8A]">Building Bridges</p>
         </div>
       </div>
 
-      <nav className="flex flex-col gap-1" aria-label="Dashboard">
+      <nav className="flex flex-col gap-1" aria-label={isDe ? 'Dashboard-Navigation' : 'Dashboard'}>
         {variant === 'user' &&
-          userLinks.map((item) => (
+          localizedUserLinks.map((item) => (
             <NavButton
               key={item.href}
               href={item.href}

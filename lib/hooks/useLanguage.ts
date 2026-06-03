@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getStoredLanguage } from '@/lib/i18n/language';
 
 export type AppLanguage = 'en' | 'de';
 
@@ -9,14 +10,10 @@ export function useLanguage(defaultLang: AppLanguage = 'en') {
 
   useEffect(() => {
     const loadLanguage = () => {
-      try {
-        const saved = localStorage.getItem('bb_lang_v1');
-        if (saved === 'en' || saved === 'de') {
-          setLang(saved);
-          return;
-        }
-      } catch {
-        /* ignore */
+      const saved = getStoredLanguage();
+      if (saved) {
+        setLang(saved);
+        return;
       }
       setLang(document.documentElement.lang === 'de' ? 'de' : 'en');
     };

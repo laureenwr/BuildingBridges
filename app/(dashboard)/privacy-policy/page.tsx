@@ -18,20 +18,20 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-2xl font-semibold text-[#8c52ff] mb-4">{isDe ? '1. Verantwortliche Stelle' : '1. Responsible entity'}</h2>
           <p>
             {isDe
-              ? 'Betreiber der Living-Plattform im Rahmen des Projekts "Building Bridges" sind die Freie Universitaet Berlin, Stiftung SPI und Universitaet Duisburg-Essen.'
+              ? 'Betreiber der Living-Plattform im Rahmen des Projekts "Building Bridges" sind die Freie Universität Berlin, Stiftung SPI und Universität Duisburg-Essen.'
               : 'The operators of the living platform within the "Building Bridges" project are Freie University Berlin, SPI Foundation, and the University of Duisburg-Essen.'}
           </p>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '2. Datenerhebung & -verarbeitung' : '2. Data collection & processing'}</h3>
           <ul className="list-disc pl-6 mb-4">
-            <li>{isDe ? 'Erhebung ausschliesslich der fuer die Plattformteilnahme erforderlichen Daten' : 'Collection only of data required for platform participation'}</li>
+            <li>{isDe ? 'Erhebung ausschliesslich der für die Plattformteilnahme erforderlichen Daten' : 'Collection only of data required for platform participation'}</li>
             <li>{isDe ? 'Beitraege werden anonymisiert gespeichert' : 'Contributions are stored in anonymized form'}</li>
             <li>{isDe ? 'Freiwillig angegebene personenbezogene Daten werden getrennt behandelt' : 'Voluntarily provided personal data is processed separately'}</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '3. Zweck der Datenverarbeitung' : '3. Purpose of processing'}</h3>
           <p>
-            {isDe ? 'Die Daten werden ausschliesslich verwendet fuer:' : 'Data is used exclusively for:'}
+            {isDe ? 'Die Daten werden ausschliesslich verwendet für:' : 'Data is used exclusively for:'}
           </p>
           <ul className="list-disc pl-6 mb-4">
             <li>{isDe ? 'Wissenschaftliche Zwecke' : 'Scientific purposes'}</li>
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '4. Anonymisierung & Rueckschluesse' : '4. Anonymization & re-identification risk'}</h3>
           <ul className="list-disc pl-6 mb-4">
             <li>{isDe ? 'Speicherung der Beitraege in anonymisierter Form' : 'Contributions are stored in anonymized form'}</li>
-            <li>{isDe ? 'Geteilte Detailinformationen koennen potenziell Rueckschluesse ermoeglichen' : 'Shared details may still allow potential re-identification'}</li>
+            <li>{isDe ? 'Geteilte Detailinformationen können potenziell Rueckschluesse ermoeglichen' : 'Shared details may still allow potential re-identification'}</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '5. Datenweitergabe' : '5. Data sharing'}</h3>
@@ -54,8 +54,8 @@ export default function PrivacyPolicyPage() {
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '6. Speicherdauer & Loeschung' : '6. Retention & deletion'}</h3>
           <ul className="list-disc pl-6 mb-4">
-            <li>{isDe ? 'Speicherung der Daten fuer die Projektdauer bzw. bis zum Widerruf der Einwilligung' : 'Data is retained for project duration or until consent is withdrawn'}</li>
-            <li>{isDe ? 'Nutzer*innen koennen jederzeit die Loeschung ihrer Daten verlangen' : 'Users can request deletion of their data at any time'}</li>
+            <li>{isDe ? 'Speicherung der Daten für die Projektdauer bzw. bis zum Widerruf der Einwilligung' : 'Data is retained for project duration or until consent is withdrawn'}</li>
+            <li>{isDe ? 'Nutzer*innen können jederzeit die Loeschung ihrer Daten verlangen' : 'Users can request deletion of their data at any time'}</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '7. Rechte der Nutzer*innen' : '7. User rights'}</h3>
@@ -78,7 +78,7 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '9. Kontakt' : '9. Contact'}</h3>
-          <p>{isDe ? 'Bei Fragen oder Anliegen zum Datenschutz koennen Sie sich an uns wenden:' : 'For questions or concerns regarding privacy, please contact us:'}</p>
+          <p>{isDe ? 'Bei Fragen oder Anliegen zum Datenschutz können Sie sich an uns wenden:' : 'For questions or concerns regarding privacy, please contact us:'}</p>
           <p className="mb-1">{isDe ? 'Kontakt' : 'Contact'}: Team Building Bridges</p>
           <p className="mb-1">{isDe ? 'E-Mail' : 'Email'}: team@buildingbridges.de</p>
           

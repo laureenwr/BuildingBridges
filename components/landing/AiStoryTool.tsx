@@ -1,10 +1,16 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type Chapter = { label: string; icon: string; text: string; quote: string };
 
-function parseTranscriptIntoChapters(transcript: string): Chapter[] {
+function parseTranscriptIntoChapters(
+  transcript: string,
+  chapterLabels: string[],
+  fallbackStoryLabel: string,
+  chapterFallback: string
+): Chapter[] {
   const sentences = transcript
     .split(/[.!?]+/)
     .map((s) => s.trim())
@@ -12,7 +18,6 @@ function parseTranscriptIntoChapters(transcript: string): Chapter[] {
   const intervieweeLines = sentences.filter((s) => s.length > 40);
   const totalLines = intervieweeLines.length;
   const chunkSize = Math.max(2, Math.floor(totalLines / 5));
-  const chapterLabels = ['Origin', 'The Journey', 'Challenges', 'Turning Point', 'Today'];
   const icons = ['🌍', '✈️', '🔥', '💡', '🌟'];
   const chapters: Chapter[] = [];
   for (let i = 0; i < 5; i++) {
@@ -21,7 +26,7 @@ function parseTranscriptIntoChapters(transcript: string): Chapter[] {
     const chunk = intervieweeLines.slice(start, end).join('. ');
     if (chunk.length > 30) {
       chapters.push({
-        label: chapterLabels[i] ?? `Chapter ${i + 1}`,
+        label: chapterLabels[i] ?? `${chapterFallback} ${i + 1}`,
         icon: icons[i] ?? '✦',
         text: chunk,
         quote: intervieweeLines[start] ?? '',
@@ -30,7 +35,7 @@ function parseTranscriptIntoChapters(transcript: string): Chapter[] {
   }
   if (chapters.length === 0 && transcript.length > 20) {
     chapters.push({
-      label: 'Her Story',
+      label: fallbackStoryLabel,
       icon: '✦',
       text: transcript.slice(0, 400),
       quote: transcript.slice(0, 100),
@@ -49,6 +54,12 @@ function getChapterHeading(text: string) {
 }
 
 export function AiStoryTool() {
+  const { isDe } = useLanguage();
+  const L = (en: string, de: string) => (isDe ? de : en);
+  const chapterLabels = isDe
+    ? ['Herkunft', 'Die Reise', 'Herausforderungen', 'Wendepunkt', 'Heute']
+    : ['Origin', 'The Journey', 'Challenges', 'Turning Point', 'Today'];
+
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [transcript, setTranscript] = useState('');
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -57,36 +68,44 @@ export function AiStoryTool() {
   const [litRow, setLitRow] = useState<number | null>(null);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const charLabel = `${transcript.length.toLocaleString()} characters`;
+  const charLabel = L(`${transcript.length.toLocaleString()} characters`, `${transcript.length.toLocaleString()} Zeichen`);
 
   const goTo = useCallback(
     (s: 1 | 2 | 3 | 4) => {
       if (s === 2 && transcript.trim().length < 10) {
-        window.alert('Please paste some interview text first.');
+        window.alert(L('Please paste some interview text first.', 'Bitte zuerst Interviewtext einfügen.'));
         return;
       }
       setStep(s);
       document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
-    [transcript]
+    [transcript, isDe]
   );
 
   const runGenerate = useCallback(() => {
     const t = transcript.trim();
     if (!t) {
-      window.alert('Please paste a transcript first.');
+      window.alert(L('Please paste a transcript first.', 'Bitte zuerst ein Transkript einfügen.'));
       return;
     }
     setStep(3);
     const bar = document.getElementById('ai-gen-bar');
     const statusEl = document.getElementById('ai-gen-status');
-    const statuses = [
-      'Reading the transcript…',
-      'Identifying key moments…',
-      'Structuring the story…',
-      'Applying privacy settings…',
-      'Preparing previews…',
-    ];
+    const statuses = isDe
+      ? [
+          'Transkript wird gelesen…',
+          'Schlüsselmomente werden erkannt…',
+          'Story wird strukturiert…',
+          'Datenschutzeinstellungen werden angewendet…',
+          'Vorschau wird vorbereitet…',
+        ]
+      : [
+          'Reading the transcript…',
+          'Identifying key moments…',
+          'Structuring the story…',
+          'Applying privacy settings…',
+          'Preparing previews…',
+        ];
     let progress = 0;
     let si = 0;
     if (bar) bar.style.width = '0%';
@@ -103,14 +122,19 @@ export function AiStoryTool() {
     setTimeout(() => {
       if (progressRef.current) clearInterval(progressRef.current);
       if (bar) bar.style.width = '100%';
-      const ch = parseTranscriptIntoChapters(t);
+      const ch = parseTranscriptIntoChapters(
+        t,
+        chapterLabels,
+        L('Her Story', 'Ihre Geschichte'),
+        L('Chapter', 'Kapitel')
+      );
       setChapters(ch);
       setTimeout(() => {
         setStep(4);
         setFormat('immersive');
       }, 300);
     }, 1800);
-  }, [transcript]);
+  }, [transcript, isDe, chapterLabels]);
 
   const immTitleHtml = () => {
     const firstWords = transcript.trim().split(/\s+/).slice(0, 6).join(' ');
@@ -118,21 +142,36 @@ export function AiStoryTool() {
       const w = firstWords.split(' ');
       return `${w.slice(0, 3).join(' ')}<br/><em>${w.slice(3).join(' ')}</em>`;
     }
-    return 'Her <em>Story</em>';
+    return L('Her <em>Story</em>', 'Ihre <em>Story</em>');
   };
 
   return (
     <div className="ai-gen-wrapper mt-20 border-t border-white/10 pt-16" id="ai-story-tool">
       <div className="mb-8">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.4)] bg-[rgba(145,82,255,0.2)] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#B580FF]">
-          ✦ Story Generator — Sample Mode
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-amber-400/10 px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-amber-200">
+            {L('Under development', 'In Entwicklung')}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.4)] bg-[rgba(145,82,255,0.2)] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#B580FF]">
+            {L('✦ Sample preview', '✦ Vorschau (Beispiel)')}
+          </span>
         </div>
         <h3 className="font-lora text-[clamp(1.5rem,2.5vw,2rem)] font-semibold leading-tight text-white">
-          From interview to <span className="italic text-[#B580FF]">published story</span>
+          {isDe ? (
+            <>
+              Vom Interview zur <span className="italic text-[#B580FF]">veröffentlichten Story</span>
+            </>
+          ) : (
+            <>
+              From interview to <span className="italic text-[#B580FF]">published story</span>
+            </>
+          )}
         </h3>
         <p className="mt-2 max-w-[560px] text-[0.88rem] leading-relaxed text-white/50">
-          Paste a raw interview transcript, configure the story settings, and preview how it looks in two storytelling
-          formats. API integration coming soon.
+          {L(
+            'Paste a raw interview transcript, configure the story settings, and preview how it looks in two storytelling formats. API integration coming soon.',
+            'Füge ein Interview-Transkript ein, konfiguriere die Story-Einstellungen und sieh dir zwei Storytelling-Formate in der Vorschau an. API-Anbindung folgt in Kürze.'
+          )}
         </p>
       </div>
 
@@ -156,10 +195,10 @@ export function AiStoryTool() {
               >
                 {n}
               </span>
-              {n === 1 && 'Paste'}
-              {n === 2 && 'Configure'}
-              {n === 3 && 'Generate'}
-              {n === 4 && 'Review'}
+              {n === 1 && L('Paste', 'Einfügen')}
+              {n === 2 && L('Configure', 'Konfigurieren')}
+              {n === 3 && L('Generate', 'Generieren')}
+              {n === 4 && L('Review', 'Prüfen')}
             </span>
           </span>
         ))}
@@ -168,14 +207,19 @@ export function AiStoryTool() {
       <div className="overflow-hidden rounded-[20px] border border-[rgba(145,82,255,0.2)] bg-white/[0.05] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
         {step === 1 && (
           <div className="p-8">
-            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">Step 1</p>
-            <h4 className="font-lora text-xl font-semibold text-white">Paste the interview transcript</h4>
+            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 1', 'Schritt 1')}</p>
+            <h4 className="font-lora text-xl font-semibold text-white">
+              {L('Paste the interview transcript', 'Interview-Transkript einfügen')}
+            </h4>
             <p className="mb-4 mt-1 text-[0.84rem] text-white/45">
-              Raw transcript is fine — interviewer questions included. The preview uses interviewee lines only.
+              {L(
+                'Raw transcript is fine — interviewer questions included. The preview uses interviewee lines only.',
+                'Rohtranskript reicht – Fragen der Interviewer:in können enthalten sein. Die Vorschau nutzt nur die Antwortzeilen.'
+              )}
             </p>
             <textarea
               className="min-h-[200px] w-full resize-y rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 font-primary text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
-              placeholder="Paste the full interview transcript here…"
+              placeholder={L('Paste the full interview transcript here…', 'Vollständiges Interview-Transkript hier einfügen…')}
               value={transcript}
               onChange={(e) => setTranscript(e.target.value)}
             />
@@ -186,17 +230,17 @@ export function AiStoryTool() {
                 className="rounded-full border border-white/10 px-3 py-1 text-[0.75rem] text-white/40 hover:text-white/70"
                 onClick={() => setTranscript('')}
               >
-                Clear
+                {L('Clear', 'Leeren')}
               </button>
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              <span className="text-[0.76rem] text-white/20">Supports any language</span>
+              <span className="text-[0.76rem] text-white/20">{L('Supports any language', 'Unterstützt jede Sprache')}</span>
               <button
                 type="button"
                 onClick={() => goTo(2)}
                 className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)] hover:shadow-[0_6px_26px_rgba(145,82,255,0.6)]"
               >
-                Next → Configure
+                {L('Next → Configure', 'Weiter → Konfigurieren')}
               </button>
             </div>
           </div>
@@ -204,16 +248,21 @@ export function AiStoryTool() {
 
         {step === 2 && (
           <div className="p-8">
-            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">Step 2</p>
-            <h4 className="font-lora text-xl font-semibold text-white">Configure the story</h4>
-            <p className="mb-6 mt-1 text-[0.84rem] text-white/45">Choose story type and output shape (sample — not sent to a server).</p>
+            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 2', 'Schritt 2')}</p>
+            <h4 className="font-lora text-xl font-semibold text-white">{L('Configure the story', 'Story konfigurieren')}</h4>
+            <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
+              {L(
+                'Choose story type and output shape (sample — not sent to a server).',
+                'Story-Typ und Ausgabeform wählen (Beispiel – wird nicht an einen Server gesendet).'
+              )}
+            </p>
             <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
-                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">Story type</p>
+                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{L('Story type', 'Story-Typ')}</p>
                 {[
-                  ['mentor', 'Role model / mentor story'],
-                  ['participant', 'Participant experience story'],
-                  ['awareness', 'Awareness & empowerment story'],
+                  ['mentor', L('Role model / mentor story', 'Role Model / Mentorinnen-Story')],
+                  ['participant', L('Participant experience story', 'Teilnehmerinnen-Erfahrungsstory')],
+                  ['awareness', L('Awareness & empowerment story', 'Awareness- & Empowerment-Story')],
                 ].map(([v, label]) => (
                   <label key={v} className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65 hover:text-white">
                     <input
@@ -228,11 +277,11 @@ export function AiStoryTool() {
                 ))}
               </div>
               <div className="rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
-                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">Output format</p>
+                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{L('Output format', 'Ausgabeformat')}</p>
                 {[
-                  ['narrative', 'Narrative paragraphs'],
-                  ['chapters', 'Chapters with headings'],
-                  ['quotes', 'Key quotes + context'],
+                  ['narrative', L('Narrative paragraphs', 'Erzählende Absätze')],
+                  ['chapters', L('Chapters with headings', 'Kapitel mit Überschriften')],
+                  ['quotes', L('Key quotes + context', 'Kernzitate + Kontext')],
                 ].map(([v, label]) => (
                   <label key={v} className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65 hover:text-white">
                     <input type="radio" name="aiFormat" className="mt-0.5 accent-[#9152FF]" defaultChecked={v === 'narrative'} />
@@ -247,14 +296,14 @@ export function AiStoryTool() {
                 onClick={() => goTo(1)}
                 className="rounded-full border border-white/10 px-4 py-2 text-[0.84rem] text-white/40 hover:border-white/25 hover:text-white/70"
               >
-                ← Back
+                {L('← Back', '← Zurück')}
               </button>
               <button
                 type="button"
                 onClick={runGenerate}
                 className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)]"
               >
-                ✨ Generate Story →
+                {L('✨ Generate Story →', '✨ Story generieren →')}
               </button>
             </div>
           </div>
@@ -265,9 +314,9 @@ export function AiStoryTool() {
             <span className="mb-4 inline-block animate-pulse text-4xl text-[#B580FF]" aria-hidden>
               ✦
             </span>
-            <div className="font-lora text-xl text-white">Shaping your story…</div>
+            <div className="font-lora text-xl text-white">{L('Shaping your story…', 'Deine Story wird gestaltet…')}</div>
             <div id="ai-gen-status" className="mt-2 min-h-[1.3em] text-[0.84rem] text-white/45">
-              Reading the transcript…
+              {L('Reading the transcript…', 'Transkript wird gelesen…')}
             </div>
             <div className="mx-auto mt-6 h-1 max-w-[360px] overflow-hidden rounded-full bg-white/10">
               <div id="ai-gen-bar" className="h-full w-0 rounded-full bg-gradient-to-r from-[#9152FF] to-[#B580FF] shadow-[0_0_10px_rgba(145,82,255,0.5)] transition-[width] duration-500" />
@@ -277,9 +326,13 @@ export function AiStoryTool() {
 
         {step === 4 && (
           <div className="p-8">
-            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">Step 4 — Review</p>
-            <h4 className="font-lora text-xl font-semibold text-white">Choose your storytelling format</h4>
-            <p className="mb-6 mt-1 text-[0.84rem] text-white/45">Preview sample layout from your pasted text.</p>
+            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 4 — Review', 'Schritt 4 — Prüfen')}</p>
+            <h4 className="font-lora text-xl font-semibold text-white">
+              {L('Choose your storytelling format', 'Storytelling-Format wählen')}
+            </h4>
+            <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
+              {L('Preview sample layout from your pasted text.', 'Beispiel-Layout aus deinem eingefügten Text.')}
+            </p>
             <div className="mb-6 flex flex-col gap-4 sm:flex-row">
               <button
                 type="button"
@@ -291,8 +344,8 @@ export function AiStoryTool() {
                 }`}
               >
                 <div className="mb-2 text-3xl">📜</div>
-                <div className="font-bold text-white">Immersive Scroll</div>
-                <p className="mt-1 text-[0.75rem] text-white/45">Dark narrative blocks</p>
+                <div className="font-bold text-white">{L('Immersive Scroll', 'Immersives Scrollen')}</div>
+                <p className="mt-1 text-[0.75rem] text-white/45">{L('Dark narrative blocks', 'Dunkle Erzählblöcke')}</p>
               </button>
               <button
                 type="button"
@@ -304,8 +357,8 @@ export function AiStoryTool() {
                 }`}
               >
                 <div className="mb-2 text-3xl">✦</div>
-                <div className="font-bold text-white">Constellation</div>
-                <p className="mt-1 text-[0.75rem] text-white/45">Click rows to highlight moments</p>
+                <div className="font-bold text-white">{L('Constellation', 'Konstellation')}</div>
+                <p className="mt-1 text-[0.75rem] text-white/45">{L('Click rows to highlight moments', 'Zeilen anklicken, um Momente hervorzuheben')}</p>
               </button>
             </div>
 
@@ -313,14 +366,17 @@ export function AiStoryTool() {
               <div className="overflow-hidden rounded-2xl bg-[#080808] font-fraunces text-[#f7f2ec]">
                 <div className="border-b border-white/[0.06] bg-gradient-to-br from-[#0c0428] to-[#080808] px-6 py-8">
                   <div className="font-dmMono text-[0.6rem] uppercase tracking-[0.2em] text-[rgba(145,82,255,0.7)]">
-                    Building Bridges · Sample
+                    {L('Building Bridges · Sample', 'Building Bridges · Beispiel')}
                   </div>
                   <div
                     className="mt-2 text-[clamp(1.8rem,4vw,2.5rem)] font-extrabold leading-none tracking-tight"
                     dangerouslySetInnerHTML={{ __html: immTitleHtml() }}
                   />
                   <p className="font-dmSans mt-3 max-w-md text-[0.85rem] font-light leading-relaxed text-[#f7f2ec]/50">
-                    Extracted from the interview transcript · {storyType} format
+                    {L(
+                      `Extracted from the interview transcript · ${storyType} format`,
+                      `Aus dem Interview-Transkript extrahiert · ${storyType}-Format`
+                    )}
                   </p>
                 </div>
                 {chapters.slice(0, 4).map((ch) => (
@@ -343,7 +399,7 @@ export function AiStoryTool() {
                   </div>
                 ))}
                 <div className="flex items-center justify-center gap-2 border-t border-[rgba(145,82,255,0.3)] bg-[rgba(145,82,255,0.15)] px-6 py-3 font-primary text-[0.72rem] text-[rgba(145,82,255,0.8)]">
-                  📜 Immersive preview · sample only
+                  {L('📜 Immersive preview · sample only', '📜 Immersive Vorschau · nur Beispiel')}
                 </div>
               </div>
             )}
@@ -352,10 +408,18 @@ export function AiStoryTool() {
               <div className="overflow-hidden rounded-2xl bg-[#04020c] font-dmSans text-[#f7f4ff]">
                 <div className="border-b border-[rgba(129,140,248,0.1)] px-6 py-6 text-center">
                   <div className="font-fraunces text-2xl font-extrabold tracking-tight">
-                    Connect the <em className="font-light not-italic text-[#818cf8]">stars.</em>
+                    {isDe ? (
+                      <>
+                        Verbinde die <em className="font-light not-italic text-[#818cf8]">Sterne.</em>
+                      </>
+                    ) : (
+                      <>
+                        Connect the <em className="font-light not-italic text-[#818cf8]">stars.</em>
+                      </>
+                    )}
                   </div>
                   <p className="font-dmMono mt-2 text-[0.6rem] uppercase tracking-[0.12em] text-[rgba(129,140,248,0.45)]">
-                    Tap a row to highlight
+                    {L('Tap a row to highlight', 'Zeile antippen zum Hervorheben')}
                   </p>
                 </div>
                 <div className="px-4 py-2">
@@ -384,7 +448,7 @@ export function AiStoryTool() {
                   ))}
                 </div>
                 <div className="flex items-center justify-center gap-2 border-t border-[rgba(129,140,248,0.15)] bg-[rgba(129,140,248,0.08)] px-6 py-3 font-primary text-[0.72rem] text-[rgba(129,140,248,0.6)]">
-                  ✦ Constellation preview · sample only
+                  {L('✦ Constellation preview · sample only', '✦ Konstellations-Vorschau · nur Beispiel')}
                 </div>
               </div>
             )}
@@ -396,22 +460,26 @@ export function AiStoryTool() {
                   onClick={() => goTo(2)}
                   className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.78rem] text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)]"
                 >
-                  ⚙️ Reconfigure
+                  {L('⚙️ Reconfigure', '⚙️ Neu konfigurieren')}
                 </button>
                 <button
                   type="button"
                   onClick={() => goTo(1)}
                   className="rounded-full border border-white/10 px-3 py-1.5 text-[0.78rem] text-white/40 hover:text-white/70"
                 >
-                  ↺ New transcript
+                  {L('↺ New transcript', '↺ Neues Transkript')}
                 </button>
               </div>
               <button
                 type="button"
-                onClick={() => window.alert('Full page export coming with API integration!')}
+                onClick={() =>
+                  window.alert(
+                    L('Full page export coming with API integration!', 'Vollständiger Export folgt mit API-Anbindung!')
+                  )
+                }
                 className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white"
               >
-                Open full story ↗
+                {L('Open full story ↗', 'Vollständige Story öffnen ↗')}
               </button>
             </div>
           </div>

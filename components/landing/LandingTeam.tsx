@@ -7,15 +7,34 @@ import { useLanguage } from '@/lib/hooks/useLanguage';
 
 const featuredSlugs = ['claudia-calvano', 'celiana-kiefer', 'hannes-rothe'] as const;
 
-const featuredRoleTranslations: Record<string, string> = {
-  'claudia-calvano': 'Consortium Lead & Lead of Subproject 1',
-  'celiana-kiefer': 'Lead of Subproject 2 "Ment2Power" (Mentoring Program)',
-  'hannes-rothe': 'Lead of Digital Platform (TP3), Chair Holder',
+const featuredRoleTranslations: Record<string, { de: string; en: string }> = {
+  'claudia-calvano': {
+    de: 'Verbundleitung und Leitung Teilprojekt 1',
+    en: 'Consortium Lead & Lead of Subproject 1',
+  },
+  'celiana-kiefer': {
+    de: 'Teilprojektleitung von Teilprojekt 2 „Ment2Power" (Mentoringprogramm)',
+    en: 'Lead of Subproject 2 "Ment2Power" (Mentoring Program)',
+  },
+  'hannes-rothe': {
+    de: 'Projektleitung Digitale Plattform (TP3), Lehrstuhlinhaber',
+    en: 'Lead of Digital Platform (TP3), Chair Holder',
+  },
 };
 
-const orgTranslations: Record<string, string> = {
-  'Freie Universität Berlin': 'Freie University of Berlin',
-  'Universität Duisburg-Essen': 'University of Duisburg-Essen',
+const orgTranslations: Record<string, { de: string; en: string }> = {
+  'Freie Universität Berlin': {
+    de: 'Freie Universität Berlin',
+    en: 'Freie University of Berlin',
+  },
+  'Universität Duisburg-Essen': {
+    de: 'Universität Duisburg-Essen',
+    en: 'University of Duisburg-Essen',
+  },
+  'Stiftung SPI': {
+    de: 'Stiftung SPI',
+    en: 'SPI Foundation',
+  },
 };
 
 export function LandingTeam() {
@@ -34,7 +53,7 @@ export function LandingTeam() {
           )}
         </h2>
         <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">
-          {isDe ? 'Drei Partnerinstitutionen - eine gemeinsame Mission.' : 'Three partner institutions - one shared mission.'}
+          {isDe ? 'Drei Partnerinstitutionen – eine gemeinsame Mission.' : 'Three partner institutions – one shared mission.'}
         </p>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -55,10 +74,18 @@ export function LandingTeam() {
                 />
                 <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{m.name}</h4>
                 <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">
-                  {isDe ? m.role : featuredRoleTranslations[m.slug] ?? m.role}
+                  {featuredRoleTranslations[m.slug]
+                    ? isDe
+                      ? featuredRoleTranslations[m.slug].de
+                      : featuredRoleTranslations[m.slug].en
+                    : m.role}
                 </p>
                 <p className="line-clamp-4 text-[0.83rem] leading-relaxed text-[#6B5F8A]">
-                  {isDe ? m.org : orgTranslations[m.org] ?? m.org}
+                  {orgTranslations[m.org]
+                    ? isDe
+                      ? orgTranslations[m.org].de
+                      : orgTranslations[m.org].en
+                    : m.org}
                 </p>
                 <span className="mt-4 inline-block text-sm font-bold text-[#9152FF] group-hover:underline">{isDe ? 'Profil ansehen →' : 'View profile →'}</span>
               </Link>

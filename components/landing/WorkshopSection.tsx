@@ -21,10 +21,10 @@ type WorkshopItem = {
 
 const upcomingWorkshops: WorkshopItem[] = [
   {
-    title: 'Fruehlingsfest',
+    title: 'Frühlingsfest',
     date: '20.03.2026',
     time: '15:00 - 19:00',
-    location: 'Maedea',
+    location: 'Mädea',
     description:
       'A spring celebration with food, henna, self-care impulses, flowers, and community activities.',
     flyerHref: '/workshops/fruehlingsfest-2026.png',
@@ -37,15 +37,15 @@ const upcomingWorkshops: WorkshopItem[] = [
     time: '16:00 - 19:00',
     location: 'Johanna-Eck',
     description:
-      'Empowerment workshop for Maedchen* with racism experiences, centered on wellbeing and reflection.',
+      'Empowerment workshop for Mädchen* with racism experiences, centered on wellbeing and reflection.',
     flyerHref: '/workshops/mentoring-was-tut-mir-gut-2026.png',
     flyerPreview: '/workshops/mentoring-was-tut-mir-gut-2026.png',
     category: 'Mentoring',
   },
   {
-    title: 'Mentoring-Programm fuer Maedchen und junge FLINTA of Colour',
+    title: 'Mentoring-Programm für Mädchen und junge FLINTA of Colour',
     date: '09.2025 - 09.2026',
-    location: 'Maedea',
+    location: 'Mädea',
     description:
       'Mentoring programme with workshops on self-care, skills training, and long-term empowerment.',
     flyerHref: '/workshops/mentoring-programm-2025.png',
@@ -56,9 +56,9 @@ const upcomingWorkshops: WorkshopItem[] = [
 
 const archiveWorkshops: WorkshopItem[] = [
   {
-    title: 'Fruehlingsfest',
+    title: 'Frühlingsfest',
     date: '20.03.2026',
-    location: 'Maedea',
+    location: 'Mädea',
     description:
       'Spring celebration with food, henna, self-care impulses, flowers, and community activities.',
     flyerHref: '/workshops/fruehlingsfest-2026.png',
@@ -69,7 +69,7 @@ const archiveWorkshops: WorkshopItem[] = [
     title: 'Mentoring: Fokus auf "Was tut mir gut?"',
     date: '02.03.2026',
     location: 'Johanna-Eck',
-    description: 'Empowerment for Maedchen* with racism experiences with focus on inner resources.',
+    description: 'Empowerment for Mädchen* with racism experiences with focus on inner resources.',
     flyerHref: '/workshops/mentoring-was-tut-mir-gut-2026.png',
     flyerPreview: '/workshops/mentoring-was-tut-mir-gut-2026.png',
     category: 'Mentoring',
@@ -87,16 +87,16 @@ const archiveWorkshops: WorkshopItem[] = [
   {
     title: 'Kennenlerntreffen mit Building Bridges',
     date: '08.10.2025',
-    location: 'Anigo Space',
+    location: 'Anígo Space',
     description: 'Introduction meeting with safe-space discussion, shared food, and group exchange.',
     flyerHref: '/workshops/kennenlerntreffen-2025.png',
     flyerPreview: '/workshops/kennenlerntreffen-2025.png',
     category: 'Events',
   },
   {
-    title: 'Mentoring-Programm fuer Maedchen und junge FLINTA of Colour',
+    title: 'Mentoring-Programm für Mädchen und junge FLINTA of Colour',
     date: '09.2025 - 09.2026',
-    location: 'Maedea',
+    location: 'Mädea',
     description:
       'Programme journey with self-care, skills training, and empowerment workshops across the year.',
     flyerHref: '/workshops/mentoring-programm-2025.png',
@@ -158,7 +158,7 @@ export function WorkshopSection() {
     <div>
       <div className="mb-12 max-w-3xl">
         <h2 className="font-lora text-[clamp(2rem,3vw,2.6rem)] font-bold tracking-tight text-[#1A1033]">
-          Workshops &amp; Events
+          Workshops & Events
         </h2>
         <p className="mt-4 text-base leading-relaxed text-[#6B5F8A]">
           Our workshops create safe spaces for exchange, empowerment, mentoring, and shared learning.

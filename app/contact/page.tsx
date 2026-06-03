@@ -22,7 +22,7 @@ export default function ContactPage() {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {isDe
-                ? 'Haben Sie Fragen zum Building Bridges Projekt oder moechten Sie mehr ueber unsere Forschung erfahren? Wir freuen uns auf Ihre Nachricht.'
+                ? 'Haben Sie Fragen zum Building Bridges Projekt oder möchten Sie mehr über unsere Forschung erfahren? Wir freuen uns auf Ihre Nachricht.'
                 : 'Do you have questions about the Building Bridges project or want to learn more about our research? We look forward to your message.'}
             </p>
           </div>
@@ -138,7 +138,7 @@ export default function ContactPage() {
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
                     <FileText className="h-6 w-6 mr-2 text-green-600" />
-                    {isDe ? 'Fuer Medien & Presse' : 'For media & press'}
+                    {isDe ? 'Für Medien & Presse' : 'For media & press'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -166,7 +166,7 @@ export default function ContactPage() {
                   </h3>
                   <p className="text-gray-700 mb-6 max-w-3xl mx-auto">
                     {isDe
-                      ? 'Das Building Bridges Projekt laeuft von September 2024 bis August 2027. Wenn Sie als Teilnehmerin, Mentorin oder Kooperationspartnerin mitwirken moechten, freuen wir uns ueber Ihre Kontaktaufnahme.'
+                      ? 'Das Building Bridges Projekt läuft von September 2024 bis August 2027. Wenn Sie als Teilnehmende, Mentorin oder Kooperationspartnerin mitwirken möchten, freuen wir uns über Ihre Kontaktaufnahme.'
                       : 'The Building Bridges project runs from September 2024 to August 2027. If you would like to participate as a participant, mentor, or cooperation partner, we would love to hear from you.'}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -174,16 +174,16 @@ export default function ContactPage() {
                       <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Users className="h-8 w-8 text-purple-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Teilnehmerinnen' : 'For participants'}</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Für Teilnehmende' : 'For participants'}</h4>
                       <p className="text-sm text-gray-600">
-                        {isDe ? 'Maedchen und FLINTA* of Colour ab der 10. Klasse' : 'Girls and FLINTA* of Colour from grade 10 onward'}
+                        {isDe ? 'Mädchen und FLINTA* of Colour ab der 10. Klasse' : 'Girls and FLINTA* of Colour from grade 10 onward'}
                       </p>
                     </div>
                     <div className="text-center">
                       <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <University className="h-8 w-8 text-blue-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Mentorinnen' : 'For mentors'}</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Für Mentorinnen' : 'For mentors'}</h4>
                       <p className="text-sm text-gray-600">
                         {isDe ? 'Studierende und Role Models of Colour' : 'Students and role models of colour'}
                       </p>
@@ -192,7 +192,7 @@ export default function ContactPage() {
                       <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <FileText className="h-8 w-8 text-green-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Fuer Partner' : 'For partners'}</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">{isDe ? 'Für Partner' : 'For partners'}</h4>
                       <p className="text-sm text-gray-600">
                         {isDe ? 'Schulen, Organisationen und Institutionen' : 'Schools, organizations, and institutions'}
                       </p>

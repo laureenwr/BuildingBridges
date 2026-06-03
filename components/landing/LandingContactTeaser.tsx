@@ -17,7 +17,7 @@ export function LandingContactTeaser() {
     {
       number: '02',
       badge: isDe ? 'TP2 · MEP' : 'TP2 · MEP',
-      title: 'SPI Foundation',
+      title: isDe ? 'Stiftung SPI' : 'SPI Foundation',
       person: 'M.A. Celiana Kiefer',
       address: 'Grüntaler Str. 21, 13357 Berlin',
       email: 'celiana.kiefer@lvs.stiftung-spi.de',
@@ -25,9 +25,9 @@ export function LandingContactTeaser() {
     {
       number: '03',
       badge: isDe ? 'TP3 · Plattform' : 'TP3 · Platform',
-      title: 'Uni. Duisburg-Essen',
+      title: isDe ? 'Universität Duisburg-Essen' : 'University of Duisburg-Essen',
       person: 'Prof. Dr. Hannes Rothe',
-      address: 'Faculty of Computer Science',
+      address: isDe ? 'Fakultät für Informatik' : 'Faculty of Computer Science',
       email: 'hannes.rothe@ris.uni-due.de',
     },
   ];
@@ -71,7 +71,7 @@ export function LandingContactTeaser() {
           </h2>
           <p className="max-w-xl text-[0.98rem] leading-relaxed text-[var(--text-body)]">
             {isDe
-              ? 'Haben Sie Fragen zu Building Bridges? Kontaktieren Sie den passenden Projektpartner direkt oder senden Sie uns eine Nachricht ueber das Kontaktformular.'
+              ? 'Hast du Fragen zu Building Bridges? Kontaktiere den passenden Projektpartner direkt oder sende uns eine Nachricht über das Kontaktformular.'
               : 'Have questions about Building Bridges? Reach out to the right project partner directly or send us a message via the contact form.'}
           </p>
         </div>
@@ -118,7 +118,7 @@ export function LandingContactTeaser() {
               </h3>
               <p className="mt-2 text-[0.92rem] text-[#c8c2e5]">
                 {isDe
-                  ? 'Nutzen Sie das vollstaendige Kontaktformular und wir leiten Ihre Anfrage an die passende Person weiter.'
+                  ? 'Nutze das vollständige Kontaktformular, und wir leiten deine Anfrage an die passende Ansprechperson weiter.'
                   : 'Use the full contact form and we will route your request to the right team member.'}
               </p>
             </div>
