@@ -113,7 +113,7 @@ export function LandingPartnersFunding() {
           <FundingBanner
             heading={isDe ? 'Gefördert durch' : 'Funded by'}
             logos={[
-              { src: '/BMBF/NewLogo%20without%20bg.png', alt: 'Building Bridges', width: 220, height: 70, scale: 0.95 },
+              { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.png', alt: 'BMBFSFJ – Gefördert vom', width: 220, height: 70, scale: 0.95 },
               { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'Empirical Educational Research', width: 220, height: 70, scale: 0.9 },
               { src: '/BMBF/image copy 3.png', alt: 'European Union', width: 220, height: 70, scale: 0.6 },
             ]}

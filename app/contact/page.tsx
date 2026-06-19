@@ -1,5 +1,6 @@
 'use client';
 
+import { FormEvent, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,54 @@ import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export default function ContactPage() {
   const { isDe } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus(null);
+
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      firstName: String(formData.get('firstName') ?? ''),
+      lastName: String(formData.get('lastName') ?? ''),
+      email: String(formData.get('email') ?? ''),
+      organization: String(formData.get('organization') ?? ''),
+      subject: String(formData.get('subject') ?? ''),
+      message: String(formData.get('message') ?? ''),
+      language: isDe ? 'de' : 'en',
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to send message');
+      }
+
+      event.currentTarget.reset();
+      setFormStatus({
+        type: 'success',
+        message: isDe ? 'Danke, Ihre Nachricht wurde gesendet.' : 'Thank you, your message has been sent.',
+      });
+    } catch (error) {
+      setFormStatus({
+        type: 'error',
+        message: isDe
+          ? 'Ihre Nachricht konnte gerade nicht gesendet werden. Bitte versuchen Sie es später erneut.'
+          : 'We could not send your message right now. Please try again later.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#F2EEFF]">
@@ -36,46 +85,65 @@ export default function ContactPage() {
                   {isDe ? 'Nachricht senden' : 'Send message'}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">{isDe ? 'Vorname' : 'First name'}</Label>
-                    <Input id="firstName" placeholder={isDe ? 'Ihr Vorname' : 'Your first name'} />
+                    <Input id="firstName" name="firstName" required placeholder={isDe ? 'Ihr Vorname' : 'Your first name'} />
                   </div>
                   <div>
                     <Label htmlFor="lastName">{isDe ? 'Nachname' : 'Last name'}</Label>
-                    <Input id="lastName" placeholder={isDe ? 'Ihr Nachname' : 'Your last name'} />
+                    <Input id="lastName" name="lastName" required placeholder={isDe ? 'Ihr Nachname' : 'Your last name'} />
                   </div>
                 </div>
                 
                 <div>
                   <Label htmlFor="email">{isDe ? 'E-Mail-Adresse' : 'Email address'}</Label>
-                  <Input id="email" type="email" placeholder={isDe ? 'ihre.email@beispiel.de' : 'your.email@example.com'} />
+                  <Input id="email" name="email" type="email" required placeholder={isDe ? 'ihre.email@beispiel.de' : 'your.email@example.com'} />
                 </div>
                 
                 <div>
                   <Label htmlFor="organization">{isDe ? 'Institution/Organisation' : 'Institution/organization'}</Label>
-                  <Input id="organization" placeholder={isDe ? 'Ihre Institution oder Organisation' : 'Your institution or organization'} />
+                  <Input id="organization" name="organization" placeholder={isDe ? 'Ihre Institution oder Organisation' : 'Your institution or organization'} />
                 </div>
                 
                 <div>
                   <Label htmlFor="subject">{isDe ? 'Betreff' : 'Subject'}</Label>
-                  <Input id="subject" placeholder={isDe ? 'Worum geht es?' : 'What is this about?'} />
+                  <Input id="subject" name="subject" required placeholder={isDe ? 'Worum geht es?' : 'What is this about?'} />
                 </div>
                 
                 <div>
                   <Label htmlFor="message">{isDe ? 'Nachricht' : 'Message'}</Label>
                   <Textarea 
                     id="message" 
+                    name="message"
+                    required
+                    minLength={10}
                     placeholder={isDe ? 'Ihre Nachricht an das Building Bridges Team...' : 'Your message to the Building Bridges team...'}
                     rows={6}
                   />
                 </div>
+
+                {formStatus ? (
+                  <div
+                    className={`rounded-md border px-4 py-3 text-sm ${
+                      formStatus.type === 'success'
+                        ? 'border-green-200 bg-green-50 text-green-800'
+                        : 'border-red-200 bg-red-50 text-red-800'
+                    }`}
+                    role={formStatus.type === 'error' ? 'alert' : 'status'}
+                    aria-live="polite"
+                  >
+                    {formStatus.message}
+                  </div>
+                ) : null}
                 
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3">
-                  {isDe ? 'Nachricht senden' : 'Send message'}
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3">
+                  {isSubmitting ? (isDe ? 'Wird gesendet...' : 'Sending...') : isDe ? 'Nachricht senden' : 'Send message'}
                   <Send className="h-4 w-4 ml-2" />
                 </Button>
+                </form>
               </CardContent>
             </Card>
 

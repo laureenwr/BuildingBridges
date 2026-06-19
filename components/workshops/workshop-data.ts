@@ -80,24 +80,24 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
 }
 
 const featuredSource: WorkshopSource = {
-  id: 'featured-self-care',
-  title: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
+  id: 'featured-online-workshop-tp3',
+  title: {
+    en: 'Online workshop: Evaluating storytelling formats with mentors',
+    de: 'Online-Workshop: Storytelling-Formate mit Mentor:innen evaluieren',
+  },
   description: {
-    en: 'An upcoming in-person workshop for BIPoC FLINTA* teenagers: explore what self-care means, who and what supports you, and how to recharge for good and challenging times. With role model Shirley (Black feminist self-care perspective) and mentor Luca (psychology student) — practical tools and a relaxed gathering at Mädea.',
-    de: 'Ein bevorstehender Workshop vor Ort für BIPoC FLINTA* Teenager:innen: Was ist Self Care, wer und was tut uns gut, und wie tanken wir Kraft für gute und herausfordernde Zeiten? Mit Role Model Shirley (schwarz-feministische Self-Care-Perspektive) und Mentorin Luca (Psychologie-Studium) — mit Tools, Infos und einem entspannten Treffen im Mädea.',
+    en: 'Help shape the future of the Building Bridges storytelling platform: explore five storytelling prototypes, share impressions on comprehensibility, emotional connection and usability, and co-create ideas for an accessible, empowering platform.',
+    de: 'Gestalte die Zukunft der Building-Bridges-Storytelling-Plattform mit: Erkunde fünf Storytelling-Prototypen, teile Eindrücke zu Verständlichkeit, emotionaler Verbindung und Nutzbarkeit und entwickle Ideen für eine zugängliche, empowernde Plattform.',
   },
-  date: '13.06.2026',
-  time: { en: '14:00 - 17:00', de: '14:00 - 17:00 Uhr' },
-  location: {
-    en: 'Mädea, Grüntaler Str. 21, 13357 Berlin',
-    de: 'Mädea, Grüntaler Str. 21, 13357 Berlin',
-  },
-  mode: 'In Person',
-  category: 'Community',
-  image: '/workshops/Self-care.jpeg',
+  date: 'TBA',
+  time: { en: '90 minutes', de: '90 Minuten' },
+  location: { en: 'Zoom + Miro', de: 'Zoom + Miro' },
+  mode: 'Online',
+  category: 'Research',
+  image: '/workshops/Online%20workshop%20TP3.png',
   tags: {
-    en: ['Upcoming', 'Self-care', 'Community', 'Empowerment'],
-    de: ['Bevorstehend', 'Self-Care', 'Community', 'Empowerment'],
+    en: ['Upcoming', 'Online', 'TP3', 'Storytelling'],
+    de: ['Bevorstehend', 'Online', 'TP3', 'Storytelling'],
   },
 };
 
@@ -211,7 +211,7 @@ const archiveSources: ArchiveSource[] = [
     title: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
     type: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
     date: '13.06.2026',
-    status: { en: 'Upcoming event', de: 'Bevorstehende Veranstaltung' },
+    status: { en: 'Past workshop', de: 'Vergangener Workshop' },
     image: '/workshops/Self-care.jpeg',
     href: '/workshops/Self-care.jpeg',
   },
@@ -303,7 +303,7 @@ export type UpcomingWorkshopAlertData = {
   dismissLabel: string;
 };
 
-/** Copy for the upcoming-workshop alert (featured Self-Care workshop). */
+/** Copy for the upcoming-workshop alert. */
 export function getUpcomingWorkshopAlert(lang: AppLanguage): UpcomingWorkshopAlertData {
   const w = toWorkshopItem(featuredSource, lang);
   if (lang === 'de') {

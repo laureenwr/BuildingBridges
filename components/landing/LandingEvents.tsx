@@ -5,56 +5,23 @@ import Link from 'next/link';
 import { UpcomingWorkshopAlert } from '@/components/workshops/UpcomingWorkshopAlert';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
-type EventTypeStyle = 'sage' | 'amber' | 'muted';
-
 type LocalizedText = { en: string; de: string };
-
-type UpcomingEvent = {
-  type: LocalizedText;
-  audience: LocalizedText;
-  date: LocalizedText;
-  title: LocalizedText;
-  typeStyle?: EventTypeStyle;
-};
 
 const featuredNextUp = {
   eyebrow: { en: 'Next up', de: 'Als Nächstes' },
-  title: { en: 'Self-Care Workshop', de: 'Self-Care-Workshop' },
+  title: {
+    en: 'Online workshop: Evaluating storytelling formats with mentors',
+    de: 'Online-Workshop: Storytelling-Formate mit Mentor:innen evaluieren',
+  },
   meta: {
-    en: 'Friday, June 13, 2026 · 2:00–5:00 PM · Mädea',
-    de: 'Freitag, 13.06.2026 · 14:00–17:00 Uhr · Mädea',
+    en: 'Date TBA · 90 minutes · Zoom + Miro',
+    de: 'Termin folgt · 90 Minuten · Zoom + Miro',
   },
   description: {
-    en: 'Upcoming workshop for BIPoC FLINTA* teenagers — self-care tools, reflection, and community at Mädea.',
-    de: 'Bevorstehender Workshop für BIPoC FLINTA* Teenager:innen — Self-Care, Reflexion und Community im Mädea.',
+    en: 'Help shape the Building Bridges storytelling platform — explore prototypes, share feedback, and co-create ideas for an accessible digital space.',
+    de: 'Gestalte die Building-Bridges-Storytelling-Plattform mit — erkunde Prototypen, teile Feedback und entwickle Ideen für einen zugänglichen digitalen Raum.',
   },
 };
-
-const workshopOfferings: UpcomingEvent[] = [
-  {
-    type: { en: 'Community event', de: 'Community-Event' },
-    audience: { en: 'For participants', de: 'Für Teilnehmende' },
-    date: { en: 'Friday, March 20, 2026 · 3:00–7:00 PM · Mädea', de: 'Freitag, 20.03.2026 · 15:00–19:00 Uhr · Mädea' },
-    title: { en: 'Frühlingsfest', de: 'Frühlingsfest' },
-  },
-  {
-    type: { en: 'Mentoring', de: 'Mentoring' },
-    audience: { en: 'For participants', de: 'Für Teilnehmende' },
-    date: { en: 'Monday, March 2, 2026 · 4:00–7:00 PM · Johanna-Eck', de: 'Montag, 02.03.2026 · 16:00–19:00 Uhr · Johanna-Eck' },
-    title: { en: 'Mentoring: Was tut mir gut?', de: 'Mentoring: Was tut mir gut?' },
-    typeStyle: 'sage',
-  },
-  {
-    type: { en: 'Empowerment', de: 'Empowerment' },
-    audience: { en: 'For participants', de: 'Für Teilnehmende' },
-    date: { en: 'Sep 2025 – Sep 2026 · Mädea', de: '09.2025 – 09.2026 · Mädea' },
-    title: {
-      en: 'Mentoring programme for girls and young FLINTA of Colour',
-      de: 'Mentoring-Programm für Mädchen und junge FLINTA of Colour',
-    },
-    typeStyle: 'muted',
-  },
-];
 
 const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
   {
@@ -77,22 +44,6 @@ const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
 
 function pick<T extends LocalizedText>(item: T, isDe: boolean): string {
   return isDe ? item.de : item.en;
-}
-
-function TypeBadge({ label, variant }: { label: string; variant?: EventTypeStyle }) {
-  const styles =
-    variant === 'sage'
-      ? 'bg-[rgba(107,170,138,0.15)] text-[#4a9470]'
-      : variant === 'amber'
-        ? 'bg-[rgba(240,165,0,0.12)] text-[#c08800]'
-        : variant === 'muted'
-          ? 'bg-[rgba(145,82,255,0.08)] text-[#7339E0]'
-          : 'bg-[#EDE5FF] text-[#9152FF]';
-  return (
-    <span className={`inline-flex w-fit items-center gap-1 rounded-full px-3 py-1 text-[0.69rem] font-bold uppercase tracking-[0.09em] ${styles}`}>
-      {label}
-    </span>
-  );
 }
 
 export function LandingEvents() {
@@ -150,33 +101,7 @@ export function LandingEvents() {
           </div>
         </div>
 
-        <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">
-          {isDe ? 'Workshop-Angebote' : 'Workshop offerings'}
-        </p>
-        <p className="mb-8 text-[0.95rem] text-[#6B5F8A]">
-          {isDe ? 'Die nächsten Termine für Workshops und Veranstaltungen.' : 'The next dates for workshops and events.'}
-        </p>
-
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {workshopOfferings.map((e) => (
-            <article
-              key={e.title.en}
-              className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-white p-6 shadow-[0_2px_12px_rgba(145,82,255,0.08)] transition hover:-translate-y-1 hover:shadow-[0_6px_28px_rgba(145,82,255,0.13)]"
-            >
-              <TypeBadge label={pick(e.type, isDe)} variant={e.typeStyle} />
-              <span className="text-[0.72rem] font-semibold uppercase tracking-[0.07em] text-[#aaa]">
-                {pick(e.audience, isDe)}
-              </span>
-              <p className="text-[0.82rem] font-semibold text-[#7339E0]">{pick(e.date, isDe)}</p>
-              <h4 className="font-lora text-base font-bold leading-snug text-[#1A1033]">{pick(e.title, isDe)}</h4>
-              <Link href="/workshops" className="mt-auto text-[0.82rem] font-bold text-[#9152FF] hover:underline">
-                {isDe ? 'Mehr erfahren →' : 'Read more →'}
-              </Link>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-10 flex justify-center">
+        <div className="flex justify-center">
           <Link
             href="/workshops"
             className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-7 py-3 text-sm font-semibold text-white shadow-[0_6px_24px_rgba(145,82,255,0.35)] transition hover:brightness-[1.03]"

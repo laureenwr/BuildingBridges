@@ -517,7 +517,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
         <FundingBanner
           heading={t('Official funding partners', 'Offizielle Förderlogos')}
           logos={[
-            { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.svg', alt: 'BMBFSFJ', width: 220, height: 70, scale: 0.95 },
+            { src: '/BMBF/LOGO%20Kit_BMBFSFJ/BMBFSFJ_gefoerdert_vom_deutsch_Web.png', alt: 'BMBFSFJ', width: 220, height: 70, scale: 0.95 },
             { src: '/BMBF/EBF-Publikations-Kit/BG-EBF_Wortmarke.svg', alt: 'EBF', width: 220, height: 70, scale: 0.9 },
             { src: '/BMBF/image copy 3.png', alt: 'EU', width: 220, height: 70, scale: 0.6 },
           ]}
