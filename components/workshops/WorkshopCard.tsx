@@ -13,6 +13,7 @@ export function WorkshopCard({ workshop }: { workshop: WorkshopItem }) {
     <article className="group flex h-full flex-col rounded-3xl border border-[rgba(145,82,255,0.16)] bg-white p-3.5 shadow-[0_8px_24px_rgba(145,82,255,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(145,82,255,0.14)]">
       <div className="relative mb-3 aspect-[16/10] overflow-hidden rounded-2xl">
         <Image
+          key={workshop.image}
           src={workshop.image}
           alt={isDe ? `Flyer: ${workshop.title}` : `Flyer preview for ${workshop.title}`}
           fill

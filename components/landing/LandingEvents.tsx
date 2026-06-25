@@ -14,8 +14,8 @@ const featuredNextUp = {
     de: 'Online-Workshop: Storytelling-Formate mit Mentor:innen evaluieren',
   },
   meta: {
-    en: 'Date TBA · 90 minutes · Zoom + Miro',
-    de: 'Termin folgt · 90 Minuten · Zoom + Miro',
+    en: 'Friday, July 31, 2026 · Time TBD · 90 minutes · Zoom + Miro',
+    de: 'Freitag, 31.07.2026 · Uhrzeit folgt · 90 Minuten · Zoom + Miro',
   },
   description: {
     en: 'Help shape the Building Bridges storytelling platform — explore prototypes, share feedback, and co-create ideas for an accessible digital space.',

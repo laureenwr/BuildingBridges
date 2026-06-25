@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Calendar, MapPin } from 'lucide-react';
 import type { WorkshopItem } from './workshop-data';
 import { useLanguage } from '@/lib/hooks/useLanguage';
@@ -47,12 +46,14 @@ export function WorkshopHero({ workshop }: { workshop: WorkshopItem }) {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/sign-up"
+            <a
+              href={workshop.registrationUrl ?? '/sign-up'}
+              target={workshop.registrationUrl ? '_blank' : undefined}
+              rel={workshop.registrationUrl ? 'noopener noreferrer' : undefined}
               className="inline-flex items-center rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-4 py-2 text-sm font-semibold text-white shadow-[0_5px_16px_rgba(145,82,255,0.34)] transition hover:brightness-[1.04]"
             >
               {isDe ? 'Am Workshop teilnehmen' : 'Join workshop'}
-            </Link>
+            </a>
             <a
               href={workshop.image}
               target="_blank"
@@ -66,6 +67,7 @@ export function WorkshopHero({ workshop }: { workshop: WorkshopItem }) {
 
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[rgba(145,82,255,0.15)] bg-white">
           <Image
+            key={workshop.image}
             src={workshop.image}
             alt={isDe ? `Flyer: ${workshop.title}` : `Featured workshop flyer for ${workshop.title}`}
             fill

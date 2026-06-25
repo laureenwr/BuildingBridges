@@ -3,6 +3,10 @@ import type { AppLanguage } from '@/lib/hooks/useLanguage';
 type L<T> = { en: T; de: T };
 
 const pick = <T>(value: L<T>, lang: AppLanguage): T => (lang === 'de' ? value.de : value.en);
+const pickMaybeLocalized = <T>(value: T | L<T>, lang: AppLanguage): T =>
+  typeof value === 'object' && value !== null && 'en' in value && 'de' in value
+    ? pick(value as L<T>, lang)
+    : (value as T);
 
 export type WorkshopItem = {
   id: string;
@@ -16,6 +20,7 @@ export type WorkshopItem = {
   category: 'Mentoring' | 'Workshop' | 'Research' | 'Community' | 'Networking';
   categoryLabel: string;
   image: string;
+  registrationUrl?: string;
   tags: string[];
 };
 
@@ -44,7 +49,8 @@ type WorkshopSource = {
   location: L<string>;
   mode: WorkshopItem['mode'];
   category: WorkshopItem['category'];
-  image: string;
+  image: string | L<string>;
+  registrationUrl?: string;
   tags: L<string[]>;
 };
 
@@ -74,7 +80,8 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
     modeLabel: pick(MODE_LABELS[source.mode], lang),
     category: source.category,
     categoryLabel: pick(CATEGORY_LABELS[source.category], lang),
-    image: source.image,
+    image: pickMaybeLocalized(source.image, lang),
+    registrationUrl: source.registrationUrl,
     tags: pick(source.tags, lang),
   };
 }
@@ -89,12 +96,16 @@ const featuredSource: WorkshopSource = {
     en: 'Help shape the future of the Building Bridges storytelling platform: explore five storytelling prototypes, share impressions on comprehensibility, emotional connection and usability, and co-create ideas for an accessible, empowering platform.',
     de: 'Gestalte die Zukunft der Building-Bridges-Storytelling-Plattform mit: Erkunde fünf Storytelling-Prototypen, teile Eindrücke zu Verständlichkeit, emotionaler Verbindung und Nutzbarkeit und entwickle Ideen für eine zugängliche, empowernde Plattform.',
   },
-  date: 'TBA',
-  time: { en: '90 minutes', de: '90 Minuten' },
+  date: '31.07.2026',
+  time: { en: 'TBD · 90 minutes', de: 'Uhrzeit folgt · 90 Minuten' },
   location: { en: 'Zoom + Miro', de: 'Zoom + Miro' },
   mode: 'Online',
   category: 'Research',
-  image: '/workshops/Online%20workshop%20TP3.png',
+  image: {
+    en: '/workshops/TP3%20updated%20english.jpg',
+    de: '/workshops/TP3%20Updated%20Germna.jpg',
+  },
+  registrationUrl: 'https://forms.gle/19nHSdjAbFwFXxgq6',
   tags: {
     en: ['Upcoming', 'Online', 'TP3', 'Storytelling'],
     de: ['Bevorstehend', 'Online', 'TP3', 'Storytelling'],

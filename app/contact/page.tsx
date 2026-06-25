@@ -165,7 +165,7 @@ export default function ContactPage() {
                     </div>
                     <div className="flex items-center text-gray-600">
                       <Mail className="h-4 w-4 mr-2 text-purple-600" />
-                      <span>info@building-bridges.app</span>
+                      <span>building.bridges@ewi-psy.fu-berlin.de</span>
                     </div>
                     <div className="flex items-start text-gray-600">
                       <MapPin className="h-4 w-4 mr-2 text-purple-600 mt-1" />
@@ -217,7 +217,7 @@ export default function ContactPage() {
                   </p>
                   <div className="flex items-center text-gray-600">
                     <Mail className="h-4 w-4 mr-2 text-green-600" />
-                    <span>info@building-bridges.app</span>
+                    <span>building.bridges@ewi-psy.fu-berlin.de</span>
                   </div>
                 </CardContent>
               </Card>
