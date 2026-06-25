@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Bookmark, MapPin, Users } from 'lucide-react';
 import type { WorkshopItem } from './workshop-data';
 import { useLanguage } from '@/lib/hooks/useLanguage';
@@ -55,12 +54,14 @@ export function WorkshopCard({ workshop }: { workshop: WorkshopItem }) {
         </button>
       </div>
 
-      <Link
-        href="/contact"
+      <a
+        href={workshop.image}
+        target="_blank"
+        rel="noopener noreferrer"
         className="mt-4 inline-flex w-fit items-center rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-3.5 py-1.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(145,82,255,0.34)] transition hover:brightness-[1.04]"
       >
         {isDe ? 'Workshop ansehen' : 'View workshop'}
-      </Link>
+      </a>
     </article>
   );
 }
