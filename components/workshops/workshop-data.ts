@@ -44,7 +44,7 @@ type WorkshopSource = {
   id: string;
   title: L<string>;
   description: L<string>;
-  date: string;
+  date: string | L<string>;
   time: L<string>;
   location: L<string>;
   mode: WorkshopItem['mode'];
@@ -80,6 +80,7 @@ const UPDATED_FLYERS = {
   selfCare: `${UPDATED_FLYER_BASE}/20260613%20Self%20Care%20Workshop%20Building%20Bridges_page-0001.jpg`,
   juliTp3En: `${UPDATED_FLYER_BASE}/31%20Juli%20eng.jpg`,
   juliTp3De: `${UPDATED_FLYER_BASE}/31%20Juli%20German.jpg`,
+  wegeNachDerSchule: `${UPDATED_FLYER_BASE}/20260921%20Wege%20nach%20der%20Schule.png`,
 };
 
 function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem {
@@ -87,7 +88,7 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
     id: source.id,
     title: pick(source.title, lang),
     description: pick(source.description, lang),
-    date: source.date,
+    date: pickMaybeLocalized(source.date, lang),
     time: pick(source.time, lang),
     location: pick(source.location, lang),
     mode: source.mode,
@@ -101,10 +102,30 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
 }
 
 /** Set when a new upcoming workshop should be featured as “Next up”. */
-const featuredSource: WorkshopSource | null = null;
+const featuredSource: WorkshopSource | null = {
+  id: 'wege-nach-der-schule',
+  title: {
+    en: 'Paths after school',
+    de: 'Wege nach der Schule',
+  },
+  description: {
+    en: 'Online workshop for girls and young FLINTA* of Colour from 9th grade. We talk about self-organisation and self-care without burning out; paths after school such as a year abroad, internships and university; how to start making the right decision for your future; finding community and friends, especially at university; jobs and pay in social professions; and how much school grades really count.',
+    de: 'Online-Workshop für Mädchen und junge FLINTA* of Color ab der 9. Klasse: Selbstorganisation & Selbstfürsorge, Wege nach der Schule (Auslandsjahr, Praktikum, Studium), Anschluss & Freundschaft, Jobs in sozialen Berufen und wie viel Schulnoten wirklich zählen.',
+  },
+  date: { en: 'Monday, 21 September 2026', de: 'Montag, 21. September 2026' },
+  time: { en: '18:00 – 20:00', de: '18:00 – 20:00 Uhr' },
+  location: { en: 'Online', de: 'Online' },
+  mode: 'Online',
+  category: 'Workshop',
+  image: UPDATED_FLYERS.wegeNachDerSchule,
+  registrationUrl: 'mailto:buildingbridges@lvs.stiftung-spi.de',
+  tags: {
+    en: ['Upcoming', 'Online', 'Empowerment'],
+    de: ['Bevorstehend', 'Online', 'Empowerment'],
+  },
+};
 
-/** Upcoming / ongoing sessions shown in the workshops feed. Empty while none are scheduled. */
-const feedSources: WorkshopSource[] = [];
+const feedSources: WorkshopSource[] = featuredSource ? [featuredSource] : [];
 
 type ArchiveSource = {
   id: string;
