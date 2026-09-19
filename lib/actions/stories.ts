@@ -168,6 +168,14 @@ async function reviewerIsAdmin(): Promise<boolean> {
   return isDashboardPreviewModeEnabled({ hostHeader: headers().get('host') });
 }
 
+function revalidateStoryPaths() {
+  revalidatePath('/portal/admin');
+  revalidatePath('/portal/admin/stories/review');
+  revalidatePath('/portal/admin/stories/published');
+  revalidatePath('/stories');
+  revalidatePath('/story-tool');
+}
+
 export async function reviewStoryAction(
   previousState: StoryReviewActionState | FormData,
   formData?: FormData
@@ -187,6 +195,25 @@ export async function reviewStoryAction(
 
     if (!Number.isInteger(storyId) || storyId <= 0) {
       return { type: 'error', message: 'Invalid story ID.' };
+    }
+
+    if (decision === 'delete') {
+      const deleted = await db.execute<{ id: number; title: string }>(sql`
+        DELETE FROM stories
+        WHERE id = ${storyId}
+        RETURNING id, title
+      `);
+      const deletedStory = deleted[0];
+
+      if (!deletedStory) {
+        return { type: 'error', message: 'Story was not found or has already been deleted.' };
+      }
+
+      revalidateStoryPaths();
+      return {
+        type: 'success',
+        message: `Story "${deletedStory.title}" was deleted.`,
+      };
     }
 
     const nextStatus = decision === 'approve' ? 'approved' : decision === 'reject' ? 'rejected' : null;
@@ -209,12 +236,7 @@ export async function reviewStoryAction(
       };
     }
 
-    revalidatePath('/portal/admin');
-    revalidatePath('/portal/admin/stories/review');
-    revalidatePath('/portal/admin/stories/published');
-    revalidatePath('/stories');
-    revalidatePath('/story-tool');
-
+    revalidateStoryPaths();
     return {
       type: 'success',
       message: `Story "${updatedStory.title}" was ${nextStatus === 'approved' ? 'approved' : 'rejected'}.`,

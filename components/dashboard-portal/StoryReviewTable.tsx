@@ -117,7 +117,7 @@ export function StoryReviewTable({
                   </td>
                   <td className="px-5 py-3 text-[#5C5275]">{row.submittedOn}</td>
                   <td className="px-5 py-3 text-right">
-                    <div className="flex flex-wrap justify-end gap-2">
+                    <div className="flex min-w-[11rem] flex-col items-stretch gap-2">
                       <form action={submitReview}>
                         <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="approve" />
@@ -127,6 +127,22 @@ export function StoryReviewTable({
                         <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="reject" />
                         <ReviewButton variant="reject" label="Reject" pendingLabel="Rejecting..." />
+                      </form>
+                      <form
+                        action={submitReview}
+                        onSubmit={(event) => {
+                          if (
+                            !window.confirm(
+                              `Delete "${row.title}" permanently? This cannot be undone.`
+                            )
+                          ) {
+                            event.preventDefault();
+                          }
+                        }}
+                      >
+                        <input type="hidden" name="storyId" value={String(row.id)} />
+                        <input type="hidden" name="decision" value="delete" />
+                        <ReviewButton variant="delete" label="Delete story" pendingLabel="Deleting..." />
                       </form>
                     </div>
                   </td>
@@ -145,7 +161,7 @@ function ReviewButton({
   label,
   pendingLabel,
 }: {
-  variant: 'approve' | 'reject';
+  variant: 'approve' | 'reject' | 'delete';
   label: string;
   pendingLabel: string;
 }) {
@@ -156,10 +172,12 @@ function ReviewButton({
       type="submit"
       disabled={pending}
       className={cn(
-        'rounded-full px-3 py-1.5 text-[0.75rem] font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60',
+        'w-full rounded-full px-3 py-1.5 text-[0.75rem] font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60',
         variant === 'approve'
           ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:brightness-105'
-          : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200/80 hover:bg-rose-100'
+          : variant === 'delete'
+            ? 'bg-[#1A1033] text-white hover:bg-[#2A1B4A]'
+            : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200/80 hover:bg-rose-100'
       )}
     >
       {pending ? pendingLabel : label}

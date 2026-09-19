@@ -1,6 +1,9 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useFormStatus } from 'react-dom';
 import type { PublicApprovedStory } from '@/lib/actions/stories';
+import { reviewStoryAction } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export function ApprovedStoriesList({
@@ -12,6 +15,16 @@ export function ApprovedStoriesList({
 }) {
   const { isDe } = useLanguage();
   const isAdmin = variant === 'admin';
+  const router = useRouter();
+
+  async function deletePublishedStory(formData: FormData) {
+    const result = await reviewStoryAction({ type: null, message: '' }, formData);
+    if (result.type === 'success') {
+      router.refresh();
+    } else {
+      window.alert(result.message);
+    }
+  }
 
   if (stories.length === 0) {
     return (
@@ -118,8 +131,41 @@ export function ApprovedStoriesList({
               {story.empowermentMessage}
             </p>
           ) : null}
+          {isAdmin ? (
+            <form
+              className="mt-5"
+              action={deletePublishedStory}
+              onSubmit={(event) => {
+                if (
+                  !window.confirm(
+                    `Delete "${story.title}" permanently? This cannot be undone.`
+                  )
+                ) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              <input type="hidden" name="storyId" value={String(story.id)} />
+              <input type="hidden" name="decision" value="delete" />
+              <DeletePublishedButton />
+            </form>
+          ) : null}
         </article>
       ))}
     </div>
+  );
+}
+
+function DeletePublishedButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-full bg-[#1A1033] px-4 py-2 text-[0.75rem] font-semibold text-white transition hover:bg-[#2A1B4A] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? 'Deleting...' : 'Delete'}
+    </button>
   );
 }
