@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { AiStoryTool } from './AiStoryTool';
 import { CommunityStories } from './CommunityStories';
 import { StoryToolDevelopmentNotice } from './StoryToolDevelopmentNotice';
+import { ApprovedStoriesList } from '@/components/stories/ApprovedStoriesList';
+import type { PublicApprovedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
 function ToggleRow({ label, icon, initialOn = false }: { label: string; icon: string; initialOn?: boolean }) {
@@ -29,7 +31,11 @@ function ToggleRow({ label, icon, initialOn = false }: { label: string; icon: st
   );
 }
 
-export function StoryToolPageContent() {
+export function StoryToolPageContent({
+  approvedStories = [],
+}: {
+  approvedStories?: PublicApprovedStory[];
+}) {
   const { isDe } = useLanguage();
   const scrollAi = () => document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -183,6 +189,13 @@ export function StoryToolPageContent() {
 
       <AiStoryTool />
       </div>
+
+      <section className="mt-20">
+        <h2 className="mb-5 font-lora text-2xl font-semibold text-white">
+          {isDe ? 'Geprüfte Community-Einreichungen' : 'Reviewed community submissions'}
+        </h2>
+        <ApprovedStoriesList stories={approvedStories} />
+      </section>
 
       <div className="mt-20 -mx-6 sm:-mx-10">
         <CommunityStories />

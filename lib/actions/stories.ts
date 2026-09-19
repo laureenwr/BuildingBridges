@@ -24,6 +24,87 @@ function formatSubmittedOn(value: Date | string | null) {
   }).format(date);
 }
 
+export type PublicApprovedStory = {
+  id: number;
+  title: string;
+  summary: string;
+  empowermentMessage: string;
+  submittedOn: string;
+  timeline: { label: string; text: string; quote: string; icon: string }[];
+  quotes: { label: string; text: string }[];
+};
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function asText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function parseTimeline(value: unknown): PublicApprovedStory['timeline'] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      const row = asRecord(item);
+      if (!row) return null;
+      const text = asText(row.text);
+      if (!text) return null;
+      return {
+        label: asText(row.label),
+        text,
+        quote: asText(row.quote),
+        icon: asText(row.icon),
+      };
+    })
+    .filter((item): item is PublicApprovedStory['timeline'][number] => item !== null);
+}
+
+function parseQuotes(value: unknown): PublicApprovedStory['quotes'] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      const row = asRecord(item);
+      const text = row ? asText(row.text) : asText(item);
+      if (!text) return null;
+      return { label: row ? asText(row.label) : '', text };
+    })
+    .filter((item): item is PublicApprovedStory['quotes'][number] => item !== null);
+}
+
+export async function getApprovedStoriesForPublic(): Promise<PublicApprovedStory[]> {
+  try {
+    const rows = await db
+      .select({
+        id: stories.id,
+        title: stories.title,
+        summary: stories.summary,
+        empowermentMessage: stories.empowermentMessage,
+        timeline: stories.timeline,
+        quotes: stories.quotes,
+        createdAt: stories.createdAt,
+      })
+      .from(stories)
+      .where(and(eq(stories.status, 'approved'), eq(stories.consentGiven, true)))
+      .orderBy(desc(stories.createdAt));
+
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      summary: row.summary,
+      empowermentMessage: row.empowermentMessage,
+      submittedOn: formatSubmittedOn(row.createdAt),
+      timeline: parseTimeline(row.timeline),
+      quotes: parseQuotes(row.quotes),
+    }));
+  } catch (error) {
+    console.error('Failed to load approved stories for public display:', error);
+    return [];
+  }
+}
+
 export async function getPendingStoriesForReview() {
   const rows = await db
     .select({
@@ -87,6 +168,9 @@ export async function reviewStoryAction(
 
     revalidatePath('/portal/admin');
     revalidatePath('/portal/admin/stories/review');
+    revalidatePath('/portal/admin/stories/published');
+    revalidatePath('/stories');
+    revalidatePath('/story-tool');
 
     return {
       type: 'success',

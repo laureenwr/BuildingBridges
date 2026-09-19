@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { StoryToolPageContent } from '@/components/landing/StoryToolPageContent';
+import { getApprovedStoriesForPublic } from '@/lib/actions/stories';
 
 export const metadata: Metadata = {
   title: 'Story Creation Tool (in development)',
@@ -7,7 +8,11 @@ export const metadata: Metadata = {
     'Building Bridges co-creation story tool — currently under development. Browse published community stories in the meantime.',
 };
 
-export default function StoryToolPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function StoryToolPage() {
+  const approvedStories = await getApprovedStoriesForPublic();
+
   return (
     <div className="relative min-h-[calc(100dvh-70px)] overflow-hidden bg-[#1A1033] px-6 py-16 text-white sm:px-10 sm:py-20">
       <div
@@ -15,7 +20,7 @@ export default function StoryToolPage() {
         aria-hidden
       />
       <div className="relative z-[1] mx-auto max-w-[1280px]">
-        <StoryToolPageContent />
+        <StoryToolPageContent approvedStories={approvedStories} />
       </div>
     </div>
   );
