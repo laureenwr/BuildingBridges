@@ -270,3 +270,8 @@
     @apply text-primary hover:text-primary-dark underline-offset-4 hover:underline;
   }
 }
+
+/* Radix ports menus to a wrapper whose stacking context sits below the fixed header (z-9999). */
+[data-radix-popper-content-wrapper] {
+  z-index: 10050 !important;
+}

@@ -74,7 +74,7 @@ export function Navbar() {
   const { t } = useTranslation('common');
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-[9999] border-b border-[rgba(145,82,255,0.15)] bg-[rgba(255,255,255,0.97)] shadow-[0_1px_20px_rgba(145,82,255,0.06)] backdrop-blur-xl">
+    <header className="fixed left-0 right-0 top-0 z-[9999] overflow-visible border-b border-[rgba(145,82,255,0.15)] bg-[rgba(255,255,255,0.97)] shadow-[0_1px_20px_rgba(145,82,255,0.06)] backdrop-blur-xl">
       <nav className="mx-auto grid h-[70px] max-w-[1280px] grid-cols-[1fr_auto] items-center gap-4 px-6 md:grid-cols-[auto_1fr_auto] lg:gap-6">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap no-underline">
           <Image
@@ -169,7 +169,13 @@ export function Navbar() {
                   <User className="h-[1.125rem] w-[1.125rem]" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
+              <DropdownMenuContent
+                className="w-56"
+                align="end"
+                side="bottom"
+                sideOffset={12}
+                avoidCollisions={false}
+              >
                 <DropdownMenuLabel>{t('account.myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

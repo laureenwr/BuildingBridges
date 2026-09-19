@@ -160,7 +160,7 @@ export function LandingNav() {
                   {L.dashboard}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuContent align="end" side="bottom" sideOffset={12} avoidCollisions={false} className="w-52">
                 <DropdownMenuLabel>{user.email ?? 'Account'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
