@@ -3,6 +3,8 @@ import { AdminPortalHome } from '@/components/dashboard-portal/AdminPortalHome';
 import { getPendingStoriesForReview } from '@/lib/actions/stories';
 import { getUserOrPreviewForPortalAdmin } from '@/lib/dev/dashboard-preview-resolve';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPortalHomePage() {
   const user = await getUserOrPreviewForPortalAdmin();
   if (!user || user.role !== 'ADMIN') redirect(user ? '/portal' : '/sign-in');

@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import { useLandingLocale } from '@/lib/landing/locale';
 import {
   getAllCommunityStories,
-  getCommunityStoryById,
   stripHtml,
   type CommunityStoryData,
   type StoryType,
@@ -24,9 +23,12 @@ function TrustedHtml({ html, className }: { html: string; className?: string }) 
   return <span className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function CommunityStories() {
+export function CommunityStories({ extraStories = [] }: { extraStories?: CommunityStoryData[] }) {
   const { locale, t } = useLandingLocale();
-  const allStories = useMemo(() => getAllCommunityStories(locale), [locale]);
+  const allStories = useMemo(
+    () => [...extraStories, ...getAllCommunityStories(locale)],
+    [extraStories, locale]
+  );
   const [filter, setFilter] = useState<StoryFilter>('all');
   const [view, setView] = useState<'browser' | 'viewer'>('browser');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function CommunityStories() {
   const publishedCount = visibleStories.length;
   const placeholders = Math.max(0, 3 - publishedCount);
 
-  const story = selectedId ? getCommunityStoryById(locale, selectedId) : undefined;
+  const story = selectedId ? allStories.find((item) => item.id === selectedId) : undefined;
 
   const albumSlides = useMemo(() => {
     if (!story) return [];

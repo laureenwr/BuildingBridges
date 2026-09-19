@@ -24,6 +24,9 @@ const nextConfig = {
   experimental: {
     // Disable problematic features that cause manifest generation issues
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    serverActions: {
+      allowedOrigins: ['building-bridges.app', 'www.building-bridges.app'],
+    },
   },
   
   // Webpack configuration for better builds and caching

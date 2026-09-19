@@ -854,6 +854,87 @@ export function getCommunityStoryById(locale: LandingLocale, id: string): Commun
   return getAllCommunityStories(locale).find((s) => s.id === id);
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+const APPROVED_ALBUM = [
+  { bg: 'linear-gradient(160deg,#0c0428 0%,#1a0e38 40%,#0e0b1a 100%)', deco: 'radial-gradient(circle,#9152FF,transparent 70%)' },
+  { bg: 'linear-gradient(160deg,#0d1f18 0%,#082016 40%,#070e0b 100%)', deco: 'radial-gradient(circle,#6BAA8A,transparent 70%)' },
+  { bg: 'linear-gradient(160deg,#1f1400 0%,#2a1a00 40%,#0d0b00 100%)', deco: 'radial-gradient(circle,#e0a020,transparent 70%)' },
+];
+
+export function mapApprovedStoryToCommunityStory(story: {
+  id: number;
+  title: string;
+  summary: string;
+  empowermentMessage: string;
+  timeline: { label: string; text: string; quote: string; icon: string }[];
+  quotes: { label: string; text: string }[];
+}): CommunityStoryData {
+  const chaptersSource =
+    story.timeline.length > 0
+      ? story.timeline
+      : [{ label: 'Story', text: story.summary, quote: story.quotes[0]?.text ?? '', icon: '📖' }];
+
+  const chapters: StoryChapter[] = chaptersSource.map((chapter, index) => {
+    const album = APPROVED_ALBUM[index % APPROVED_ALBUM.length];
+    return {
+      num: String(index + 1).padStart(2, '0'),
+      label: chapter.label || `Chapter ${index + 1}`,
+      period: chapter.label || `Chapter ${index + 1}`,
+      icon: chapter.icon || '📖',
+      dotClass: index === 0 ? '' : 'sage',
+      heading: escapeHtml(chapter.label || story.title),
+      body: escapeHtml(chapter.text || story.summary),
+      quote: chapter.quote || story.quotes[index]?.text || '',
+      quoteCaption: '',
+      albumBg: album.bg,
+      albumDeco: album.deco,
+    };
+  });
+
+  if (story.empowermentMessage) {
+    chapters.push({
+      num: String(chapters.length + 1).padStart(2, '0'),
+      label: 'Empowerment',
+      period: 'Closing',
+      icon: '✨',
+      dotClass: 'white',
+      heading: 'Empowerment',
+      body: escapeHtml(story.empowermentMessage),
+      quote: '',
+      quoteCaption: '',
+      albumBg: APPROVED_ALBUM[0].bg,
+      albumDeco: APPROVED_ALBUM[0].deco,
+    });
+  }
+
+  return {
+    id: `submitted-${story.id}`,
+    name: story.title,
+    origin: 'Community submission',
+    field: 'Co-Creation',
+    type: 'participant',
+    avatar: '✍️',
+    avatarBg: 'linear-gradient(135deg,#9152FF,#6BAA8A)',
+    teaser: story.summary,
+    headline: escapeHtml(story.title),
+    tagline: story.summary,
+    tags: ['Community', 'Co-Creation', 'Participant'],
+    tagStyles: ['', 'sage', 'amber'],
+    cardText: story.summary,
+    keyQuote: story.quotes[0]?.text || story.empowermentMessage || story.summary,
+    timelineDesc: story.summary,
+    chapters,
+    quoteColors: QUOTE_COLORS,
+  };
+}
+
 export function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, '');
 }

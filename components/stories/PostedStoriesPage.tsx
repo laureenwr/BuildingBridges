@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { CommunityStories } from '@/components/landing/CommunityStories';
-import { ApprovedStoriesList } from '@/components/stories/ApprovedStoriesList';
+import { mapApprovedStoryToCommunityStory } from '@/lib/content/communityStories';
 import type { PublicApprovedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
@@ -12,6 +12,7 @@ export function PostedStoriesPage({
   approvedStories?: PublicApprovedStory[];
 }) {
   const { isDe } = useLanguage();
+  const extraStories = approvedStories.map(mapApprovedStoryToCommunityStory);
 
   return (
     <div className="relative min-h-[calc(100dvh-70px)] overflow-hidden bg-[#1A1033] text-white">
@@ -44,13 +45,7 @@ export function PostedStoriesPage({
             {isDe ? '← Story-Werkzeug' : '← Story Creation Tool'}
           </Link>
         </div>
-        <section className="mb-16">
-          <h2 className="mb-5 font-lora text-2xl font-semibold text-white">
-            {isDe ? 'Geprüfte Community-Einreichungen' : 'Reviewed community submissions'}
-          </h2>
-          <ApprovedStoriesList stories={approvedStories} />
-        </section>
-        <CommunityStories />
+        <CommunityStories extraStories={extraStories} />
       </div>
     </div>
   );

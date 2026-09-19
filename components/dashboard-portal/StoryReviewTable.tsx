@@ -1,6 +1,8 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { reviewStoryAction } from '@/lib/actions/stories';
 import { cn } from '@/lib/utils';
 
@@ -20,12 +22,31 @@ export type StoryReviewTableProps = {
   className?: string;
 };
 
+type ReviewState = {
+  type: 'success' | 'error' | null;
+  message: string;
+};
+
 export function StoryReviewTable({
   rows,
   title = 'Stories for review',
   className,
 }: StoryReviewTableProps) {
-  const [state, formAction] = useFormState(reviewStoryAction, { type: null, message: '' });
+  const router = useRouter();
+  const [state, setState] = useState<ReviewState>({ type: null, message: '' });
+
+  async function submitReview(formData: FormData) {
+    try {
+      const result = await reviewStoryAction({ type: null, message: '' }, formData);
+      setState(result);
+      if (result.type === 'success') {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Story review request failed:', error);
+      setState({ type: 'error', message: 'Could not update the story review status.' });
+    }
+  }
 
   return (
     <div
@@ -38,6 +59,7 @@ export function StoryReviewTable({
         <h3 className="font-lora text-lg font-semibold text-[#1A1033]">{title}</h3>
         {state.message ? (
           <p
+            role="status"
             className={cn(
               'mt-2 rounded-xl px-3 py-2 text-[0.8rem] font-medium',
               state.type === 'success'
@@ -96,13 +118,13 @@ export function StoryReviewTable({
                   <td className="px-5 py-3 text-[#5C5275]">{row.submittedOn}</td>
                   <td className="px-5 py-3 text-right">
                     <div className="flex flex-wrap justify-end gap-2">
-                      <form action={formAction}>
-                        <input type="hidden" name="storyId" value={row.id} />
+                      <form action={submitReview}>
+                        <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="approve" />
                         <ReviewButton variant="approve" label="Approve" pendingLabel="Approving..." />
                       </form>
-                      <form action={formAction}>
-                        <input type="hidden" name="storyId" value={row.id} />
+                      <form action={submitReview}>
+                        <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="reject" />
                         <ReviewButton variant="reject" label="Reject" pendingLabel="Rejecting..." />
                       </form>

@@ -1,10 +1,13 @@
 'use server';
 
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
+import { cookies, headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { getToken } from 'next-auth/jwt';
 import { db } from '@/lib/db/drizzle';
 import { getUser } from '@/lib/db/queries';
 import { stories } from '@/lib/db/schema';
+import { isDashboardPreviewModeEnabled } from '@/lib/dev/dashboard-preview-mode';
 
 type StoryReviewActionState = {
   type: 'success' | 'error' | null;
@@ -131,33 +134,73 @@ export async function getPendingStoriesForReview() {
   }));
 }
 
-export async function reviewStoryAction(
-  _previousState: StoryReviewActionState,
-  formData: FormData
-): Promise<StoryReviewActionState> {
+function asFormData(
+  previousState: StoryReviewActionState | FormData,
+  formData?: FormData
+): FormData | null {
+  if (formData instanceof FormData) return formData;
+  if (previousState instanceof FormData) return previousState;
+  return null;
+}
+
+async function reviewerIsAdmin(): Promise<boolean> {
+  // Attach cookies so NextAuth can read the session inside a Server Action.
+  const cookieStore = cookies();
   const user = await getUser();
-  if (!user || user.role !== 'ADMIN') {
-    return { type: 'error', message: 'Unauthorized. Only admins can review stories.' };
-  }
+  if (user?.role === 'ADMIN') return true;
 
-  const storyId = Number(formData.get('storyId'));
-  const decision = formData.get('decision');
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join('; ');
+  const token = await getToken({
+    req: {
+      headers: { cookie: cookieHeader },
+      cookies: Object.fromEntries(cookieStore.getAll().map((cookie) => [cookie.name, cookie.value])),
+    } as never,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  if (!Number.isInteger(storyId) || storyId <= 0) {
-    return { type: 'error', message: 'Invalid story ID.' };
-  }
+  if ((token as { role?: string } | null)?.role === 'ADMIN') return true;
+  if (user) return false;
 
-  const nextStatus = decision === 'approve' ? 'approved' : decision === 'reject' ? 'rejected' : null;
-  if (!nextStatus) {
-    return { type: 'error', message: 'Invalid review decision.' };
-  }
+  // Same localhost/dev bypass the Admin page already uses. Off in Production.
+  return isDashboardPreviewModeEnabled({ hostHeader: headers().get('host') });
+}
 
+export async function reviewStoryAction(
+  previousState: StoryReviewActionState | FormData,
+  formData?: FormData
+): Promise<StoryReviewActionState> {
   try {
-    const [updatedStory] = await db
-      .update(stories)
-      .set({ status: nextStatus })
-      .where(and(eq(stories.id, storyId), eq(stories.status, 'pending_review')))
-      .returning({ id: stories.id, title: stories.title });
+    if (!(await reviewerIsAdmin())) {
+      return { type: 'error', message: 'Unauthorized. Only admins can review stories.' };
+    }
+
+    const data = asFormData(previousState, formData);
+    if (!data) {
+      return { type: 'error', message: 'Invalid review request.' };
+    }
+
+    const storyId = Number(data.get('storyId'));
+    const decision = data.get('decision');
+
+    if (!Number.isInteger(storyId) || storyId <= 0) {
+      return { type: 'error', message: 'Invalid story ID.' };
+    }
+
+    const nextStatus = decision === 'approve' ? 'approved' : decision === 'reject' ? 'rejected' : null;
+    if (!nextStatus) {
+      return { type: 'error', message: 'Invalid review decision.' };
+    }
+
+    const updated = await db.execute<{ id: number; title: string }>(sql`
+      UPDATE stories
+      SET status = ${nextStatus}
+      WHERE id = ${storyId} AND status = 'pending_review'
+      RETURNING id, title
+    `);
+    const updatedStory = updated[0];
 
     if (!updatedStory) {
       return {

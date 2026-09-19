@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AiStoryTool } from './AiStoryTool';
 import { CommunityStories } from './CommunityStories';
 import { StoryToolDevelopmentNotice } from './StoryToolDevelopmentNotice';
-import { ApprovedStoriesList } from '@/components/stories/ApprovedStoriesList';
+import { mapApprovedStoryToCommunityStory } from '@/lib/content/communityStories';
 import type { PublicApprovedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
@@ -190,15 +190,8 @@ export function StoryToolPageContent({
       <AiStoryTool />
       </div>
 
-      <section className="mt-20">
-        <h2 className="mb-5 font-lora text-2xl font-semibold text-white">
-          {isDe ? 'Geprüfte Community-Einreichungen' : 'Reviewed community submissions'}
-        </h2>
-        <ApprovedStoriesList stories={approvedStories} />
-      </section>
-
       <div className="mt-20 -mx-6 sm:-mx-10">
-        <CommunityStories />
+        <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />
       </div>
     </>
   );
