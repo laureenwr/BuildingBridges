@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { getMarketingDashboardHref } from '@/lib/nav/dashboard-href';
 
 function NavDrop({
   label,
@@ -53,6 +54,7 @@ function NavDropLink({ href, children }: { href: string; children: React.ReactNo
 export function LandingNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useUser();
+  const dashboardHref = getMarketingDashboardHref(user);
   const { locale, setLocale, t } = useLandingLocale();
 
   const L = {
@@ -164,7 +166,7 @@ export function LandingNav() {
                 <DropdownMenuLabel>{user.email ?? 'Account'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard">{L.dashboard}</Link>
+                  <Link href={dashboardHref}>{L.dashboard}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
-import { getMarketingDashboardHref } from '@/lib/nav/dashboard-href';
+import { getMarketingDashboardHref, getPostLoginHref } from '@/lib/nav/dashboard-href';
 import { useTranslation } from 'react-i18next';
 import { setStoredLanguage } from '@/lib/i18n/language';
 import { useLanguage } from '@/lib/hooks/useLanguage';
@@ -179,7 +179,7 @@ export function Navbar() {
                 <DropdownMenuLabel>{t('account.myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <Link href="/dashboard" className="block">
+                  <Link href={getPostLoginHref(user?.role)} className="block">
                     <DropdownMenuItem className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       <span>{t('account.workshopsDashboard')}</span>

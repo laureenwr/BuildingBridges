@@ -4,6 +4,7 @@ import {
   isDashboardPreviewModeEnabled,
   isPortalRoutePath,
 } from '@/lib/dev/dashboard-preview-mode';
+import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 // Define protected paths by role
 const adminOnlyPaths = [
@@ -116,6 +117,13 @@ export async function middleware(request: NextRequest) {
   }
   
   const userRole = (token as any).role || 'STUDENT';
+
+  if (
+    (pathname === '/dashboard' || pathname === '/dashboard/') &&
+    userRole === 'ADMIN'
+  ) {
+    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
+  }
   
   // Role-based access control
   if (isAdminOnlyPath(pathname) && userRole !== 'ADMIN') {

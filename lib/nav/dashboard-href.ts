@@ -6,3 +6,9 @@ export function getMarketingDashboardHref(user: User | null | undefined) {
   if (user.role === 'ADMIN') return '/portal/admin' as const;
   return '/portal' as const;
 }
+
+/** After login or a visit to /dashboard: admins use the real Admin Portal. */
+export function getPostLoginHref(role?: string | null) {
+  if (role === 'ADMIN') return '/portal/admin' as const;
+  return '/dashboard' as const;
+}

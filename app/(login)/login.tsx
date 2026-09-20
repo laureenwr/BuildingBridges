@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
 import { signUpAction } from './actions';
-import { signIn as nextAuthSignIn } from 'next-auth/react';
+import { signIn as nextAuthSignIn, getSession } from 'next-auth/react';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/hooks/useLanguage';
+import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const { isDe } = useLanguage();
@@ -139,18 +140,24 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 const form = e.currentTarget as HTMLFormElement;
                 const email = (form.querySelector('#email') as HTMLInputElement)?.value;
                 const password = (form.querySelector('#password') as HTMLInputElement)?.value;
-                const rawCallback = (form.querySelector('input[name="redirect"]') as HTMLInputElement)?.value || '/dashboard';
+                const rawCallback = (form.querySelector('input[name="redirect"]') as HTMLInputElement)?.value || '';
                 // allow only internal paths to prevent open redirects; block protocol-relative (//)
                 const isInternal = rawCallback.startsWith('/') && !rawCallback.startsWith('//');
-                const callbackUrl = isInternal ? rawCallback : '/dashboard';
+                const requestedCallback = isInternal && rawCallback ? rawCallback : '/dashboard';
                 const result = await nextAuthSignIn('credentials', {
                   redirect: false,
                   email,
                   password,
-                  callbackUrl,
+                  callbackUrl: requestedCallback,
                 });
                 if (result?.ok) {
-                  window.location.href = result.url || callbackUrl;
+                  const session = await getSession();
+                  const home = getPostLoginHref(session?.user?.role);
+                  const dest =
+                    requestedCallback === '/dashboard' || requestedCallback === '/dashboard/'
+                      ? home
+                      : result.url || requestedCallback;
+                  window.location.href = dest;
                 } else {
                   window.location.href = '/sign-in?error=invalid-credentials';
                 }
