@@ -9,10 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
 import { signUpAction } from './actions';
-import { signIn as nextAuthSignIn, getSession } from 'next-auth/react';
+import { signIn as nextAuthSignIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/hooks/useLanguage';
-import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const { isDe } = useLanguage();
@@ -143,7 +142,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 const rawCallback = (form.querySelector('input[name="redirect"]') as HTMLInputElement)?.value || '';
                 // allow only internal paths to prevent open redirects; block protocol-relative (//)
                 const isInternal = rawCallback.startsWith('/') && !rawCallback.startsWith('//');
-                const requestedCallback = isInternal && rawCallback ? rawCallback : '/dashboard';
+                const requestedCallback = isInternal && rawCallback ? rawCallback : '/logged-in';
                 const result = await nextAuthSignIn('credentials', {
                   redirect: false,
                   email,
@@ -151,11 +150,12 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   callbackUrl: requestedCallback,
                 });
                 if (result?.ok) {
-                  const session = await getSession();
-                  const home = getPostLoginHref(session?.user?.role);
                   const dest =
-                    requestedCallback === '/dashboard' || requestedCallback === '/dashboard/'
-                      ? home
+                    !rawCallback ||
+                    requestedCallback === '/dashboard' ||
+                    requestedCallback === '/dashboard/' ||
+                    requestedCallback === '/logged-in'
+                      ? '/logged-in'
                       : result.url || requestedCallback;
                   window.location.href = dest;
                 } else {

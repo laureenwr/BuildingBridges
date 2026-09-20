@@ -84,6 +84,14 @@ export const authOptions: NextAuthOptions = {
       if (user && (user as any).role) {
         (token as any).role = (user as any).role;
       }
+      if (!(token as any).role && token.sub) {
+        const dbUser = await db.query.users.findFirst({
+          where: eq(users.id, parseInt(token.sub, 10)),
+        });
+        if (dbUser) {
+          (token as any).role = dbUser.role;
+        }
+      }
       return token;
     },
   },
