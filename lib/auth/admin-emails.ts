@@ -7,9 +7,9 @@ export function isPlatformAdminEmail(email?: string | null) {
   );
 }
 
-export function userHasAdminAccess(
-  user?: { role?: string | null; email?: string | null } | null
-) {
+export function userHasAdminAccess<T extends { role?: string | null; email?: string | null }>(
+  user?: T | null
+): user is T {
   if (!user) return false;
   return user.role === 'ADMIN' || isPlatformAdminEmail(user.email);
 }
