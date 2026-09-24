@@ -13,9 +13,15 @@ export type ApprovalTableProps = {
   rows: readonly ApprovalUserRow[];
   title?: string;
   className?: string;
+  showActions?: boolean;
 };
 
-export function ApprovalTable({ rows, title = 'Pending user approvals', className }: ApprovalTableProps) {
+export function ApprovalTable({
+  rows,
+  title = 'Registered users',
+  className,
+  showActions = false,
+}: ApprovalTableProps) {
   return (
     <div
       className={cn(
@@ -33,41 +39,33 @@ export function ApprovalTable({ rows, title = 'Pending user approvals', classNam
               <th className="whitespace-nowrap px-5 py-3 font-bold">User</th>
               <th className="whitespace-nowrap px-5 py-3 font-bold">Role</th>
               <th className="whitespace-nowrap px-5 py-3 font-bold">Joined On</th>
-              <th className="whitespace-nowrap px-5 py-3 font-bold text-right">Action</th>
+              {showActions ? (
+                <th className="whitespace-nowrap px-5 py-3 font-bold text-right">Action</th>
+              ) : null}
             </tr>
           </thead>
           <tbody className="text-[#1A1033]">
-            {rows.map((row) => (
-              <tr key={row.id} className="border-t border-[rgba(145,82,255,0.08)]">
-                <td className="px-5 py-3 font-semibold">{row.user}</td>
-                <td className="px-5 py-3 text-[#5C5275]">{row.role}</td>
-                <td className="px-5 py-3 text-[#5C5275]">{row.joinedOn}</td>
-                <td className="px-5 py-3 text-right">
-                  <div className="flex flex-wrap justify-end gap-2">
-                    <button
-                      type="button"
-                      className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1.5 text-[0.75rem] font-semibold text-white shadow-sm transition hover:brightness-105"
-                      onClick={() => {
-                        // TODO: PATCH /api/users/{id} — set approval_status: 'approved'
-                        console.info('approve user', row.id);
-                      }}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-full bg-rose-50 px-3 py-1.5 text-[0.75rem] font-semibold text-rose-700 ring-1 ring-rose-200/80 transition hover:bg-rose-100"
-                      onClick={() => {
-                        // TODO: PATCH /api/users/{id} — set approval_status: 'rejected'
-                        console.info('reject user', row.id);
-                      }}
-                    >
-                      Reject
-                    </button>
-                  </div>
+            {rows.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={showActions ? 4 : 3}
+                  className="px-5 py-8 text-center text-[0.9rem] text-[#6B5F8A]"
+                >
+                  No registered users yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              rows.map((row) => (
+                <tr key={row.id} className="border-t border-[rgba(145,82,255,0.08)]">
+                  <td className="px-5 py-3 font-semibold">{row.user}</td>
+                  <td className="px-5 py-3 text-[#5C5275]">{row.role}</td>
+                  <td className="px-5 py-3 text-[#5C5275]">{row.joinedOn}</td>
+                  {showActions ? (
+                    <td className="px-5 py-3 text-right text-[0.8rem] text-[#6B5F8A]">—</td>
+                  ) : null}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

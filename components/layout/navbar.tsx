@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
-import { getMarketingDashboardHref, getPostLoginHref } from '@/lib/nav/dashboard-href';
+import { DashboardMenuButton } from '@/components/layout/DashboardMenuButton';
 import { useTranslation } from 'react-i18next';
 import { setStoredLanguage } from '@/lib/i18n/language';
 import { useLanguage } from '@/lib/hooks/useLanguage';
@@ -63,12 +63,8 @@ function NavDropLink({ href, children }: { href: string; children: React.ReactNo
   );
 }
 
-const gradientBtn =
-  'whitespace-nowrap rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-4 py-2 text-[0.82rem] font-semibold text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)] transition hover:-translate-y-px hover:brightness-[1.03] hover:shadow-[0_6px_20px_rgba(145,82,255,0.45)]';
-
 export function Navbar() {
   const { user } = useUser();
-  const dashboardHref = getMarketingDashboardHref(user);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang } = useLanguage();
   const { t } = useTranslation('common');
@@ -110,7 +106,8 @@ export function Navbar() {
           </NavDrop>
           <NavDrop label={t('nav.platform', { defaultValue: 'Platform' })} href="/#knowledge">
             <NavDropLink href="/#knowledge">{t('nav.knowledgeResources', { defaultValue: 'Knowledge & Resources' })}</NavDropLink>
-            <NavDropLink href={dashboardHref}>{t('nav.dashboard', { defaultValue: 'Dashboard' })}</NavDropLink>
+            <NavDropLink href="/portal">{t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' })}</NavDropLink>
+            <NavDropLink href="/portal/admin">{t('nav.adminDashboard', { defaultValue: 'Admin dashboard' })}</NavDropLink>
             <NavDropLink href="/story-tool">{t('nav.storyTool', { defaultValue: 'Story Creation Tool' })}</NavDropLink>
             <NavDropLink href="/story-tool">{t('nav.digitalToolkit', { defaultValue: 'Digital Toolkit' })}</NavDropLink>
           </NavDrop>
@@ -155,9 +152,7 @@ export function Navbar() {
           >
             {t('nav.contact', { defaultValue: 'Contact us' })}
           </Link>
-          <Link href={dashboardHref} className={gradientBtn}>
-            {t('nav.dashboard', { defaultValue: 'Dashboard' })}
-          </Link>
+          <DashboardMenuButton />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -179,10 +174,16 @@ export function Navbar() {
                 <DropdownMenuLabel>{t('account.myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <Link href={getPostLoginHref(user?.role)} className="block">
+                  <Link href="/portal" className="block">
                     <DropdownMenuItem className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
-                      <span>{t('account.workshopsDashboard')}</span>
+                      <span>{t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' })}</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/portal/admin" className="block">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>{t('nav.adminDashboard', { defaultValue: 'Admin dashboard' })}</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/dashboard/general" className="block">
@@ -214,14 +215,17 @@ export function Navbar() {
           )}
         </div>
 
-        <button
-          type="button"
-          className="flex flex-col justify-center gap-1.5 rounded-lg p-1.5 md:hidden"
-          aria-label={mobileOpen ? t('account.closeMenu') : t('account.openMenu')}
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X className="h-6 w-6 text-[#1A1033]" /> : <Menu className="h-6 w-6 text-[#1A1033]" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <DashboardMenuButton compact />
+          <button
+            type="button"
+            className="flex flex-col justify-center gap-1.5 rounded-lg p-1.5"
+            aria-label={mobileOpen ? t('account.closeMenu') : t('account.openMenu')}
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? <X className="h-6 w-6 text-[#1A1033]" /> : <Menu className="h-6 w-6 text-[#1A1033]" />}
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -233,7 +237,8 @@ export function Navbar() {
             className="fixed left-0 right-0 top-[70px] z-[9998] flex flex-col gap-0.5 overflow-hidden border-b border-[rgba(145,82,255,0.15)] bg-white px-4 py-4 shadow-lg md:hidden"
           >
             {[
-              [t('nav.dashboard'), dashboardHref],
+              [t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' }), '/portal'],
+              [t('nav.adminDashboard', { defaultValue: 'Admin dashboard' }), '/portal/admin'],
               [t('nav.home'), '/#home'],
               [t('nav.aboutProject'), '/#about'],
               [t('nav.team'), '/#team'],

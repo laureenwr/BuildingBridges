@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import {
-  isDashboardPreviewModeEnabled,
-  isPortalRoutePath,
-} from '@/lib/dev/dashboard-preview-mode';
 import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 // Define protected paths by role
 const adminOnlyPaths = [
   '/dashboard/admin',
   '/dashboard/settings/users',
-  '/portal/admin',
 ];
 
 const mentorOnlyPaths = [
@@ -91,51 +86,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // TEMP: Dashboard preview mode (remove before production) — /portal unauthenticated while preview is enabled
-  if (
-    isDashboardPreviewModeEnabled({
-      hostname: request.nextUrl.hostname,
-      hostHeader: request.headers.get('host'),
-    }) &&
-    isPortalRoutePath(pathname)
-  ) {
-    const tokenEarly = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-    const previewRole = tokenEarly ? (tokenEarly as { role?: string }).role || 'STUDENT' : null;
-
-    if (isAdminOnlyPath(pathname) && previewRole != null && previewRole !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-
-    return NextResponse.next();
-  }
-
   // For all other paths, check authentication (edge-safe)
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
-    // Redirect to sign-in if not authenticated
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+    const signIn = new URL('/sign-in', request.url);
+    const dest = `${pathname}${request.nextUrl.search || ''}`;
+    if (dest.startsWith('/') && !dest.startsWith('//')) {
+      signIn.searchParams.set('redirect', dest);
+    }
+    return NextResponse.redirect(signIn);
   }
   
-  const userRole = (token as any).role || 'STUDENT';
+  const userRole = typeof (token as { role?: unknown }).role === 'string'
+    ? (token as { role: string }).role
+    : undefined;
 
-  if (
-    (pathname === '/dashboard' || pathname === '/dashboard/') &&
-    userRole === 'ADMIN'
-  ) {
+  if (pathname === '/dashboard' || pathname === '/dashboard/') {
     return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
   }
   
-  // Role-based access control
-  if (isAdminOnlyPath(pathname) && userRole !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Only bounce known non-admins. A missing JWT role must not default to student
+  // or Admin dashboard clicks get sent to the mentor portal.
+  if (isAdminOnlyPath(pathname) && userRole && userRole !== 'ADMIN') {
+    return NextResponse.redirect(new URL('/portal', request.url));
   }
   
   if (isMentorOnlyPath(pathname) && userRole !== 'MENTOR') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
   }
   
   if (isStudentOnlyPath(pathname) && userRole !== 'STUDENT') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
   }
   
   return NextResponse.next();

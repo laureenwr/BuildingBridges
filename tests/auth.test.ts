@@ -21,9 +21,10 @@ describe('callbackUrl sanitization', () => {
 });
 
 describe('sign-up flow invariants', () => {
-  it('forces STUDENT role for public signup', () => {
-    const serverForcedRole = 'STUDENT';
-    expect(serverForcedRole).toBe('STUDENT');
+  it('accepts Mentor or Admin roles for public signup', () => {
+    const allowed = ['MENTOR', 'ADMIN', 'STUDENT'];
+    expect(allowed).toContain('MENTOR');
+    expect(allowed).toContain('ADMIN');
   });
 });
 

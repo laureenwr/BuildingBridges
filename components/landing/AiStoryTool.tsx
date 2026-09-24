@@ -1,8 +1,11 @@
 'use client';
 
 import { startTransition, useCallback, useRef, useState } from 'react';
+import { AiInterviewChat } from '@/components/landing/AiInterviewChat';
 import { submitStoryToolStory } from '@/lib/actions/story-tool';
 import { useLanguage } from '@/lib/hooks/useLanguage';
+
+type CollectMode = 'paste' | 'interview';
 
 type Chapter = { label: string; icon: string; text: string; quote: string };
 type SubmissionStatus = { type: 'success' | 'error'; message: string } | null;
@@ -15,7 +18,8 @@ function createStorySessionId() {
 }
 
 function getStoryTitle(transcript: string, fallbackTitle: string) {
-  const words = transcript.trim().split(/\s+/).filter(Boolean).slice(0, 6);
+  const source = (transcript.split(/\n---\n/).pop() ?? transcript).trim();
+  const words = source.split(/\s+/).filter(Boolean).slice(0, 6);
   return words.length > 0 ? words.join(' ') : fallbackTitle;
 }
 
@@ -75,6 +79,7 @@ export function AiStoryTool() {
     : ['Origin', 'The Journey', 'Challenges', 'Turning Point', 'Today'];
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [collectMode, setCollectMode] = useState<CollectMode>('paste');
   const [transcript, setTranscript] = useState('');
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [storyType, setStoryType] = useState('mentor');
@@ -91,7 +96,12 @@ export function AiStoryTool() {
   const goTo = useCallback(
     (s: 1 | 2 | 3 | 4) => {
       if (s === 2 && transcript.trim().length < 10) {
-        window.alert(L('Please paste some interview text first.', 'Bitte zuerst Interviewtext einfügen.'));
+        window.alert(
+          L(
+            'Please share some of your story first — paste a transcript or talk with AI.',
+            'Bitte teile zuerst etwas von deiner Geschichte — füge ein Transkript ein oder sprich mit der KI.'
+          )
+        );
         return;
       }
       setStep(s);
@@ -101,9 +111,14 @@ export function AiStoryTool() {
   );
 
   const runGenerate = useCallback(() => {
-    const t = transcript.trim();
+    const t = (transcript.split(/\n---\n/).pop() ?? transcript).trim();
     if (!t) {
-      window.alert(L('Please paste a transcript first.', 'Bitte zuerst ein Transkript einfügen.'));
+      window.alert(
+        L(
+          'Please share some of your story first — paste a transcript or talk with AI.',
+          'Bitte teile zuerst etwas von deiner Geschichte — füge ein Transkript ein oder sprich mit der KI.'
+        )
+      );
       return;
     }
     setStep(3);
@@ -183,7 +198,10 @@ export function AiStoryTool() {
     if (!trimmedTranscript) {
       setSubmissionStatus({
         type: 'error',
-        message: L('Please paste a transcript before submitting.', 'Bitte füge vor dem Einreichen ein Transkript ein.'),
+        message: L(
+          'Please share some of your story before submitting.',
+          'Bitte teile vor dem Einreichen etwas von deiner Geschichte.'
+        ),
       });
       return;
     }
@@ -237,7 +255,7 @@ export function AiStoryTool() {
       },
       conversation: [
         {
-          type: 'transcript',
+          type: collectMode === 'interview' ? 'ai-interview' : 'transcript',
           storyType,
           text: trimmedTranscript,
         },
@@ -274,7 +292,7 @@ export function AiStoryTool() {
           setIsSubmitting(false);
         });
     });
-  }, [chapters, consentGiven, isDe, isSubmitting, storyType, submissionStatus?.type, transcript]);
+  }, [chapters, collectMode, consentGiven, isDe, isSubmitting, storyType, submissionStatus?.type, transcript]);
 
   return (
     <div className="ai-gen-wrapper mt-20 border-t border-white/10 pt-16" id="ai-story-tool">
@@ -300,8 +318,8 @@ export function AiStoryTool() {
         </h3>
         <p className="mt-2 max-w-[560px] text-[0.88rem] leading-relaxed text-white/50">
           {L(
-            'Paste a raw interview transcript, configure the story settings, preview how it looks, and submit it for human review when you are ready.',
-            'Füge ein Interview-Transkript ein, konfiguriere die Story-Einstellungen, sieh dir die Vorschau an und reiche sie ein, wenn du bereit bist.'
+            'Talk with AI or paste a transcript, configure the story settings, preview how it looks, and submit it for human review when you are ready.',
+            'Sprich mit der KI oder füge ein Transkript ein, konfiguriere die Story-Einstellungen, sieh dir die Vorschau an und reiche sie ein, wenn du bereit bist.'
           )}
         </p>
       </div>
@@ -326,7 +344,7 @@ export function AiStoryTool() {
               >
                 {n}
               </span>
-              {n === 1 && L('Paste', 'Einfügen')}
+              {n === 1 && L('Collect', 'Sammeln')}
               {n === 2 && L('Configure', 'Konfigurieren')}
               {n === 3 && L('Generate', 'Generieren')}
               {n === 4 && L('Review', 'Prüfen')}
@@ -340,50 +358,87 @@ export function AiStoryTool() {
           <div className="p-8">
             <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 1', 'Schritt 1')}</p>
             <h4 className="font-lora text-xl font-semibold text-white">
-              {L('Paste the interview transcript', 'Interview-Transkript einfügen')}
+              {L('Collect your story', 'Deine Geschichte sammeln')}
             </h4>
             <p className="mb-4 mt-1 text-[0.84rem] text-white/45">
               {L(
-                'Raw transcript is fine — interviewer questions included. The preview uses interviewee lines only.',
-                'Rohtranskript reicht – Fragen der Interviewer:in können enthalten sein. Die Vorschau nutzt nur die Antwortzeilen.'
+                'Talk with AI in a private drafting chat, or paste a transcript you already have. You stay in control, and nothing is published until human review.',
+                'Sprich mit der KI in einem privaten Entwurfsgespräch, oder füge ein Transkript ein, das du schon hast. Du behältst die Kontrolle, und nichts wird vor der menschlichen Prüfung veröffentlicht.'
               )}
             </p>
-            <textarea
-              className="min-h-[200px] w-full resize-y rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 font-primary text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
-              placeholder={L('Paste the full interview transcript here…', 'Vollständiges Interview-Transkript hier einfügen…')}
-              value={transcript}
-              onChange={(e) => {
-                setTranscript(e.target.value);
-                setConsentGiven(false);
-                setSubmissionStatus(null);
-                sessionIdRef.current = '';
-              }}
-            />
-            <div className="mt-2 flex items-center justify-between">
-              <span className="text-[0.73rem] text-white/25">{charLabel}</span>
-              <button
-                type="button"
-                className="rounded-full border border-white/10 px-3 py-1 text-[0.75rem] text-white/40 hover:text-white/70"
-                onClick={() => {
-                  setTranscript('');
+            <div className="mb-5 flex flex-wrap gap-2">
+              {(
+                [
+                  ['paste', L('Paste transcript', 'Transkript einfügen')],
+                  ['interview', L('Talk with AI', 'Mit KI sprechen')],
+                ] as const
+              ).map(([mode, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setCollectMode(mode)}
+                  className={`rounded-full border px-4 py-1.5 text-[0.8rem] font-semibold transition ${
+                    collectMode === mode
+                      ? 'border-[rgba(145,82,255,0.5)] bg-[rgba(145,82,255,0.2)] text-white'
+                      : 'border-white/10 bg-white/[0.04] text-white/45 hover:text-white/75'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {collectMode === 'interview' ? (
+              <AiInterviewChat
+                isDe={isDe}
+                onTranscriptChange={(next) => {
+                  setTranscript(next);
                   setConsentGiven(false);
                   setSubmissionStatus(null);
                   sessionIdRef.current = '';
                 }}
-              >
-                {L('Clear', 'Leeren')}
-              </button>
-            </div>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              <span className="text-[0.76rem] text-white/20">{L('Supports any language', 'Unterstützt jede Sprache')}</span>
-              <button
-                type="button"
-                onClick={() => goTo(2)}
-                className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)] hover:shadow-[0_6px_26px_rgba(145,82,255,0.6)]"
-              >
-                {L('Next → Configure', 'Weiter → Konfigurieren')}
-              </button>
-            </div>
+                onReady={() => goTo(2)}
+              />
+            ) : (
+              <>
+                <textarea
+                  className="min-h-[200px] w-full resize-y rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 font-primary text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+                  placeholder={L('Paste the full interview transcript here…', 'Vollständiges Interview-Transkript hier einfügen…')}
+                  value={transcript}
+                  onChange={(e) => {
+                    setTranscript(e.target.value);
+                    setConsentGiven(false);
+                    setSubmissionStatus(null);
+                    sessionIdRef.current = '';
+                  }}
+                />
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[0.73rem] text-white/25">{charLabel}</span>
+                  <button
+                    type="button"
+                    className="rounded-full border border-white/10 px-3 py-1 text-[0.75rem] text-white/40 hover:text-white/70"
+                    onClick={() => {
+                      setTranscript('');
+                      setConsentGiven(false);
+                      setSubmissionStatus(null);
+                      sessionIdRef.current = '';
+                    }}
+                  >
+                    {L('Clear', 'Leeren')}
+                  </button>
+                </div>
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                  <span className="text-[0.76rem] text-white/20">{L('Supports any language', 'Unterstützt jede Sprache')}</span>
+                  <button
+                    type="button"
+                    onClick={() => goTo(2)}
+                    className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)] hover:shadow-[0_6px_26px_rgba(145,82,255,0.6)]"
+                  >
+                    {L('Next → Configure', 'Weiter → Konfigurieren')}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -472,7 +527,7 @@ export function AiStoryTool() {
               {L('Choose your storytelling format', 'Storytelling-Format wählen')}
             </h4>
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
-              {L('Preview sample layout from your pasted text.', 'Beispiel-Layout aus deinem eingefügten Text.')}
+              {L('Preview sample layout from your story draft.', 'Beispiel-Layout aus deinem Story-Entwurf.')}
             </p>
             <div className="mb-6 flex flex-col gap-4 sm:flex-row">
               <button

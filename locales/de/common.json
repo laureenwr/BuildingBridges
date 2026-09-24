@@ -24,6 +24,12 @@
     "partners": "Partner",
     "contact": "Kontakt",
     "dashboard": "Dashboard",
+    "signIn": "Anmelden",
+    "adminPortal": "Admin-Dashboard",
+    "mentorPortal": "Mentorinnen-Dashboard",
+    "participantPortal": "Teilnehmerinnen-Portal",
+    "mentorDashboard": "Mentorinnen-Dashboard",
+    "adminDashboard": "Admin-Dashboard",
     "registerNow": "Jetzt registrieren →",
     "team": "Team"
   },
@@ -55,6 +61,9 @@
   "account": {
     "myAccount": "Mein Konto",
     "workshopsDashboard": "Workshop-Dashboard",
+    "adminPortal": "Admin-Portal",
+    "mentorPortal": "Mentorinnen-Portal",
+    "participantPortal": "Teilnehmerinnen-Portal",
     "settings": "Einstellungen",
     "logOut": "Abmelden",
     "register": "Registrieren →",
@@ -62,9 +71,9 @@
     "closeMenu": "Menü schließen"
   },
   "platformPreview": {
-    "title": "Plattformzugang (Vorschaumodus)",
-    "userDashboard": "Nutzer-Dashboard",
-    "adminDashboard": "Admin-Dashboard"
+    "title": "Portal wählen",
+    "userDashboard": "Mentorinnen-Portal",
+    "adminDashboard": "Admin-Portal"
   },
   "story": {
     "shareStory": "Teile deine Geschichte",

@@ -1,13 +1,13 @@
 'use server';
 
-import { and, desc, eq, sql } from 'drizzle-orm';
-import { cookies, headers } from 'next/headers';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { getToken } from 'next-auth/jwt';
+import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 import { db } from '@/lib/db/drizzle';
 import { getUser } from '@/lib/db/queries';
-import { stories } from '@/lib/db/schema';
-import { isDashboardPreviewModeEnabled } from '@/lib/dev/dashboard-preview-mode';
+import { stories, users } from '@/lib/db/schema';
 
 type StoryReviewActionState = {
   type: 'success' | 'error' | null;
@@ -147,7 +147,7 @@ async function reviewerIsAdmin(): Promise<boolean> {
   // Attach cookies so NextAuth can read the session inside a Server Action.
   const cookieStore = cookies();
   const user = await getUser();
-  if (user?.role === 'ADMIN') return true;
+  if (userHasAdminAccess(user)) return true;
 
   const cookieHeader = cookieStore
     .getAll()
@@ -161,11 +161,35 @@ async function reviewerIsAdmin(): Promise<boolean> {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  if ((token as { role?: string } | null)?.role === 'ADMIN') return true;
-  if (user) return false;
+  if (userHasAdminAccess({
+    role: (token as { role?: string } | null)?.role,
+    email: (token as { email?: string } | null)?.email,
+  })) {
+    return true;
+  }
 
-  // Same localhost/dev bypass the Admin page already uses. Off in Production.
-  return isDashboardPreviewModeEnabled({ hostHeader: headers().get('host') });
+  const tokenEmail = (token as { email?: string } | null)?.email?.trim().toLowerCase();
+  const tokenId = token?.sub ? parseInt(String(token.sub), 10) : NaN;
+
+  if (tokenEmail) {
+    const [dbUser] = await db
+      .select({ role: users.role, email: users.email })
+      .from(users)
+      .where(and(eq(users.email, tokenEmail), isNull(users.deletedAt)))
+      .limit(1);
+    if (userHasAdminAccess(dbUser)) return true;
+  }
+
+  if (!Number.isNaN(tokenId)) {
+    const [dbUser] = await db
+      .select({ role: users.role, email: users.email })
+      .from(users)
+      .where(and(eq(users.id, tokenId), isNull(users.deletedAt)))
+      .limit(1);
+    if (userHasAdminAccess(dbUser)) return true;
+  }
+
+  return false;
 }
 
 function revalidateStoryPaths() {

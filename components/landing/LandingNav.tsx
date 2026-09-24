@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { getMarketingDashboardHref } from '@/lib/nav/dashboard-href';
+import { getPortalNavItems } from '@/lib/nav/dashboard-href';
 
 function NavDrop({
   label,
@@ -54,7 +54,7 @@ function NavDropLink({ href, children }: { href: string; children: React.ReactNo
 export function LandingNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useUser();
-  const dashboardHref = getMarketingDashboardHref(user);
+  const portalItems = getPortalNavItems(user);
   const { locale, setLocale, t } = useLandingLocale();
 
   const L = {
@@ -74,7 +74,9 @@ export function LandingNav() {
     partners: t('Partners', 'Partner'),
     contact: t('Contact', 'Kontakt'),
     register: t('Register', 'Anmelden'),
-    dashboard: t('Dashboard', 'Dashboard'),
+    adminPortal: t('Admin Portal', 'Admin-Portal'),
+    mentorPortal: t('Mentor Portal', 'Mentorinnen-Portal'),
+    participantPortal: t('Participant Portal', 'Teilnehmerinnen-Portal'),
     signIn: t('Sign In', 'Anmelden'),
     signOut: t('Log out', 'Abmelden'),
   };
@@ -156,28 +158,55 @@ export function LandingNav() {
             {L.contact}
           </Link>
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-full border-[#9152FF]/40 text-[0.82rem]">
-                  {L.dashboard}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="bottom" sideOffset={12} avoidCollisions={false} className="w-52">
-                <DropdownMenuLabel>{user.email ?? 'Account'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={dashboardHref}>{L.dashboard}</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await signOut({ callbackUrl: '/' });
-                  }}
+            <>
+              {portalItems.map((item) => (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={
+                    item.primary
+                      ? 'whitespace-nowrap rounded-full bg-[#9152FF] px-[1.15rem] py-[0.48rem] text-[0.82rem] font-semibold text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)] transition-all hover:-translate-y-px hover:bg-[#7339E0]'
+                      : 'whitespace-nowrap rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-[1.05rem] py-[0.44rem] text-[0.82rem] font-semibold text-[#9152FF] transition-colors hover:border-[#9152FF] hover:bg-[#9152FF] hover:text-white'
+                  }
                 >
-                  {L.signOut}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  {item.key === 'admin'
+                    ? L.adminPortal
+                    : item.key === 'mentor'
+                      ? L.mentorPortal
+                      : L.participantPortal}
+                </Link>
+              ))}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="rounded-full border-[#9152FF]/40 text-[0.82rem]">
+                    {user.email ?? 'Account'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="bottom" sideOffset={12} avoidCollisions={false} className="w-52">
+                  <DropdownMenuLabel>{user.email ?? 'Account'}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {portalItems.map((item) => (
+                    <DropdownMenuItem key={item.key} asChild>
+                      <Link href={item.href}>
+                        {item.key === 'admin'
+                          ? L.adminPortal
+                          : item.key === 'mentor'
+                            ? L.mentorPortal
+                            : L.participantPortal}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await signOut({ callbackUrl: '/' });
+                    }}
+                  >
+                    {L.signOut}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
             <>
               <Link
@@ -212,6 +241,10 @@ export function LandingNav() {
       {mobileOpen ? (
         <div className="fixed left-0 right-0 top-[70px] z-[9998] flex flex-col gap-0.5 border-b border-[rgba(145,82,255,0.15)] bg-white px-6 py-4 pb-8 shadow-[0_6px_28px_rgba(145,82,255,0.13)] lg:hidden">
           {[
+            ...portalItems.map((item) => [
+              item.href,
+              item.key === 'admin' ? L.adminPortal : item.key === 'mentor' ? L.mentorPortal : L.participantPortal,
+            ] as const),
             ['/#home', L.home],
             ['/#about', L.aboutProject],
             ['/vision', L.vision],

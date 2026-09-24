@@ -34,7 +34,7 @@ export type SidebarProps = {
 };
 
 const userLinks: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { href: '/portal', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/portal', label: 'My portal', icon: LayoutDashboard },
   { href: '/portal/profile', label: 'My Profile', icon: UserRound },
   { href: '/story-tool', label: 'Story Creation Tool', icon: PenLine },
   { href: '/portal/stories', label: 'My Stories', icon: BookOpenCheck },
@@ -86,7 +86,7 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
   }[] = [
     {
       heading: isDe ? 'Überblick' : 'Overview',
-      items: [{ href: '/portal/admin', label: isDe ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard }],
+      items: [{ href: '/portal/admin', label: isDe ? 'Admin-Portal' : 'Admin Portal', icon: LayoutDashboard }],
     },
     {
       heading: isDe ? 'Nutzer:innen' : 'Users',
@@ -115,7 +115,7 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
       !isDe
         ? item.label
         : item.href === '/portal'
-          ? 'Dashboard'
+          ? 'Mein Portal'
           : item.href === '/portal/profile'
             ? 'Mein Profil'
             : item.href === '/story-tool'

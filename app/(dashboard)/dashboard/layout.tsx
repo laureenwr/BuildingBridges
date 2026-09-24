@@ -12,7 +12,7 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
-    { href: '/dashboard', icon: Home, label: 'Dashboard' },
+    { href: '/portal', icon: Home, label: 'Dashboard' },
     { href: '/dashboard/workshops', icon: BookOpen, label: 'Workshops' },
     { href: '/dashboard/mentoring', icon: Sparkles, label: 'My Mentoring Program' },
     { href: '/dashboard/personal', icon: UserCircle, label: 'Personal' },

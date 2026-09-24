@@ -1,19 +1,29 @@
 import { redirect } from 'next/navigation';
 import { AdminPortalHome } from '@/components/dashboard-portal/AdminPortalHome';
 import { getPendingStoriesForReview } from '@/lib/actions/stories';
-import { getUserOrPreviewForPortalAdmin } from '@/lib/dev/dashboard-preview-resolve';
+import { getUser } from '@/lib/db/queries';
+import { getRegisteredUsers, getStoryCounts, getUserCount, greetingFirstName } from '@/lib/portal/portal-data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPortalHomePage() {
-  const user = await getUserOrPreviewForPortalAdmin();
-  if (!user || user.role !== 'ADMIN') redirect(user ? '/portal' : '/sign-in');
+  const user = await getUser();
+  if (!user) redirect('/sign-in');
 
-  const greetingName =
-    (user.name?.trim() && user.name.trim().split(/\s+/)[0]) ||
-    (user.email?.includes('@') ? user.email!.split('@')[0] : 'Amina');
+  const [storyRows, users, userCount, storyCounts] = await Promise.all([
+    getPendingStoriesForReview(),
+    getRegisteredUsers(12),
+    getUserCount(),
+    getStoryCounts(),
+  ]);
 
-  const storyRows = await getPendingStoriesForReview();
-
-  return <AdminPortalHome greetingName={greetingName} storyRows={storyRows} />;
+  return (
+    <AdminPortalHome
+      greetingName={greetingFirstName(user)}
+      storyRows={storyRows}
+      users={users}
+      userCount={userCount}
+      pendingStoryCount={storyCounts.pending}
+    />
+  );
 }

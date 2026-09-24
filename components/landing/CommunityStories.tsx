@@ -2,6 +2,8 @@
 
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useLandingLocale } from '@/lib/landing/locale';
 import {
@@ -35,8 +37,10 @@ export function CommunityStories({ extraStories = [] }: { extraStories?: Communi
   const [format, setFormat] = useState<StoryFormat>('immersive');
   const [cardChapter, setCardChapter] = useState(0);
   const [albumIndex, setAlbumIndex] = useState(0);
+  const [activeChapter, setActiveChapter] = useState(0);
   const touchStartX = useRef(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   const visibleStories = useMemo(() => {
     if (filter === 'all') return allStories;
@@ -111,7 +115,30 @@ export function CommunityStories({ extraStories = [] }: { extraStories?: Communi
 
   useEffect(() => {
     setAlbumIndex(0);
+    setActiveChapter(0);
   }, [selectedId]);
+
+  useEffect(() => {
+    if (view !== 'viewer' || format !== 'immersive') return;
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const updateActiveChapter = () => {
+      const chapters = Array.from(stage.querySelectorAll<HTMLElement>('[data-chapter]'));
+      if (chapters.length === 0) return;
+      let current = 0;
+      chapters.forEach((chapter, index) => {
+        if (chapter.getBoundingClientRect().top - stage.getBoundingClientRect().top < stage.clientHeight * 0.42) {
+          current = index;
+        }
+      });
+      setActiveChapter(current);
+    };
+
+    updateActiveChapter();
+    stage.addEventListener('scroll', updateActiveChapter, { passive: true });
+    return () => stage.removeEventListener('scroll', updateActiveChapter);
+  }, [view, format, selectedId]);
 
   useEffect(() => {
     if (format === 'album') setAlbumIndex(0);
@@ -162,15 +189,25 @@ export function CommunityStories({ extraStories = [] }: { extraStories?: Communi
   ];
 
   const formats: { id: StoryFormat; icon: string; label: string }[] = [
-    { id: 'immersive', icon: '📜', label: t('Immersive', 'Immersiv') },
+    { id: 'immersive', icon: '📖', label: t('Immersive', 'Immersiv') },
     story?.videoSrc
       ? { id: 'video', icon: '▶', label: t('Video', 'Video') }
       : { id: 'card', icon: '🃏', label: t('Story Card', 'Story-Karte') },
-    { id: 'timeline', icon: '📅', label: t('Timeline', 'Zeitleiste') },
-    { id: 'quotes', icon: '💬', label: t('Quotes', 'Zitate') },
-    { id: 'globe', icon: '🌍', label: t('Globe', 'Globus') },
-    { id: 'album', icon: '📖', label: t('Album', 'Album') },
+    { id: 'timeline', icon: '⏱', label: t('Timeline', 'Zeitleiste') },
+    { id: 'quotes', icon: '❝', label: t('Quotes', 'Zitate') },
+    { id: 'globe', icon: '🌐', label: t('Globe', 'Globus') },
+    { id: 'album', icon: '🖼', label: t('Album', 'Album') },
   ];
+
+  const viewingLabel = formats.find((item) => item.id === format)?.label ?? t('Immersive', 'Immersiv');
+
+  const scrollToChapter = (index: number) => {
+    setFormat('immersive');
+    requestAnimationFrame(() => {
+      const chapter = stageRef.current?.querySelector<HTMLElement>(`[data-chapter="${index}"]`);
+      chapter?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   const placeholderLabels = [
     t('Interview in progress…', 'Interview läuft…'),
@@ -298,56 +335,93 @@ export function CommunityStories({ extraStories = [] }: { extraStories?: Communi
               </div>
             </div>
           </>
-        ) : story ? (
-          <div className="story-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="story-viewer-title">
-            <div className="story-viewer-shell">
-              <div className="viewer-topbar">
-                <button type="button" className="back-btn" onClick={closeViewer}>
-                  ← {t('All stories', 'Alle Stories')}
-                </button>
-                <div>
-                  <div id="story-viewer-title" className="viewer-story-title">{story.name}</div>
-                  <div className="viewer-story-origin">
-                    {story.origin} · {story.field}
+        ) : null}
+      </div>
+      {story && view === 'viewer'
+        ? createPortal(
+            <div className="community-stories">
+              <div className="story-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="story-viewer-title">
+                <div className="story-reader">
+                  <nav className="reader-rail" aria-label={t('Story view modes', 'Story-Ansichten')}>
+                    <div className="rail-brand">
+                      <Image
+                        src="/logo.png"
+                        alt="Building Bridges"
+                        width={40}
+                        height={40}
+                        className="rail-logo"
+                      />
+                      <span>
+                        Building<em>Bridges</em>
+                      </span>
+                    </div>
+                    {formats.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`rail-item ${format === item.id ? 'active' : ''}`}
+                        aria-pressed={format === item.id}
+                        onClick={() => setFormat(item.id)}
+                      >
+                        <span className="rail-icon" aria-hidden>
+                          {item.icon}
+                        </span>
+                        <span className="rail-label">{item.label}</span>
+                      </button>
+                    ))}
+                    <div className="rail-spacer" />
+                    <button type="button" className="rail-item rail-exit" onClick={closeViewer}>
+                      <span className="rail-icon" aria-hidden>
+                        ✕
+                      </span>
+                      <span className="rail-label">{t('Exit story', 'Story verlassen')}</span>
+                    </button>
+                  </nav>
+
+                  <main
+                    ref={stageRef}
+                    className={`reader-stage ${format === 'immersive' ? 'is-read' : 'is-wide'}${format === 'video' ? ' is-video' : ''}`}
+                  >
+                    <div className="reader-stage-inner">
+                      {format !== 'immersive' ? (
+                        <h1 id="story-viewer-title" className="sr-only">
+                          {story.name}
+                        </h1>
+                      ) : null}
+                      <StoryViewerFormats
+                        story={story}
+                        format={format}
+                        viewingLabel={viewingLabel}
+                        cardChapter={cardChapter}
+                        setCardChapter={setCardChapter}
+                        albumSlides={albumSlides}
+                        albumIndex={albumIndex}
+                        goAlbum={goAlbum}
+                        touchStartX={touchStartX}
+                        t={t}
+                      />
+                    </div>
+                  </main>
+
+                  <div className="reader-progress" aria-hidden={format !== 'immersive'}>
+                    {story.chapters.map((chapter, index) => (
+                      <div key={chapter.num} className="progress-step">
+                        {index > 0 ? <div className="progress-line" /> : null}
+                        <button
+                          type="button"
+                          className={`progress-dot ${format === 'immersive' && activeChapter === index ? 'current' : ''}`}
+                          aria-label={`${t('Chapter', 'Kapitel')} ${chapter.num} · ${chapter.label}`}
+                          onClick={() => scrollToChapter(index)}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-
-              <div className="format-switcher" role="tablist" aria-label={t('Story format', 'Story-Format')}>
-                {formats.map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={format === f.id}
-                    className={`fmt-btn ${format === f.id ? 'active' : ''}`}
-                    onClick={() => setFormat(f.id)}
-                  >
-                    <span className="fb-icon" aria-hidden>
-                      {f.icon}
-                    </span>
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="story-viewer-stage">
-                <StoryViewerFormats
-                  story={story}
-                  format={format}
-                  cardChapter={cardChapter}
-                  setCardChapter={setCardChapter}
-                  albumSlides={albumSlides}
-                  albumIndex={albumIndex}
-                  goAlbum={goAlbum}
-                  touchStartX={touchStartX}
-                  t={t}
-                />
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </div>
+            </div>,
+            document.body
+          )
+        : null}
     </section>
   );
 }
@@ -361,6 +435,7 @@ function firstSentence(text: string): string {
 function StoryViewerFormats({
   story,
   format,
+  viewingLabel,
   cardChapter,
   setCardChapter,
   albumSlides,
@@ -371,6 +446,7 @@ function StoryViewerFormats({
 }: {
   story: CommunityStoryData;
   format: StoryFormat;
+  viewingLabel: string;
   cardChapter: number;
   setCardChapter: (n: number) => void;
   albumSlides: Array<{ overline: string; titleHtml: string; body: string; quote: string; bg: string; deco: string }>;
@@ -387,21 +463,23 @@ function StoryViewerFormats({
         <div className="immersive-shell">
           <div className="imm-hero">
             <div className="imm-overline">{immOverline}</div>
-            <div className="imm-h1">
+            <h1 id="story-viewer-title" className="imm-h1">
               <TrustedHtml html={story.headline} />
-            </div>
-            <p className="imm-tagline">{story.tagline}</p>
+            </h1>
             <div className="imm-meta-row">
               {story.tags.map((tag, i) => (
                 <span key={tag} className={`imm-badge ${story.tagStyles[i] || ''}`}>
                   {tag}
                 </span>
               ))}
+              <span className="imm-viewing">
+                {t('Viewing:', 'Ansicht:')} <strong>{viewingLabel}</strong>
+              </span>
             </div>
           </div>
           <div className="imm-chapters">
-            {story.chapters.map((ch) => (
-              <div key={ch.num} className="imm-ch">
+            {story.chapters.map((ch, index) => (
+              <div key={ch.num} className="imm-ch" data-chapter={index}>
                 <div className="imm-ch-num">
                   {ch.num} · {ch.label}
                 </div>

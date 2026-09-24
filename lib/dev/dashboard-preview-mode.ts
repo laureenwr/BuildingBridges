@@ -29,31 +29,13 @@ export function isLocalDevHostname(hostname: string | null | undefined): boolean
 }
 
 /**
- * // TEMP: Dashboard preview mode (remove before production)
+ * Preview mock (Amina board) is off. Portals require a real signed-in user.
  */
-export function isDashboardPreviewModeEnabled(opts?: {
+export function isDashboardPreviewModeEnabled(_opts?: {
   hostname?: string | null;
   hostHeader?: string | null;
 }): boolean {
-  if (process.env.NEXT_PUBLIC_DISABLE_DASHBOARD_PREVIEW === 'true') {
-    return false;
-  }
-  if (process.env.NEXT_PUBLIC_DASHBOARD_PREVIEW_DEV === 'true') {
-    return true;
-  }
-
-  const nextHost = opts?.hostname?.trim().toLowerCase() ?? '';
-  if (nextHost && isLocalDevHostname(nextHost)) {
-    return true;
-  }
-
-  const fromHdr = hostnameFromHostHeader(opts?.hostHeader ?? null);
-  if (fromHdr && isLocalDevHostname(fromHdr)) {
-    return true;
-  }
-
-  const env = process.env.NODE_ENV;
-  return env === 'development' || env === 'test';
+  return false;
 }
 
 export function isPortalRoutePath(pathname: string): boolean {

@@ -1,5 +1,6 @@
 'use server';
 
+import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 import { db } from '@/lib/db/drizzle';
 import { workshops, workshopEnrollments, workshopFiles, users } from '@/lib/db/schema';
 import { getUser } from '@/lib/db/queries';
@@ -19,7 +20,7 @@ function generateSlug(title: string): string {
 export async function createWorkshop(formData: FormData) {
   try {
     const user = await getUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!userHasAdminAccess(user)) {
       return { error: 'Unauthorized' };
     }
 
@@ -73,7 +74,7 @@ export async function createWorkshop(formData: FormData) {
 export async function updateWorkshop(workshopId: number, formData: FormData) {
   try {
     const user = await getUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!userHasAdminAccess(user)) {
       return { error: 'Unauthorized' };
     }
 
@@ -130,7 +131,7 @@ export async function updateWorkshop(workshopId: number, formData: FormData) {
 export async function deleteWorkshop(workshopId: number) {
   try {
     const user = await getUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!userHasAdminAccess(user)) {
       return { error: 'Unauthorized' };
     }
 
@@ -152,7 +153,7 @@ export async function getWorkshops() {
     const user = await getUser();
 
     let workshopList;
-    if (user?.role === 'ADMIN') {
+    if (userHasAdminAccess(user)) {
       // Admin sees all workshops
       workshopList = await db.select().from(workshops).orderBy(desc(workshops.createdAt));
     } else {
@@ -335,7 +336,7 @@ export async function getUserEnrollments() {
 export async function uploadWorkshopFile(workshopId: number, fileName: string, fileUrl: string, fileSize?: number, fileType?: string) {
   try {
     const user = await getUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!userHasAdminAccess(user)) {
       return { error: 'Unauthorized' };
     }
 
@@ -361,7 +362,7 @@ export async function uploadWorkshopFile(workshopId: number, fileName: string, f
 export async function deleteWorkshopFile(fileId: number) {
   try {
     const user = await getUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!userHasAdminAccess(user)) {
       return { error: 'Unauthorized' };
     }
 

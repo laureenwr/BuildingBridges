@@ -21,6 +21,7 @@ import {
   roleEnum,
   verificationTokens,
 } from '@/lib/db/schema';
+import { isPlatformAdminEmail } from '@/lib/auth/admin-emails';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies, headers } from 'next/headers';
@@ -223,7 +224,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     }
 
     // Return success instead of redirecting - now goes to dashboard
-    return { success: true, redirectTo: '/dashboard' };
+    return { success: true, redirectTo: '/logged-in' };
   } catch (error) {
     // Enhanced error logging with details
     console.error('Sign-up error:', error);
@@ -640,17 +641,23 @@ export async function resetPassword(formData: FormData) {
 // Sign-in action removed - NextAuth handles authentication via credentials provider
 
 export async function signUpAction(formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const role = 'STUDENT';
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  const password = String(formData.get('password') ?? '');
+  const name = String(formData.get('name') ?? '').trim().slice(0, 100);
+  const requestedRole = String(formData.get('role') ?? 'MENTOR').toUpperCase();
+  const role = isPlatformAdminEmail(email)
+    ? 'ADMIN'
+    : requestedRole === 'ADMIN'
+      ? 'ADMIN'
+      : requestedRole === 'STUDENT'
+        ? 'STUDENT'
+        : 'MENTOR';
 
-  // Validate required fields
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');
   }
 
   try {
-    // Check for existing user
     const existingUser = await db
       .select()
       .from(users)
@@ -661,7 +668,6 @@ export async function signUpAction(formData: FormData) {
       redirect('/sign-up?error=exists');
     }
 
-    // Validate password strength
     if (password.length < 8) {
       redirect('/sign-up?error=password-too-short');
     }
@@ -674,12 +680,13 @@ export async function signUpAction(formData: FormData) {
       redirect('/sign-up?error=password-no-number');
     }
 
-    // Create user
     const passwordHash = await hashPassword(password);
+    const displayName = name || (email.includes('@') ? email.split('@')[0]! : email);
     const newUser: NewUser = {
+      name: displayName,
       email,
       passwordHash,
-      role: role as any,
+      role,
     };
 
     const [createdUser] = await db.insert(users).values(newUser).returning();
@@ -688,10 +695,26 @@ export async function signUpAction(formData: FormData) {
       redirect('/sign-up?error=server-error');
     }
 
-    // Do not auto-login; redirect to sign-in with success message
-    redirect('/sign-in?success=1');
+    try {
+      const [createdTeam] = await db
+        .insert(teams)
+        .values({ name: `${displayName}'s Team` })
+        .returning();
+      if (createdTeam) {
+        await db.insert(teamMembers).values({
+          userId: createdUser.id,
+          teamId: createdTeam.id,
+          role: 'owner',
+        });
+        await logActivity(createdTeam.id, createdUser.id, ActivityType.SIGN_UP);
+      }
+    } catch (teamError) {
+      console.error('Sign up created the user but team setup failed:', teamError);
+    }
+
+    const next = role === 'ADMIN' ? '/portal/admin' : '/portal';
+    redirect(`/sign-in?success=1&redirect=${encodeURIComponent(next)}`);
   } catch (error) {
-    // Check if this is a Next.js redirect error and rethrow it
     if (error && typeof error === 'object' && 'digest' in error &&
         typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
       throw error;

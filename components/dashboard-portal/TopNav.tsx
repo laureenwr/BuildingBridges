@@ -17,6 +17,7 @@ import {
 import { signOut } from 'next-auth/react';
 import { setStoredLanguage } from '@/lib/i18n/language';
 import { useLanguage } from '@/lib/hooks/useLanguage';
+import { DashboardMenuButton } from '@/components/layout/DashboardMenuButton';
 
 type RoleLabel = 'Mentee' | 'Mentor' | 'Admin';
 
@@ -175,15 +176,7 @@ export function TopNav({
             {isDe ? 'Kontakt' : 'Contact'}
           </Link>
 
-          <Link
-            href={dashboardHref}
-            className={cn(
-              'whitespace-nowrap rounded-full px-3 py-1.5 text-[0.75rem] font-semibold shadow-md transition sm:px-4 sm:text-[0.82rem]',
-              'bg-[#9152FF] text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)] hover:-translate-y-px hover:bg-[#7339E0]'
-            )}
-          >
-            {isDe ? 'Dashboard' : 'Dashboard'}
-          </Link>
+          <DashboardMenuButton compact />
 
           <div className="flex items-center gap-2 pl-1">
             <span
@@ -245,8 +238,15 @@ export function TopNav({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <Link href={dashboardHref} className="block">
-                    <DropdownMenuItem className="cursor-pointer">{isDe ? 'Mein Dashboard' : 'My dashboard'}</DropdownMenuItem>
+                  <Link href="/portal" className="block">
+                    <DropdownMenuItem className="cursor-pointer">
+                      {isDe ? 'Mentorinnen-Dashboard' : 'Mentor dashboard'}
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/portal/admin" className="block">
+                    <DropdownMenuItem className="cursor-pointer">
+                      {isDe ? 'Admin-Dashboard' : 'Admin dashboard'}
+                    </DropdownMenuItem>
                   </Link>
                   <Link href="/dashboard/general" className="block">
                     <DropdownMenuItem className="cursor-pointer">{isDe ? 'Kontoeinstellungen' : 'Account settings'}</DropdownMenuItem>

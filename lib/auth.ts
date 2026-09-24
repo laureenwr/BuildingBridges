@@ -7,6 +7,7 @@ import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { type DefaultSession } from "next-auth";
 import { comparePasswords } from "@/lib/auth/session";
+import { isPlatformAdminEmail } from "@/lib/auth/admin-emails";
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -38,10 +39,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const email = credentials.email.trim().toLowerCase();
         const result = await db
           .select()
           .from(users)
-          .where(and(eq(users.email, credentials.email), isNull(users.deletedAt)))
+          .where(and(eq(users.email, email), isNull(users.deletedAt)))
           .limit(1);
 
         const user = result[0];
@@ -64,6 +66,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      const email = user.email?.trim().toLowerCase();
+      if (email && isPlatformAdminEmail(email)) {
+        await db
+          .update(users)
+          .set({ role: "ADMIN", deletedAt: null, updatedAt: new Date() })
+          .where(eq(users.email, email));
+      }
+      return true;
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
@@ -81,17 +93,34 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
-      if (user && (user as any).role) {
-        (token as any).role = (user as any).role;
-      }
-      if (!(token as any).role && token.sub) {
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.id, parseInt(token.sub, 10)),
-        });
-        if (dbUser) {
-          (token as any).role = dbUser.role;
+      if (user) {
+        token.sub = String((user as { id?: string }).id ?? token.sub ?? '');
+        if ((user as { role?: string }).role) {
+          (token as { role?: string }).role = (user as { role?: string }).role;
         }
       }
+
+      const id = token.sub ? parseInt(String(token.sub), 10) : NaN;
+      if (!Number.isNaN(id)) {
+        const [dbUser] = await db
+          .select({ role: users.role, name: users.name, email: users.email })
+          .from(users)
+          .where(and(eq(users.id, id), isNull(users.deletedAt)))
+          .limit(1);
+        if (dbUser) {
+          const role = isPlatformAdminEmail(dbUser.email) ? "ADMIN" : dbUser.role;
+          if (role === "ADMIN" && dbUser.role !== "ADMIN") {
+            await db
+              .update(users)
+              .set({ role: "ADMIN", deletedAt: null, updatedAt: new Date() })
+              .where(eq(users.email, dbUser.email));
+          }
+          (token as { role?: string }).role = role;
+          if (dbUser.name) token.name = dbUser.name;
+          if (dbUser.email) token.email = dbUser.email;
+        }
+      }
+
       return token;
     },
   },

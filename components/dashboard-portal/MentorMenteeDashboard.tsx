@@ -11,29 +11,33 @@ import {
   HeartHandshake,
   ShieldAlert,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { ActionCard } from '@/components/dashboard-portal/ActionCard';
 import { ProgressCard } from '@/components/dashboard-portal/ProgressCard';
 import { EventCard } from '@/components/dashboard-portal/EventCard';
-import { dummyEvents } from '@/components/dashboard-portal/dashboard-copy';
 
 export type MentorMenteeDashboardProps = {
   greetingName: string;
   pendingApproval: boolean;
   storiesAllowed: boolean;
+  events: { id: string; title: string; date: string; time: string; format: string }[];
+  storyCounts: { total: number; pending: number; approved: number };
 };
 
 export function MentorMenteeDashboard({
   greetingName,
   pendingApproval,
   storiesAllowed,
+  events,
+  storyCounts,
 }: MentorMenteeDashboardProps) {
+  const router = useRouter();
   const checklist = [
-    { id: '1', label: 'Choose story type', done: true },
-    { id: '2', label: 'Set the context', done: true },
-    { id: '3', label: 'Share your experience', done: false },
-    { id: '4', label: 'Add empowerment message', done: false },
-    { id: '5', label: 'Choose how to publish', done: false },
+    { id: '1', label: 'Create or continue a story', done: storyCounts.total > 0 },
+    { id: '2', label: 'Browse upcoming workshops', done: false },
+    { id: '3', label: 'Update your profile', done: false },
   ];
+  const percent = Math.round((checklist.filter((item) => item.done).length / checklist.length) * 100);
 
   return (
     <div className="space-y-8">
@@ -155,7 +159,7 @@ export function MentorMenteeDashboard({
             title="My stories"
             description="View, edit or manage your existing stories."
             actionLabel="Go to my stories"
-            href="/portal/stories"
+            href="/stories"
             accent="green"
           />
           <ActionCard
@@ -169,7 +173,7 @@ export function MentorMenteeDashboard({
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[1.05fr_minmax(0,0.95fr)]">
-        <ProgressCard percent={60} items={checklist} />
+        <ProgressCard percent={percent} items={checklist} onContinue={() => router.push('/story-tool')} />
         <div
           className="flex flex-col gap-4 rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]"
           aria-labelledby="events-heading"
@@ -181,12 +185,18 @@ export function MentorMenteeDashboard({
             <CalendarRange className="h-5 w-5 text-[#9152FF]" aria-hidden />
           </div>
           <div className="flex flex-col gap-3">
-            {dummyEvents.map((e) => (
-              <EventCard key={e.id} title={e.title} date={e.date} time={e.time} format={e.format} />
-            ))}
+            {events.length > 0 ? (
+              events.map((e) => (
+                <EventCard key={e.id} title={e.title} date={e.date} time={e.time} format={e.format} />
+              ))
+            ) : (
+              <p className="rounded-xl border border-dashed border-[rgba(145,82,255,0.2)] bg-[#FAF8FF] px-4 py-6 text-center text-[0.9rem] text-[#6B5F8A]">
+                No upcoming workshops are listed right now.
+              </p>
+            )}
           </div>
           <Link
-            href="/portal/events"
+            href="/workshops"
             className="mt-auto inline-flex w-full items-center justify-center rounded-full border border-[rgba(145,82,255,0.35)] bg-white px-5 py-2.5 text-[0.88rem] font-semibold text-[#7339E0] transition hover:bg-[#F5F0FF] md:w-auto"
           >
             See full calendar
@@ -221,19 +231,19 @@ export function MentorMenteeDashboard({
 
         <div className="flex flex-col justify-between rounded-2xl border border-[rgba(145,82,255,0.14)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
           <div>
-            <h3 className="font-lora text-lg font-semibold text-[#1A1033]">Impact summary</h3>
+            <h3 className="font-lora text-lg font-semibold text-[#1A1033]">Community stories</h3>
             <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="rounded-xl bg-[#FAF8FF] px-4 py-3">
-                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-[#9A8CB3]">Stories created</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-[#1A1033]">3</dd>
+                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-[#9A8CB3]">Submitted</dt>
+                <dd className="mt-1 font-lora text-2xl font-bold text-[#1A1033]">{storyCounts.total}</dd>
               </div>
               <div className="rounded-xl bg-emerald-50/90 px-4 py-3">
                 <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">Published</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">1</dd>
+                <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">{storyCounts.approved}</dd>
               </div>
               <div className="rounded-xl bg-amber-50/90 px-4 py-3">
-                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">Drafts saved</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">2</dd>
+                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">In review</dt>
+                <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
               </div>
             </dl>
           </div>

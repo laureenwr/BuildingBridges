@@ -1,30 +1,31 @@
 import { redirect } from 'next/navigation';
 import { MentorMenteeDashboard } from '@/components/dashboard-portal/MentorMenteeDashboard';
-import { getUserOrPreviewForPortalUser } from '@/lib/dev/dashboard-preview-resolve';
+import { getUser } from '@/lib/db/queries';
+import { getPortalUpcomingEvents, getStoryCounts, greetingFirstName } from '@/lib/portal/portal-data';
+
+export const dynamic = 'force-dynamic';
 
 export default async function UserPortalHomePage({
   searchParams,
 }: {
   searchParams?: { approval?: string; pending?: string };
 }) {
-  const user = await getUserOrPreviewForPortalUser();
+  const user = await getUser();
   if (!user) redirect('/sign-in');
 
   const pendingApproval =
     searchParams?.approval === 'pending' || searchParams?.pending === '1';
 
-  // TODO: derive from DB — users.approval_status === 'pending' | 'approved' | 'rejected'
-  const storiesAllowed = !pendingApproval;
-
-  const greetingName =
-    (user.name?.trim() && user.name.trim().split(/\s+/)[0]) ||
-    (user.email?.includes('@') ? user.email!.split('@')[0] : 'Amina');
+  const [storyCounts] = await Promise.all([getStoryCounts()]);
+  const events = getPortalUpcomingEvents('en');
 
   return (
     <MentorMenteeDashboard
-      greetingName={greetingName}
+      greetingName={greetingFirstName(user)}
       pendingApproval={pendingApproval}
-      storiesAllowed={storiesAllowed}
+      storiesAllowed={!pendingApproval}
+      events={events}
+      storyCounts={storyCounts}
     />
   );
 }
