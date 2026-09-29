@@ -9,13 +9,35 @@ type InterviewMessage = {
   content: string;
 };
 
+export type InterviewAnswer = {
+  question: string;
+  text: string;
+};
+
 type ChatProps = {
   isDe: boolean;
   onTranscriptChange: (transcript: string) => void;
+  onAnswersChange: (answers: InterviewAnswer[]) => void;
   onReady: () => void;
 };
 
-export function AiInterviewChat({ isDe, onTranscriptChange, onReady }: ChatProps) {
+export function answersFromInterview(messages: InterviewMessage[]): InterviewAnswer[] {
+  const answers: InterviewAnswer[] = [];
+  let pendingQuestion = '';
+  for (const message of messages) {
+    if (message.role === 'assistant') {
+      pendingQuestion = message.content;
+      continue;
+    }
+    const text = message.content.trim();
+    if (!text) continue;
+    answers.push({ question: pendingQuestion.trim(), text });
+    pendingQuestion = '';
+  }
+  return answers;
+}
+
+export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onReady }: ChatProps) {
   const L = (en: string, de: string) => (isDe ? de : en);
   const [consented, setConsented] = useState(false);
   const [started, setStarted] = useState(false);
@@ -64,6 +86,7 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onReady }: ChatProps
 
       const withReply = [...nextMessages, { role: 'assistant' as const, content: result.reply }];
       setMessages(withReply);
+      onAnswersChange(answersFromInterview(withReply));
       if (result.transcript) onTranscriptChange(result.transcript);
       if (result.done) {
         setDone(true);
@@ -88,6 +111,7 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onReady }: ChatProps
     setStarted(true);
     setDone(false);
     setMessages([]);
+    onAnswersChange([]);
     void sendTurn('start', []);
   };
 
@@ -174,8 +198,8 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onReady }: ChatProps
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           <p className="text-[0.82rem] text-white/55">
             {L(
-              'The interview is saved as a draft transcript. You can still edit it after this step.',
-              'Das Interview ist als Transkript-Entwurf gespeichert. Du kannst es danach noch bearbeiten.'
+              'The interview is saved. Next you can name the chapters and edit the wording.',
+              'Das Interview ist gespeichert. Als Nächstes kannst du die Kapitel benennen und den Text bearbeiten.'
             )}
           </p>
           <button

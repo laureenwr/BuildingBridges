@@ -65,7 +65,7 @@ export default function MentorsPage() {
   return (
     <div className="container mx-auto py-24 px-4">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">
-        Anmeldeformular – Building Bridges - Mentor:innen
+        Anmeldeformular, Building Bridges Mentor:innen
       </h1>
       <p className="text-gray-600 mb-8">
         Herzlich willkommen beim Anmeldeformular für die Mentor:innen des Projekts Building Bridges! 

@@ -23,7 +23,7 @@ const SCRIPT = {
     welcome:
       'I can ask a few gentle questions to help you draft your story. Skip anything you do not want to share. You stay in control, and nothing is published until you submit it for human review.',
     questions: [
-      'What kind of story would you like to share — an experience, a mentoring story, or something about awareness and empowerment?',
+      'What kind of story would you like to share. An experience, a mentoring story, or something about awareness and empowerment?',
       'Where and when did this take place? You can stay as general as you like.',
       'What happened? Share only what feels okay. You can skip anything sensitive.',
       'What would you like others to know? What helped you?',
@@ -39,7 +39,7 @@ const SCRIPT = {
     welcome:
       'Ich kann dir ein paar behutsame Fragen stellen, um deine Story zu entwerfen. Überspringe alles, was du nicht teilen möchtest. Du behältst die Kontrolle, und nichts wird veröffentlicht, bevor du es zur menschlichen Prüfung einreichst.',
     questions: [
-      'Welche Art von Geschichte möchtest du teilen — eine Erfahrung, eine Mentoring-Story oder etwas zu Awareness und Empowerment?',
+      'Welche Art von Geschichte möchtest du teilen. Eine Erfahrung, eine Mentoring-Story oder etwas zu Awareness und Empowerment?',
       'Wo und wann hat das stattgefunden? Du kannst so allgemein bleiben, wie du möchtest.',
       'Was ist passiert? Teile nur, was sich okay anfühlt. Sensibles kannst du überspringen.',
       'Was sollten andere wissen? Was hat dir geholfen?',

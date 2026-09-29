@@ -18,7 +18,7 @@ export type DashboardLayoutProps = {
   developmentPreviewBanner?: boolean;
 };
 
-/** // TEMP: Dashboard preview mode (remove before production) — matches fixed banner stacked height */
+/** // TEMP: Dashboard preview mode (remove before production). Matches fixed banner stacked height */
 const PREVIEW_BANNER_OFFSET = '2.75rem';
 
 export function DashboardLayout({

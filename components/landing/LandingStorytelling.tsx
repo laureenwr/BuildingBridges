@@ -29,8 +29,8 @@ export function LandingStorytelling() {
             </h2>
             <p className="mt-4 max-w-[420px] text-base leading-relaxed text-white/70">
               {isDe
-                ? 'Entdecke das digitale Storytelling-Tool: geführte Schritte, Datenschutz-Einstellungen und optionale KI-Unterstützung – entwickelt mit und für die Community.'
-                : 'Explore the digital storytelling tool: guided steps, privacy controls, and optional AI support - developed with and for the community.'}
+                ? 'Entdecke das digitale Storytelling-Tool: geführte Schritte, Datenschutz-Einstellungen und optionale KI-Unterstützung. Entwickelt mit und für die Community.'
+                : 'Explore the digital storytelling tool: guided steps, privacy controls, and optional AI support, developed with and for the community.'}
             </p>
           </div>
           <div className="rounded-[24px] bg-[#9152FF] p-8 text-white shadow-[0_12px_48px_rgba(145,82,255,0.18)]">
@@ -38,8 +38,8 @@ export function LandingStorytelling() {
             <h3 className="font-lora text-xl font-bold">{isDe ? 'Erstelle und teile deine Geschichte' : 'Create and share your story'}</h3>
             <p className="mt-3 text-[0.88rem] leading-relaxed opacity-80">
               {isDe
-                ? 'In Entwicklung — Vorschau, KI-Generator und Community-Stories sind schon nutzbar.'
-                : 'Under development — preview, AI generator, and community stories are already available to explore.'}
+                ? 'In Entwicklung. Vorschau, KI-Generator und Community-Stories sind schon nutzbar.'
+                : 'Under development. Preview, AI generator, and community stories are already available to explore.'}
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link

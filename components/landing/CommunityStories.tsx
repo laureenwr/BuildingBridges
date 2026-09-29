@@ -225,15 +225,15 @@ export function CommunityStories({ extraStories = [] }: { extraStories?: Communi
   return (
     <section ref={sectionRef} id="community-stories" className="community-stories scroll-mt-[70px]">
       <div className="cs-inner">
-        <div className="cs-eyebrow">{t('Community Stories — Building Bridges', 'Community Stories — Building Bridges')}</div>
+        <div className="cs-eyebrow">{t('Community Stories, Building Bridges', 'Community Stories, Building Bridges')}</div>
         <h2 className="cs-title">
           {t('Stories that ', 'Geschichten, die ')}
           <em>{t('build bridges', 'Brücken bauen')}</em>
         </h2>
         <p className="cs-subtitle">
           {t(
-            'Real experiences from mentors, researchers and participants — shared to inspire, connect and empower. More stories are added as interviews are conducted.',
-            'Echte Erfahrungen von Mentorinnen, Forschenden und Teilnehmende — geteilt, um zu inspirieren, zu verbinden und zu stärken. Weitere Stories werden mit laufenden Interviews ergänzt.'
+            'Real experiences from mentors, researchers and participants. Shared to inspire, connect and empower. More stories are added as interviews are conducted.',
+            'Echte Erfahrungen von Mentorinnen, Forschenden und Teilnehmende. Geteilt, um zu inspirieren, zu verbinden und zu stärken. Weitere Stories werden mit laufenden Interviews ergänzt.'
           )}
         </p>
 
@@ -632,7 +632,7 @@ function StoryViewerFormats({
           <iframe
             className="cairo-globe-iframe"
             src="/cairo-to-charite-globe.html"
-            title="From Cairo to Charité — 3D Globe"
+            title="From Cairo to Charité, 3D globe"
             allow="autoplay"
           />
         ) : format === 'globe' ? (

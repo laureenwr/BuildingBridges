@@ -127,11 +127,11 @@ export function MentorMenteeDashboard({
             <ul className="mt-4 space-y-3 text-[0.9rem] text-[#5C5275]">
               <li className="flex gap-2">
                 <HeartHandshake className="mt-0.5 h-4 w-4 shrink-0 text-[#9152FF]" aria-hidden />
-                Take one small storytelling step—you choose the pace.
+                Take one small storytelling step. You choose the pace.
               </li>
               <li className="flex gap-2">
                 <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
-                Drafts autosave — your voice stays yours.
+                Drafts autosave. Your voice stays yours.
               </li>
               <li className="flex gap-2">
                 <LayoutDashboard className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
@@ -210,15 +210,15 @@ export function MentorMenteeDashboard({
           <ul className="mt-4 space-y-3">
             <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#9152FF]" aria-hidden />
-              <strong className="text-[#1A1033]">You are in control</strong>&nbsp; — pause anytime, edit gently, publish only when ready.
+              <strong className="text-[#1A1033]">You are in control</strong>. Pause anytime, edit gently, publish only when ready.
             </li>
             <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden />
-              <strong className="text-[#1A1033]">Your privacy matters</strong>&nbsp; — you decide what stays private or shared with mentors.
+              <strong className="text-[#1A1033]">Your privacy matters</strong>. You decide what stays private or shared with mentors.
             </li>
             <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden />
-              <strong className="text-[#1A1033]">Support each other</strong>&nbsp; — kind words can change someone&apos;s day.
+              <strong className="text-[#1A1033]">Support each other</strong>. Kind words can change someone&apos;s day.
             </li>
           </ul>
           <Link

@@ -15,7 +15,7 @@ export default function ImprintPage() {
           <h2>{isDe ? 'Angaben gemäß § 5 TMG' : 'Information according to § 5 TMG'}</h2>
           <p>
             {isDe
-              ? 'Building Bridges - Verbundprojekt aus Freie Universität Berlin, Stiftung SPI und Universität Duisburg-Essen. Diese Website dient der Information über das Projekt.'
+              ? 'Building Bridges, Verbundprojekt aus Freie Universität Berlin, Stiftung SPI und Universität Duisburg-Essen. Diese Website dient der Information über das Projekt.'
               : 'Building Bridges is a joint project of Freie University Berlin, SPI Foundation, and the University of Duisburg-Essen. This website provides information about the project.'}
           </p>
 

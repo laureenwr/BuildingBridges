@@ -1,14 +1,67 @@
 'use client';
 
 import { startTransition, useCallback, useRef, useState } from 'react';
-import { AiInterviewChat } from '@/components/landing/AiInterviewChat';
+import { AiInterviewChat, type InterviewAnswer } from '@/components/landing/AiInterviewChat';
 import { submitStoryToolStory } from '@/lib/actions/story-tool';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type CollectMode = 'paste' | 'interview';
-
-type Chapter = { label: string; icon: string; text: string; quote: string };
+type StoryKind = 'mentor' | 'participant' | 'awareness';
+type Chapter = { id: string; label: string; icon: string; text: string; quote: string };
 type SubmissionStatus = { type: 'success' | 'error'; message: string } | null;
+type ChapterAssist = {
+  busy: 'grammar' | 'titles' | null;
+  error: string | null;
+  grammarDraft: string | null;
+  titles: string[];
+};
+
+async function requestStoryAssist(input: {
+  locale: 'en' | 'de';
+  action: 'grammar' | 'titles' | 'story-title';
+  text: string;
+  currentLabel?: string;
+}) {
+  const response = await fetch('/api/story-assist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return (await response.json()) as {
+    success?: boolean;
+    text?: string;
+    titles?: string[];
+    message?: string;
+    code?: string;
+  };
+}
+
+function assistErrorCopy(
+  L: (en: string, de: string) => string,
+  result: { code?: string; message?: string },
+  forTitle = false
+) {
+  if (result.code === 'missing-key') {
+    return forTitle
+      ? L(
+          'AI writing help is not set up yet. You can type the title yourself.',
+          'KI-Schreibhilfe ist noch nicht eingerichtet. Du kannst den Titel selbst eingeben.'
+        )
+      : L(
+          'AI writing help is not set up yet. You can keep editing yourself.',
+          'KI-Schreibhilfe ist noch nicht eingerichtet. Du kannst selbst weiterbearbeiten.'
+        );
+  }
+  if (result.code === 'no-credits') {
+    return L(
+      'The OpenAI account has no remaining credits. Add credits, then try AI help again. You can keep editing yourself.',
+      'Das OpenAI-Konto hat keine Credits mehr. Lade Credits auf und versuche die KI-Hilfe danach erneut. Du kannst selbst weiterbearbeiten.'
+    );
+  }
+  return result.message || L('AI help is not available right now.', 'KI-Hilfe ist gerade nicht verfügbar.');
+}
+
+const CHAPTER_ICONS = ['📖', '🌍', '✈️', '🔥', '💡', '🌟'];
 
 function createStorySessionId() {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -17,167 +70,244 @@ function createStorySessionId() {
   return `story-tool-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function getStoryTitle(transcript: string, fallbackTitle: string) {
-  const source = (transcript.split(/\n---\n/).pop() ?? transcript).trim();
-  const words = source.split(/\s+/).filter(Boolean).slice(0, 6);
-  return words.length > 0 ? words.join(' ') : fallbackTitle;
+function createChapterId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `chapter-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function parseTranscriptIntoChapters(
-  transcript: string,
-  chapterLabels: string[],
-  fallbackStoryLabel: string,
-  chapterFallback: string
-): Chapter[] {
-  const sentences = transcript
-    .split(/[.!?]+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 20);
-  const intervieweeLines = sentences.filter((s) => s.length > 40);
-  const totalLines = intervieweeLines.length;
-  const chunkSize = Math.max(2, Math.floor(totalLines / 5));
-  const icons = ['🌍', '✈️', '🔥', '💡', '🌟'];
-  const chapters: Chapter[] = [];
-  for (let i = 0; i < 5; i++) {
-    const start = i * chunkSize;
-    const end = Math.min(start + chunkSize, totalLines);
-    const chunk = intervieweeLines.slice(start, end).join('. ');
-    if (chunk.length > 30) {
-      chapters.push({
-        label: chapterLabels[i] ?? `${chapterFallback} ${i + 1}`,
-        icon: icons[i] ?? '✦',
-        text: chunk,
-        quote: intervieweeLines[start] ?? '',
-      });
-    }
-  }
-  if (chapters.length === 0 && transcript.length > 20) {
-    chapters.push({
-      label: fallbackStoryLabel,
-      icon: '✦',
-      text: transcript.slice(0, 400),
-      quote: transcript.slice(0, 100),
-    });
-  }
-  return chapters;
-}
-
-function getChapterHeading(text: string) {
-  const words = text.trim().split(/\s+/).slice(0, 5).join(' ');
-  const parts = words.split(' ');
-  if (parts.length >= 4) {
-    return `${parts.slice(0, 3).join(' ')} <em>${parts.slice(3).join(' ')}</em>`;
-  }
-  return words;
+function makeChapter(partial?: Partial<Chapter>, index = 0): Chapter {
+  return {
+    id: partial?.id ?? createChapterId(),
+    label: partial?.label ?? '',
+    icon: partial?.icon ?? CHAPTER_ICONS[index % CHAPTER_ICONS.length],
+    text: partial?.text ?? '',
+    quote: partial?.quote ?? '',
+  };
 }
 
 export function AiStoryTool() {
   const { isDe } = useLanguage();
   const L = (en: string, de: string) => (isDe ? de : en);
-  const chapterLabels = isDe
-    ? ['Herkunft', 'Die Reise', 'Herausforderungen', 'Wendepunkt', 'Heute']
-    : ['Origin', 'The Journey', 'Challenges', 'Turning Point', 'Today'];
+  const interviewLabels = isDe
+    ? ['Art der Geschichte', 'Ort und Zeit', 'Was passiert ist', 'Was andere wissen sollen', 'Sonstiges']
+    : ['Kind of story', 'Where and when', 'What happened', 'What others should know', 'Anything else'];
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [collectMode, setCollectMode] = useState<CollectMode>('paste');
   const [transcript, setTranscript] = useState('');
+  const [answers, setAnswers] = useState<InterviewAnswer[]>([]);
+  const [storyTitle, setStoryTitle] = useState('');
   const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [storyType, setStoryType] = useState('mentor');
+  const [storyType, setStoryType] = useState<StoryKind>('mentor');
   const [format, setFormat] = useState<'immersive' | 'constellation'>('immersive');
   const [litRow, setLitRow] = useState<number | null>(null);
   const [consentGiven, setConsentGiven] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [assistByChapter, setAssistByChapter] = useState<Record<string, ChapterAssist>>({});
+  const [titleBusy, setTitleBusy] = useState(false);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
   const sessionIdRef = useRef('');
+  const lastSourceKeyRef = useRef('');
 
+  const sourceKey = `${collectMode}::${transcript}::${answers.map((answer) => answer.text).join('\n---\n')}`;
   const charLabel = L(`${transcript.length.toLocaleString()} characters`, `${transcript.length.toLocaleString()} Zeichen`);
+  const storyTypeLabel =
+    storyType === 'mentor'
+      ? L('Mentor', 'Mentorin')
+      : storyType === 'awareness'
+        ? L('Awareness', 'Awareness')
+        : L('Participant', 'Teilnehmerin');
+
+  const usableChapters = chapters.filter((chapter) => chapter.text.trim());
+
+  const buildChaptersFromSource = useCallback((): Chapter[] => {
+    if (collectMode === 'interview' && answers.length > 0) {
+      return answers.map((answer, index) =>
+        makeChapter(
+          {
+            label: interviewLabels[index] ?? `${L('Chapter', 'Kapitel')} ${index + 1}`,
+            text: answer.text,
+          },
+          index
+        )
+      );
+    }
+
+    const pasted = transcript.trim();
+    return [
+      makeChapter(
+        {
+          label: L('Story', 'Geschichte'),
+          text: pasted,
+        },
+        0
+      ),
+    ];
+  }, [answers, collectMode, interviewLabels, transcript, isDe]);
 
   const goTo = useCallback(
-    (s: 1 | 2 | 3 | 4) => {
-      if (s === 2 && transcript.trim().length < 10) {
+    (next: 1 | 2 | 3 | 4) => {
+      if (next >= 2 && transcript.trim().length < 10) {
         window.alert(
           L(
-            'Please share some of your story first — paste a transcript or talk with AI.',
-            'Bitte teile zuerst etwas von deiner Geschichte — füge ein Transkript ein oder sprich mit der KI.'
+            'Please share some of your story first. Paste a transcript or talk with AI.',
+            'Bitte teile zuerst etwas von deiner Geschichte. Füge ein Transkript ein oder sprich mit der KI.'
           )
         );
         return;
       }
-      setStep(s);
+      if (next >= 3 && !storyTitle.trim()) {
+        window.alert(L('Please add a title for this story.', 'Bitte gib dieser Story einen Titel.'));
+        return;
+      }
+      if (next === 3 && lastSourceKeyRef.current !== sourceKey) {
+        setChapters(buildChaptersFromSource());
+        lastSourceKeyRef.current = sourceKey;
+      }
+      setStep(next);
       document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
-    [transcript, isDe]
+    [buildChaptersFromSource, sourceKey, storyTitle, transcript, isDe]
   );
 
-  const runGenerate = useCallback(() => {
-    const t = (transcript.split(/\n---\n/).pop() ?? transcript).trim();
-    if (!t) {
-      window.alert(
-        L(
-          'Please share some of your story first — paste a transcript or talk with AI.',
-          'Bitte teile zuerst etwas von deiner Geschichte — füge ein Transkript ein oder sprich mit der KI.'
-        )
-      );
+  const goToReview = () => {
+    if (usableChapters.length === 0) {
+      window.alert(L('Please add at least one chapter with text.', 'Bitte füge mindestens ein Kapitel mit Text hinzu.'));
       return;
     }
-    setStep(3);
+    setFormat('immersive');
+    setStep(4);
+    document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const updateChapter = (id: string, patch: Partial<Chapter>) => {
+    setChapters((current) => current.map((chapter) => (chapter.id === id ? { ...chapter, ...patch } : chapter)));
+  };
+
+  const addChapter = () => {
+    setChapters((current) => [...current, makeChapter({}, current.length)]);
+  };
+
+  const removeChapter = (id: string) => {
+    setChapters((current) => (current.length <= 1 ? current : current.filter((chapter) => chapter.id !== id)));
+  };
+
+  const moveChapter = (id: string, direction: -1 | 1) => {
+    setChapters((current) => {
+      const index = current.findIndex((chapter) => chapter.id === id);
+      const next = index + direction;
+      if (index < 0 || next < 0 || next >= current.length) return current;
+      const copy = [...current];
+      const [item] = copy.splice(index, 1);
+      copy.splice(next, 0, item);
+      return copy;
+    });
+  };
+
+  const emptyAssist = (): ChapterAssist => ({ busy: null, error: null, grammarDraft: null, titles: [] });
+
+  const patchAssist = (id: string, patch: Partial<ChapterAssist>) => {
+    setAssistByChapter((current) => {
+      const prev = current[id] ?? emptyAssist();
+      return { ...current, [id]: { ...prev, ...patch } };
+    });
+  };
+
+  const runChapterAssist = async (chapter: Chapter, action: 'grammar' | 'titles') => {
+    const text = chapter.text.trim();
+    if (!text) {
+      patchAssist(chapter.id, {
+        error: L('Add some chapter text first.', 'Bitte schreibe zuerst etwas Kapiteltext.'),
+      });
+      return;
+    }
+    patchAssist(chapter.id, { busy: action, error: null });
+    try {
+      const result = await requestStoryAssist({
+        locale: isDe ? 'de' : 'en',
+        action,
+        text,
+        currentLabel: chapter.label,
+      });
+      if (!result.success) {
+        patchAssist(chapter.id, {
+          busy: null,
+          error: assistErrorCopy(L, result),
+        });
+        return;
+      }
+      if (action === 'grammar') {
+        patchAssist(chapter.id, { busy: null, grammarDraft: result.text || '' });
+        return;
+      }
+      patchAssist(chapter.id, { busy: null, titles: result.titles ?? [] });
+    } catch {
+      patchAssist(chapter.id, {
+        busy: null,
+        error: L('AI help is not available right now.', 'KI-Hilfe ist gerade nicht verfügbar.'),
+      });
+    }
+  };
+
+  const suggestStoryTitle = async () => {
+    const source =
+      collectMode === 'interview'
+        ? answers.map((answer) => answer.text).join('\n\n').trim()
+        : transcript.trim();
+    if (!source) {
+      setTitleError(L('Add some of your story first.', 'Bitte teile zuerst etwas von deiner Geschichte.'));
+      return;
+    }
+    setTitleBusy(true);
+    setTitleError(null);
+    try {
+      const result = await requestStoryAssist({
+        locale: isDe ? 'de' : 'en',
+        action: 'story-title',
+        text: source,
+      });
+      if (!result.success) {
+        setTitleError(assistErrorCopy(L, result, true));
+        return;
+      }
+      setTitleSuggestions(result.titles ?? []);
+    } catch {
+      setTitleError(L('AI help is not available right now.', 'KI-Hilfe ist gerade nicht verfügbar.'));
+    } finally {
+      setTitleBusy(false);
+    }
+  };
+
+  const mergeWithPrevious = (id: string) => {
+    setChapters((current) => {
+      const index = current.findIndex((chapter) => chapter.id === id);
+      if (index <= 0) return current;
+      const prev = current[index - 1];
+      const curr = current[index];
+      const merged = {
+        ...prev,
+        text: [prev.text.trim(), curr.text.trim()].filter(Boolean).join('\n\n'),
+        quote: prev.quote.trim() || curr.quote.trim(),
+      };
+      return [...current.slice(0, index - 1), merged, ...current.slice(index + 1)];
+    });
+  };
+
+  const resetCollectedStory = () => {
+    setTranscript('');
+    setAnswers([]);
+    setChapters([]);
+    setAssistByChapter({});
+    setTitleSuggestions([]);
+    setTitleError(null);
     setConsentGiven(false);
     setSubmissionStatus(null);
-    const bar = document.getElementById('ai-gen-bar');
-    const statusEl = document.getElementById('ai-gen-status');
-    const statuses = isDe
-      ? [
-          'Transkript wird gelesen…',
-          'Schlüsselmomente werden erkannt…',
-          'Story wird strukturiert…',
-          'Datenschutzeinstellungen werden angewendet…',
-          'Vorschau wird vorbereitet…',
-        ]
-      : [
-          'Reading the transcript…',
-          'Identifying key moments…',
-          'Structuring the story…',
-          'Applying privacy settings…',
-          'Preparing previews…',
-        ];
-    let progress = 0;
-    let si = 0;
-    if (bar) bar.style.width = '0%';
-    if (progressRef.current) clearInterval(progressRef.current);
-    progressRef.current = setInterval(() => {
-      progress = Math.min(progress + Math.random() * 15, 90);
-      if (bar) bar.style.width = `${progress}%`;
-      if (statusEl && si < statuses.length && progress > (si + 1) * 18) {
-        statusEl.textContent = statuses[si];
-        si += 1;
-      }
-    }, 400);
-
-    setTimeout(() => {
-      if (progressRef.current) clearInterval(progressRef.current);
-      if (bar) bar.style.width = '100%';
-      const ch = parseTranscriptIntoChapters(
-        t,
-        chapterLabels,
-        L('Her Story', 'Ihre Geschichte'),
-        L('Chapter', 'Kapitel')
-      );
-      setChapters(ch);
-      setTimeout(() => {
-        setStep(4);
-        setFormat('immersive');
-      }, 300);
-    }, 1800);
-  }, [transcript, isDe, chapterLabels]);
-
-  const immTitleHtml = () => {
-    const firstWords = transcript.trim().split(/\s+/).slice(0, 6).join(' ');
-    if (firstWords.length > 4) {
-      const w = firstWords.split(' ');
-      return `${w.slice(0, 3).join(' ')}<br/><em>${w.slice(3).join(' ')}</em>`;
-    }
-    return L('Her <em>Story</em>', 'Ihre <em>Story</em>');
+    sessionIdRef.current = '';
+    lastSourceKeyRef.current = '';
   };
 
   const handleSubmitForReview = useCallback(() => {
@@ -194,39 +324,23 @@ export function AiStoryTool() {
       return;
     }
 
-    const trimmedTranscript = transcript.trim();
-    if (!trimmedTranscript) {
+    const title = storyTitle.trim();
+    const readyChapters = chapters.filter((chapter) => chapter.text.trim());
+    if (!title) {
+      setSubmissionStatus({ type: 'error', message: L('Please add a title for this story.', 'Bitte gib dieser Story einen Titel.') });
+      return;
+    }
+    if (readyChapters.length === 0) {
       setSubmissionStatus({
         type: 'error',
-        message: L(
-          'Please share some of your story before submitting.',
-          'Bitte teile vor dem Einreichen etwas von deiner Geschichte.'
-        ),
+        message: L('Please add at least one chapter with text.', 'Bitte füge mindestens ein Kapitel mit Text hinzu.'),
       });
       return;
     }
 
-    if (chapters.length === 0) {
-      setSubmissionStatus({
-        type: 'error',
-        message: L('Please generate the story preview before submitting.', 'Bitte generiere zuerst die Story-Vorschau.'),
-      });
-      return;
-    }
-
-    const summary = chapters[0]?.text.trim() ?? '';
-    const empowermentMessage = chapters[chapters.length - 1]?.text.trim() ?? '';
-
-    if (!summary || !empowermentMessage) {
-      setSubmissionStatus({
-        type: 'error',
-        message: L(
-          'The generated story is missing a summary or empowerment message.',
-          'Der generierten Story fehlt eine Zusammenfassung oder Empowerment-Botschaft.'
-        ),
-      });
-      return;
-    }
+    const summary = readyChapters[0].text.trim();
+    const empowermentMessage = readyChapters[readyChapters.length - 1].text.trim();
+    const trimmedTranscript = transcript.trim() || readyChapters.map((chapter) => chapter.text.trim()).join('\n\n');
 
     if (!sessionIdRef.current) {
       sessionIdRef.current = createStorySessionId();
@@ -236,18 +350,18 @@ export function AiStoryTool() {
       sessionId: sessionIdRef.current,
       consent: true,
       story: {
-        title: getStoryTitle(trimmedTranscript, L('Her Story', 'Ihre Geschichte')),
+        title,
         summary,
-        timeline: chapters.map((chapter, index) => ({
+        timeline: readyChapters.map((chapter, index) => ({
           order: index + 1,
-          label: chapter.label,
+          label: chapter.label.trim() || `${L('Chapter', 'Kapitel')} ${index + 1}`,
           icon: chapter.icon,
-          text: chapter.text,
-          quote: chapter.quote,
+          text: chapter.text.trim(),
+          quote: chapter.quote.trim(),
         })),
-        quotes: chapters
+        quotes: readyChapters
           .map((chapter) => ({
-            label: chapter.label,
+            label: chapter.label.trim(),
             text: chapter.quote.trim(),
           }))
           .filter((quote) => quote.text.length > 0),
@@ -292,7 +406,7 @@ export function AiStoryTool() {
           setIsSubmitting(false);
         });
     });
-  }, [chapters, collectMode, consentGiven, isDe, isSubmitting, storyType, submissionStatus?.type, transcript]);
+  }, [chapters, collectMode, consentGiven, isDe, isSubmitting, storyTitle, storyType, submissionStatus?.type, transcript]);
 
   return (
     <div className="ai-gen-wrapper mt-20 border-t border-white/10 pt-16" id="ai-story-tool">
@@ -300,9 +414,6 @@ export function AiStoryTool() {
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-amber-400/10 px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-amber-200">
             {L('Under development', 'In Entwicklung')}
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.4)] bg-[rgba(145,82,255,0.2)] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#B580FF]">
-            {L('✦ Sample preview', '✦ Vorschau (Beispiel)')}
           </span>
         </div>
         <h3 className="font-lora text-[clamp(1.5rem,2.5vw,2rem)] font-semibold leading-tight text-white">
@@ -318,8 +429,8 @@ export function AiStoryTool() {
         </h3>
         <p className="mt-2 max-w-[560px] text-[0.88rem] leading-relaxed text-white/50">
           {L(
-            'Talk with AI or paste a transcript, configure the story settings, preview how it looks, and submit it for human review when you are ready.',
-            'Sprich mit der KI oder füge ein Transkript ein, konfiguriere die Story-Einstellungen, sieh dir die Vorschau an und reiche sie ein, wenn du bereit bist.'
+            'You write the chapters. The designs only display what you enter. Nothing is published until human review.',
+            'Du schreibst die Kapitel. Die Designs zeigen nur, was du eingibst. Nichts wird vor der menschlichen Prüfung veröffentlicht.'
           )}
         </p>
       </div>
@@ -345,8 +456,8 @@ export function AiStoryTool() {
                 {n}
               </span>
               {n === 1 && L('Collect', 'Sammeln')}
-              {n === 2 && L('Configure', 'Konfigurieren')}
-              {n === 3 && L('Generate', 'Generieren')}
+              {n === 2 && L('Details', 'Details')}
+              {n === 3 && L('Chapters', 'Kapitel')}
               {n === 4 && L('Review', 'Prüfen')}
             </span>
           </span>
@@ -397,6 +508,7 @@ export function AiStoryTool() {
                   setSubmissionStatus(null);
                   sessionIdRef.current = '';
                 }}
+                onAnswersChange={setAnswers}
                 onReady={() => goTo(2)}
               />
             ) : (
@@ -417,12 +529,7 @@ export function AiStoryTool() {
                   <button
                     type="button"
                     className="rounded-full border border-white/10 px-3 py-1 text-[0.75rem] text-white/40 hover:text-white/70"
-                    onClick={() => {
-                      setTranscript('');
-                      setConsentGiven(false);
-                      setSubmissionStatus(null);
-                      sessionIdRef.current = '';
-                    }}
+                    onClick={resetCollectedStory}
                   >
                     {L('Clear', 'Leeren')}
                   </button>
@@ -434,7 +541,7 @@ export function AiStoryTool() {
                     onClick={() => goTo(2)}
                     className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)] hover:shadow-[0_6px_26px_rgba(145,82,255,0.6)]"
                   >
-                    {L('Next → Configure', 'Weiter → Konfigurieren')}
+                    {L('Next → Details', 'Weiter → Details')}
                   </button>
                 </div>
               </>
@@ -445,46 +552,70 @@ export function AiStoryTool() {
         {step === 2 && (
           <div className="p-8">
             <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 2', 'Schritt 2')}</p>
-            <h4 className="font-lora text-xl font-semibold text-white">{L('Configure the story', 'Story konfigurieren')}</h4>
+            <h4 className="font-lora text-xl font-semibold text-white">{L('Title and story type', 'Titel und Story-Typ')}</h4>
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
               {L(
-                'Choose story type and output shape. Submission only happens after you confirm consent in the review step.',
-                'Story-Typ und Ausgabeform wählen. Eingereicht wird erst nach deiner Zustimmung im Prüfschritt.'
+                'Give the story a name and say whose story it is. You will shape the chapters in the next step.',
+                'Gib der Story einen Namen und sage, wessen Geschichte es ist. Die Kapitel formst du im nächsten Schritt.'
               )}
             </p>
-            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
-                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{L('Story type', 'Story-Typ')}</p>
-                {[
+            <label className="mb-3 block">
+              <span className="mb-2 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">
+                {L('Story title', 'Story-Titel')}
+              </span>
+              <input
+                type="text"
+                value={storyTitle}
+                onChange={(event) => setStoryTitle(event.target.value)}
+                placeholder={L('e.g. Finding my place in Berlin', 'z. B. Meinen Platz in Berlin finden')}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[0.92rem] text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+              />
+            </label>
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={() => void suggestStoryTitle()}
+                disabled={titleBusy}
+                className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.78rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)] disabled:opacity-50"
+              >
+                {titleBusy ? L('Suggesting…', 'Vorschläge werden geladen…') : L('✦ Suggest titles', '✦ Titel vorschlagen')}
+              </button>
+              {titleError ? <p className="mt-2 text-[0.78rem] text-rose-200/80">{titleError}</p> : null}
+              {titleSuggestions.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {titleSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => setStoryTitle(suggestion)}
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[0.78rem] text-white/75 hover:border-[rgba(145,82,255,0.45)] hover:text-white"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <div className="mb-6 rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
+              <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{L('Story type', 'Story-Typ')}</p>
+              {(
+                [
                   ['mentor', L('Role model / mentor story', 'Role Model / Mentorinnen-Story')],
                   ['participant', L('Participant experience story', 'Teilnehmerinnen-Erfahrungsstory')],
                   ['awareness', L('Awareness & empowerment story', 'Awareness- & Empowerment-Story')],
-                ].map(([v, label]) => (
-                  <label key={v} className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65 hover:text-white">
-                    <input
-                      type="radio"
-                      name="aiStoryType"
-                      className="mt-0.5 accent-[#9152FF]"
-                      checked={storyType === v}
-                      onChange={() => setStoryType(v)}
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-              <div className="rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
-                <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{L('Output format', 'Ausgabeformat')}</p>
-                {[
-                  ['narrative', L('Narrative paragraphs', 'Erzählende Absätze')],
-                  ['chapters', L('Chapters with headings', 'Kapitel mit Überschriften')],
-                  ['quotes', L('Key quotes + context', 'Kernzitate + Kontext')],
-                ].map(([v, label]) => (
-                  <label key={v} className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65 hover:text-white">
-                    <input type="radio" name="aiFormat" className="mt-0.5 accent-[#9152FF]" defaultChecked={v === 'narrative'} />
-                    {label}
-                  </label>
-                ))}
-              </div>
+                ] as const
+              ).map(([value, label]) => (
+                <label key={value} className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65 hover:text-white">
+                  <input
+                    type="radio"
+                    name="aiStoryType"
+                    className="mt-0.5 accent-[#9152FF]"
+                    checked={storyType === value}
+                    onChange={() => setStoryType(value)}
+                  />
+                  {label}
+                </label>
+              ))}
             </div>
             <div className="flex flex-wrap justify-between gap-4">
               <button
@@ -496,38 +627,206 @@ export function AiStoryTool() {
               </button>
               <button
                 type="button"
-                onClick={runGenerate}
+                onClick={() => goTo(3)}
                 className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)]"
               >
-                {L('✨ Generate Story →', '✨ Story generieren →')}
+                {L('Next → Chapters', 'Weiter → Kapitel')}
               </button>
             </div>
           </div>
         )}
 
         {step === 3 && (
-          <div className="px-8 py-12 text-center">
-            <span className="mb-4 inline-block animate-pulse text-4xl text-[#B580FF]" aria-hidden>
-              ✦
-            </span>
-            <div className="font-lora text-xl text-white">{L('Shaping your story…', 'Deine Story wird gestaltet…')}</div>
-            <div id="ai-gen-status" className="mt-2 min-h-[1.3em] text-[0.84rem] text-white/45">
-              {L('Reading the transcript…', 'Transkript wird gelesen…')}
+          <div className="p-8">
+            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 3', 'Schritt 3')}</p>
+            <h4 className="font-lora text-xl font-semibold text-white">{L('Shape the chapters', 'Kapitel formen')}</h4>
+            <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
+              {L(
+                collectMode === 'interview'
+                  ? 'Each answer is one chapter. Rename, edit, merge, or delete. Optional AI can fix grammar or suggest names. You choose what to keep.'
+                  : 'Your paste starts as one chapter. Split it yourself. Optional AI can fix grammar or suggest names. You choose what to keep.',
+                collectMode === 'interview'
+                  ? 'Jede Antwort ist ein Kapitel. Benenne um, bearbeite, führe zusammen oder lösche. Optional kann KI Grammatik korrigieren oder Namen vorschlagen. Du entscheidest, was bleibt.'
+                  : 'Dein eingefügter Text startet als ein Kapitel. Teile ihn selbst. Optional kann KI Grammatik korrigieren oder Namen vorschlagen. Du entscheidest, was bleibt.'
+              )}
+            </p>
+
+            <div className="space-y-4">
+              {chapters.map((chapter, index) => {
+                const assist = assistByChapter[chapter.id] ?? emptyAssist();
+                return (
+                <div key={chapter.id} className="rounded-[14px] border border-white/10 bg-white/[0.03] p-5">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">
+                      {L('Chapter', 'Kapitel')} {index + 1}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => moveChapter(chapter.id, -1)}
+                        disabled={index === 0}
+                        className="rounded-full border border-white/10 px-2.5 py-1 text-[0.72rem] text-white/45 hover:text-white/75 disabled:opacity-30"
+                      >
+                        {L('Up', 'Hoch')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveChapter(chapter.id, 1)}
+                        disabled={index === chapters.length - 1}
+                        className="rounded-full border border-white/10 px-2.5 py-1 text-[0.72rem] text-white/45 hover:text-white/75 disabled:opacity-30"
+                      >
+                        {L('Down', 'Runter')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => mergeWithPrevious(chapter.id)}
+                        disabled={index === 0}
+                        className="rounded-full border border-white/10 px-2.5 py-1 text-[0.72rem] text-white/45 hover:text-white/75 disabled:opacity-30"
+                      >
+                        {L('Merge up', 'Nach oben mergen')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeChapter(chapter.id)}
+                        disabled={chapters.length <= 1}
+                        className="rounded-full border border-white/10 px-2.5 py-1 text-[0.72rem] text-rose-200/70 hover:text-rose-100 disabled:opacity-30"
+                      >
+                        {L('Delete', 'Löschen')}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-3 grid gap-3 sm:grid-cols-[auto_1fr]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-lg" aria-hidden>
+                      {chapter.icon}
+                    </span>
+                    <input
+                      type="text"
+                      value={chapter.label}
+                      onChange={(event) => updateChapter(chapter.id, { label: event.target.value })}
+                      placeholder={L('Chapter name', 'Kapitelname')}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-[0.88rem] text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+                    />
+                  </div>
+                  <textarea
+                    value={chapter.text}
+                    onChange={(event) => updateChapter(chapter.id, { text: event.target.value })}
+                    placeholder={L('Chapter text…', 'Kapiteltext…')}
+                    className="mb-3 min-h-[120px] w-full resize-y rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+                  />
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void runChapterAssist(chapter, 'grammar')}
+                      disabled={assist.busy !== null}
+                      className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.75rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)] disabled:opacity-50"
+                    >
+                      {assist.busy === 'grammar'
+                        ? L('Fixing grammar…', 'Grammatik wird korrigiert…')
+                        : L('Fix grammar', 'Grammatik korrigieren')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void runChapterAssist(chapter, 'titles')}
+                      disabled={assist.busy !== null}
+                      className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.75rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)] disabled:opacity-50"
+                    >
+                      {assist.busy === 'titles'
+                        ? L('Suggesting names…', 'Namen werden vorgeschlagen…')
+                        : L('Suggest chapter names', 'Kapitelnamen vorschlagen')}
+                    </button>
+                  </div>
+                  {assist.error ? <p className="mb-3 text-[0.78rem] text-rose-200/80">{assist.error}</p> : null}
+                  {assist.grammarDraft ? (
+                    <div className="mb-3 rounded-xl border border-[rgba(145,82,255,0.25)] bg-[rgba(145,82,255,0.08)] p-3">
+                      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">
+                        {L('Suggested wording. You choose', 'Vorgeschlagener Wortlaut. Du entscheidest')}
+                      </p>
+                      <p className="text-[0.84rem] leading-relaxed text-white/80">{assist.grammarDraft}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateChapter(chapter.id, { text: assist.grammarDraft || '' });
+                            patchAssist(chapter.id, { grammarDraft: null });
+                          }}
+                          className="rounded-full bg-[#9152FF] px-3 py-1.5 text-[0.75rem] font-semibold text-white"
+                        >
+                          {L('Use this', 'Übernehmen')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => patchAssist(chapter.id, { grammarDraft: null })}
+                          className="rounded-full border border-white/10 px-3 py-1.5 text-[0.75rem] text-white/55 hover:text-white/80"
+                        >
+                          {L('Keep mine', 'Meinen behalten')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                  {assist.titles.length > 0 ? (
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {assist.titles.map((title) => (
+                        <button
+                          key={title}
+                          type="button"
+                          onClick={() => updateChapter(chapter.id, { label: title })}
+                          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[0.78rem] text-white/75 hover:border-[rgba(145,82,255,0.45)] hover:text-white"
+                        >
+                          {title}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                  <input
+                    type="text"
+                    value={chapter.quote}
+                    onChange={(event) => updateChapter(chapter.id, { quote: event.target.value })}
+                    placeholder={L('Optional quote', 'Optionales Zitat')}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-[0.88rem] text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+                  />
+                </div>
+                );
+              })}
             </div>
-            <div className="mx-auto mt-6 h-1 max-w-[360px] overflow-hidden rounded-full bg-white/10">
-              <div id="ai-gen-bar" className="h-full w-0 rounded-full bg-gradient-to-r from-[#9152FF] to-[#B580FF] shadow-[0_0_10px_rgba(145,82,255,0.5)] transition-[width] duration-500" />
+
+            <button
+              type="button"
+              onClick={addChapter}
+              className="mt-4 rounded-full border border-[rgba(145,82,255,0.35)] px-4 py-2 text-[0.8rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)]"
+            >
+              {L('+ Add chapter', '+ Kapitel hinzufügen')}
+            </button>
+
+            <div className="mt-6 flex flex-wrap justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => goTo(2)}
+                className="rounded-full border border-white/10 px-4 py-2 text-[0.84rem] text-white/40 hover:border-white/25 hover:text-white/70"
+              >
+                {L('← Back', '← Zurück')}
+              </button>
+              <button
+                type="button"
+                onClick={goToReview}
+                className="rounded-full bg-gradient-to-br from-[#9152FF] to-[#7339E0] px-5 py-2.5 text-[0.84rem] font-semibold text-white shadow-[0_4px_18px_rgba(145,82,255,0.4)]"
+              >
+                {L('Next → Review', 'Weiter → Prüfen')}
+              </button>
             </div>
           </div>
         )}
 
         {step === 4 && (
           <div className="p-8">
-            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 4 — Review', 'Schritt 4 — Prüfen')}</p>
+            <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 4: Review', 'Schritt 4: Prüfen')}</p>
             <h4 className="font-lora text-xl font-semibold text-white">
-              {L('Choose your storytelling format', 'Storytelling-Format wählen')}
+              {L('See how the designs use your chapters', 'So nutzen die Designs deine Kapitel')}
             </h4>
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
-              {L('Preview sample layout from your story draft.', 'Beispiel-Layout aus deinem Story-Entwurf.')}
+              {L(
+                'This is your wording in the story layouts. Nothing new is written here.',
+                'Das ist dein Wortlaut in den Story-Layouts. Hier wird nichts Neues geschrieben.'
+              )}
             </p>
             <div className="mb-6 flex flex-col gap-4 sm:flex-row">
               <button
@@ -562,40 +861,35 @@ export function AiStoryTool() {
               <div className="overflow-hidden rounded-2xl bg-[#080808] font-fraunces text-[#f7f2ec]">
                 <div className="border-b border-white/[0.06] bg-gradient-to-br from-[#0c0428] to-[#080808] px-6 py-8">
                   <div className="font-dmMono text-[0.6rem] uppercase tracking-[0.2em] text-[rgba(145,82,255,0.7)]">
-                    {L('Building Bridges · Sample', 'Building Bridges · Beispiel')}
+                    Building Bridges · {storyTypeLabel}
                   </div>
-                  <div
-                    className="mt-2 text-[clamp(1.8rem,4vw,2.5rem)] font-extrabold leading-none tracking-tight"
-                    dangerouslySetInnerHTML={{ __html: immTitleHtml() }}
-                  />
+                  <div className="mt-2 text-[clamp(1.8rem,4vw,2.5rem)] font-extrabold leading-none tracking-tight">
+                    {storyTitle.trim() || L('Untitled story', 'Unbenannte Story')}
+                  </div>
                   <p className="font-dmSans mt-3 max-w-md text-[0.85rem] font-light leading-relaxed text-[#f7f2ec]/50">
                     {L(
-                      `Extracted from the interview transcript · ${storyType} format`,
-                      `Aus dem Interview-Transkript extrahiert · ${storyType}-Format`
+                      `Your chapters · ${storyTypeLabel} story`,
+                      `Deine Kapitel · ${storyTypeLabel}-Story`
                     )}
                   </p>
                 </div>
-                {chapters.slice(0, 4).map((ch) => (
-                  <div key={ch.label} className="border-b border-white/[0.04] px-6 py-6">
+                {usableChapters.map((ch, index) => (
+                  <div key={ch.id} className="border-b border-white/[0.04] px-6 py-6">
                     <div className="font-dmMono text-[0.55rem] uppercase tracking-[0.18em] text-[rgba(196,164,255,0.5)]">
-                      {ch.icon} {ch.label}
+                      {ch.icon} {ch.label.trim() || `${L('Chapter', 'Kapitel')} ${index + 1}`}
                     </div>
-                    <div
-                      className="font-fraunces mt-2 text-[clamp(1.2rem,2.5vw,1.75rem)] font-extrabold leading-tight tracking-tight"
-                      dangerouslySetInnerHTML={{ __html: getChapterHeading(ch.text) }}
-                    />
                     <p className="font-dmSans mt-3 text-[0.84rem] font-light leading-relaxed text-[#f7f2ec]/65">
                       {ch.text.length > 280 ? `${ch.text.slice(0, 280)}…` : ch.text}
                     </p>
-                    {ch.quote.length > 20 && (
+                    {ch.quote.trim() ? (
                       <blockquote className="font-fraunces mt-4 border-l-2 border-[#818cf8] pl-3 text-[0.9rem] italic text-[#f7f2ec]/80">
-                        &ldquo;{ch.quote.length > 120 ? `${ch.quote.slice(0, 120)}…` : ch.quote}&rdquo;
+                        &ldquo;{ch.quote.trim()}&rdquo;
                       </blockquote>
-                    )}
+                    ) : null}
                   </div>
                 ))}
                 <div className="flex items-center justify-center gap-2 border-t border-[rgba(145,82,255,0.3)] bg-[rgba(145,82,255,0.15)] px-6 py-3 font-primary text-[0.72rem] text-[rgba(145,82,255,0.8)]">
-                  {L('📜 Immersive preview · sample only', '📜 Immersive Vorschau · nur Beispiel')}
+                  {L('Your wording in the immersive layout', 'Dein Wortlaut im immersiven Layout')}
                 </div>
               </div>
             )}
@@ -604,24 +898,16 @@ export function AiStoryTool() {
               <div className="overflow-hidden rounded-2xl bg-[#04020c] font-dmSans text-[#f7f4ff]">
                 <div className="border-b border-[rgba(129,140,248,0.1)] px-6 py-6 text-center">
                   <div className="font-fraunces text-2xl font-extrabold tracking-tight">
-                    {isDe ? (
-                      <>
-                        Verbinde die <em className="font-light not-italic text-[#818cf8]">Sterne.</em>
-                      </>
-                    ) : (
-                      <>
-                        Connect the <em className="font-light not-italic text-[#818cf8]">stars.</em>
-                      </>
-                    )}
+                    {storyTitle.trim() || L('Untitled story', 'Unbenannte Story')}
                   </div>
                   <p className="font-dmMono mt-2 text-[0.6rem] uppercase tracking-[0.12em] text-[rgba(129,140,248,0.45)]">
                     {L('Tap a row to highlight', 'Zeile antippen zum Hervorheben')}
                   </p>
                 </div>
                 <div className="px-4 py-2">
-                  {chapters.slice(0, 6).map((ch, i) => (
+                  {usableChapters.map((ch, i) => (
                     <button
-                      key={`${ch.label}-${i}`}
+                      key={ch.id}
                       type="button"
                       onClick={() => setLitRow(litRow === i ? null : i)}
                       className={`flex w-full items-center gap-4 rounded-lg border-b border-[rgba(129,140,248,0.08)] py-3 pl-2 text-left transition hover:bg-[rgba(129,140,248,0.06)] ${
@@ -635,7 +921,7 @@ export function AiStoryTool() {
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <span className="font-fraunces shrink-0 text-[0.95rem] font-semibold">
-                        {ch.icon} {ch.label}
+                        {ch.icon} {ch.label.trim() || `${L('Chapter', 'Kapitel')} ${i + 1}`}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-[0.75rem] text-[#f7f4ff]/35">
                         {ch.text.length > 80 ? `${ch.text.slice(0, 80)}…` : ch.text}
@@ -644,7 +930,7 @@ export function AiStoryTool() {
                   ))}
                 </div>
                 <div className="flex items-center justify-center gap-2 border-t border-[rgba(129,140,248,0.15)] bg-[rgba(129,140,248,0.08)] px-6 py-3 font-primary text-[0.72rem] text-[rgba(129,140,248,0.6)]">
-                  {L('✦ Constellation preview · sample only', '✦ Konstellations-Vorschau · nur Beispiel')}
+                  {L('Your wording in the constellation layout', 'Dein Wortlaut im Konstellations-Layout')}
                 </div>
               </div>
             )}
@@ -663,8 +949,8 @@ export function AiStoryTool() {
                 />
                 <span>
                   {L(
-                    'I confirm that I have consent to submit this story transcript and generated story for human review by Building Bridges. I understand it will not be published automatically.',
-                    'Ich bestätige, dass ich die Zustimmung habe, dieses Story-Transkript und die generierte Story zur menschlichen Prüfung durch Building Bridges einzureichen. Mir ist bewusst, dass sie nicht automatisch veröffentlicht wird.'
+                    'I confirm that I have consent to submit this story for human review by Building Bridges. I understand it will not be published automatically.',
+                    'Ich bestätige, dass ich die Zustimmung habe, diese Story zur menschlichen Prüfung durch Building Bridges einzureichen. Mir ist bewusst, dass sie nicht automatisch veröffentlicht wird.'
                   )}
                 </span>
               </label>
@@ -685,10 +971,10 @@ export function AiStoryTool() {
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => goTo(2)}
+                  onClick={() => goTo(3)}
                   className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.78rem] text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)]"
                 >
-                  {L('⚙️ Reconfigure', '⚙️ Neu konfigurieren')}
+                  {L('✎ Edit chapters', '✎ Kapitel bearbeiten')}
                 </button>
                 <button
                   type="button"

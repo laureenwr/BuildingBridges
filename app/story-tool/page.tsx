@@ -5,7 +5,7 @@ import { getApprovedStoriesForPublic } from '@/lib/actions/stories';
 export const metadata: Metadata = {
   title: 'Story Creation Tool (in development)',
   description:
-    'Building Bridges co-creation story tool — currently under development. Browse published community stories in the meantime.',
+    'Building Bridges co-creation story tool. Currently under development. Browse published community stories in the meantime.',
 };
 
 export const dynamic = 'force-dynamic';

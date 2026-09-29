@@ -23,7 +23,7 @@ export function StorytellingSection() {
       <div className="relative z-[1] mx-auto max-w-[1280px]">
         <div className="mb-16 max-w-[640px]">
           <div className="mb-3 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#B580FF]">
-            {t('Story Creation Tool — TP3', 'Story-Werkzeug — TP3')}
+            {t('Story Creation Tool, TP3', 'Story-Werkzeug, TP3')}
           </div>
           <h2 className="font-[family-name:var(--font-lora)] text-[clamp(2rem,3vw,2.8rem)] font-bold leading-tight tracking-tight">
             {t('A co-creative space for ', 'Ein gemeinsam gestalteter Raum für ')}
@@ -32,7 +32,7 @@ export function StorytellingSection() {
           <p className="mt-4 text-[0.97rem] leading-relaxed text-white/70">
             {t(
               'The core innovation of Building Bridges: a digital storytelling tool where you control how much you share, whether to publish, and how AI assists your creative process. Built with and for the community.',
-              'Die zentrale Innovation: ein digitales Story-Werkzeug, in dem du steuerst, wie viel du teilst, ob du veröffentlichst und wie KI deinen Prozess unterstützt — mit und für die Community.'
+              'Die zentrale Innovation: ein digitales Story-Werkzeug, in dem du steuerst, wie viel du teilst, ob du veröffentlichst und wie KI deinen Prozess unterstützt. Mit und für die Community.'
             )}
           </p>
         </div>
@@ -40,7 +40,7 @@ export function StorytellingSection() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div>
             <h3 className="mb-1 font-[family-name:var(--font-lora)] text-[1.3rem] font-bold">{t('Story Creation Steps', 'Schritte zur Story-Erstellung')}</h3>
-            <p className="mb-6 text-[0.85rem] text-white/60">{t('A guided, safe process — skip any step at any time.', 'Ein geführter, sicherer Prozess — überspringe jederzeit jeden Schritt.')}</p>
+            <p className="mb-6 text-[0.85rem] text-white/60">{t('A guided, safe process. Skip any step at any time.', 'Ein geführter, sicherer Prozess. Überspringe jederzeit jeden Schritt.')}</p>
             <div className="flex flex-col">
               {[
                 {
@@ -109,10 +109,10 @@ export function StorytellingSection() {
 
         <div className="mt-16">
           <h3 className="mb-1 font-[family-name:var(--font-lora)] text-[1.4rem] font-bold">{t('AI-Supported Technical Toolkit', 'KI-unterstütztes technisches Toolkit')}</h3>
-          <p className="mb-8 text-[0.88rem] text-white/60">{t('Manual creativity + responsible AI — optional and transparent.', 'Manuelle Kreativität + verantwortungsvolle KI — optional und transparent.')}</p>
+          <p className="mb-8 text-[0.88rem] text-white/60">{t('Manual creativity + responsible AI. Optional and transparent.', 'Manuelle Kreativität + verantwortungsvolle KI. Optional und transparent.')}</p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: '✍️', t: t('Text Generation', 'Textgenerierung'), d: t('LLM assistance — you stay the author.', 'LLM-Unterstützung — du bleibst Autor*in.') },
+              { icon: '✍️', t: t('Text Generation', 'Textgenerierung'), d: t('LLM assistance. You stay the author.', 'LLM-Unterstützung. Du bleibst Autor*in.') },
               { icon: '🖼️', t: t('Image Generation', 'Bildgenerierung'), d: t('Illustrations without personal photos.', 'Illustrationen ohne persönliche Fotos.') },
               { icon: '🎙️', t: t('Audio & Voice-over', 'Audio & Voice-over'), d: t('Narration with privacy options.', 'Erzählstimme mit Privatsphäre-Optionen.') },
               { icon: '📝', t: t('Auto-Structuring & Subtitles', 'Struktur & Untertitel'), d: t('Accessibility and multimodal publishing.', 'Barrierefreiheit & multimodales Publizieren.') },

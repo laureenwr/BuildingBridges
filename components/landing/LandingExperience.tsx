@@ -110,13 +110,13 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             <p className="mt-5 text-[0.97rem] leading-relaxed text-white/80">
               {t(
                 '"Building Bridges" is a 36-month interdisciplinary research and development project that aims to empower and mentor girls and FLINTA* of color from the 10th grade onwards. The project is being carried out by the Free University of Berlin, the SPI Foundation, and the University of Duisburg-Essen.',
-                '„Building Bridges“ ist ein 36-monatiges interdisziplinäres Projekt für Mädchen und FLINTA* of Colour ab der 10. Klasse — durchgeführt von FU Berlin, Stiftung SPI und Universität Duisburg-Essen.'
+                '„Building Bridges“ ist ein 36-monatiges interdisziplinäres Projekt für Mädchen und FLINTA* of Colour ab der 10. Klasse. Durchgeführt von FU Berlin, Stiftung SPI und Universität Duisburg-Essen.'
               )}
             </p>
             <p className="mt-4 text-[0.97rem] leading-relaxed text-white/80">
               {t(
                 'The entire project is scientifically monitored by the Free University of Berlin. Interviews and questionnaires assess experiences of discrimination, mental health, stressors, resources, and academic participation.',
-                'Wissenschaftlich begleitet von der FU Berlin — mit Interviews und Fragebögen zu Diskriminierung, psychischer Gesundheit, Ressourcen und akademischer Teilhabe.'
+                'Wissenschaftlich begleitet von der FU Berlin. Mit Interviews und Fragebögen zu Diskriminierung, psychischer Gesundheit, Ressourcen und akademischer Teilhabe.'
               )}
             </p>
           </div>
@@ -137,7 +137,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             <div className="flex flex-col gap-4">
               {[
                 { icon: '🔬', title: t('Scientific Coordination (TP1)', 'Wissenschaftliche Koordination (TP1)'), desc: t('Interviews & questionnaires on discrimination, mental health, and participation.', 'Interviews & Fragebögen zu Diskriminierung, Gesundheit und Teilhabe.') },
-                { icon: '🤝', title: t('Mentoring & Empowerment (TP2)', 'Mentoring & Empowerment (TP2)'), desc: t('Workshops and mentoring from grade 10 — empowerment and transitions.', 'Workshops und Mentoring ab Klasse 10 — Empowerment und Übergänge.') },
+                { icon: '🤝', title: t('Mentoring & Empowerment (TP2)', 'Mentoring & Empowerment (TP2)'), desc: t('Workshops and mentoring from grade 10, plus empowerment and transitions.', 'Workshops und Mentoring ab Klasse 10, plus Empowerment und Übergänge.') },
                 { icon: '💻', title: t('Digital Platform (TP3)', 'Digitale Plattform (TP3)'), desc: t('Participatory platform for storytelling and peer exchange.', 'Partizipative Plattform für Storytelling und Peer-Austausch.') },
               ].map((p) => (
                 <div key={p.title} className="flex gap-4 rounded-[18px] border border-white/10 bg-white/10 p-5 transition hover:bg-white/15">
@@ -165,7 +165,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
               { icon: '📋', title: t('Developing an MEP Program', 'MEP-Programm entwickeln'), body: t('Intersectionality-sensitive mentoring for BIPoC girls and FLINTA*.', 'Intersektional sensibles Mentoring für BIPoC-Mädchen und FLINTA*.') },
               { icon: '🎓', title: t('Promoting Academic Careers', 'Akademische Laufbahnen fördern'), body: t('Psychosocial fields and resources for M*oC entering science.', 'Psychosoziale Felder und Ressourcen für M*oC auf dem Weg in die Wissenschaft.') },
               { icon: '⭐', title: t('Creating Role Models', 'Vorbilder sichtbar machen'), body: t('Mentors and role models of colour in the programme.', 'Mentor*innen und Vorbilder of Colour im Programm.') },
-              { icon: '🌐', title: t('Digital Platform', 'Digitale Plattform'), body: t('Participatory storytelling and peer-to-peer exchange.', 'Partizipatives Storytelling und Peer-to-Peer-Austausch.') },
+              { icon: '🌐', title: t('Digital Platform', 'Digitale Plattform'), body: t('Participatory storytelling and peer exchange.', 'Partizipatives Storytelling und Austausch unter Gleichen.') },
               { icon: '🔍', title: t('Research Barriers', 'Barrieren erforschen'), body: t('Discrimination, barriers, and conditions for participation.', 'Diskriminierung, Barrieren und Teilhabebedingungen.') },
               { icon: '💪', title: t('Strengthening Resilience', 'Resilienz stärken'), body: t('Talents and resources for wellbeing and performance.', 'Talente und Ressourcen für Wohlbefinden und Leistung.') },
             ].map((g) => (
@@ -190,12 +190,12 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             {t('Meet the ', 'Die ')}
             <em className="font-normal italic text-[#9152FF]">{t('people', 'Menschen')}</em> {t('behind Building Bridges', 'hinter Building Bridges')}
           </h2>
-          <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">{t('Three partner institutions – one shared mission.', 'Drei Partner — eine gemeinsame Mission.')}</p>
+          <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">{t('Three partner institutions. One shared mission.', 'Drei Partner. Eine gemeinsame Mission.')}</p>
 
           <TeamTpBlock
             variant="tp1"
             badge="TP1"
-            title={t('Free University of Berlin – Scientific Coordination & Research', 'FU Berlin – Wissenschaftliche Koordination & Forschung')}
+            title={t('Free University of Berlin: scientific coordination and research', 'FU Berlin: wissenschaftliche Koordination und Forschung')}
             subtitle={t('Educational Science & Psychology · Project management & evaluation', 'Erziehungswissenschaft & Psychologie · Management & Evaluation')}
             members={tp1}
             displayName={displayName}
@@ -203,7 +203,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
           <TeamTpBlock
             variant="tp2"
             badge="TP2"
-            title={t('SPI Foundation – Mentoring & Empowerment Program', 'Stiftung SPI – Mentoring & Empowerment')}
+            title={t('SPI Foundation: Mentoring and Empowerment Program', 'Stiftung SPI: Mentoring und Empowerment')}
             subtitle={t('Social Pedagogical Institute Berlin · MEP development', 'Sozialpädagogisches Institut Berlin · MEP-Entwicklung')}
             members={tp2}
             displayName={displayName}
@@ -211,7 +211,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
           <TeamTpBlock
             variant="tp3"
             badge="TP3"
-            title={t('University of Duisburg-Essen – Digital Platform & Research', 'Universität Duisburg-Essen – Digitale Plattform')}
+            title={t('University of Duisburg-Essen: digital platform and research', 'Universität Duisburg-Essen: digitale Plattform')}
             subtitle={t('Faculty of Computer Science · Participatory development', 'Informatik · Partizipative Entwicklung')}
             members={tp3}
             displayName={displayName}
@@ -371,9 +371,9 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             <p className="mb-8 text-[0.9rem] opacity-75">{t('36 months: September 2024 to August 2027.', '36 Monate: September 2024 bis August 2027.')}</p>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               {[
-                { n: '1', period: 'Sep 2024 – Aug 2025', title: t('Project Launch & MEP Development', 'Start & MEP-Entwicklung'), desc: t('First cohort and programme design.', 'Erste Kohorte und Programmentwicklung.') },
-                { n: '2', period: 'Sep 2025 – Aug 2026', title: t('Full Implementation & Research', 'Umsetzung & Forschung'), desc: t('Full programmes and data collection.', 'Volle Umsetzung und Datenerhebung.'), active: true },
-                { n: '3', period: 'Sep 2026 – Aug 2027', title: t('Evaluation & Sustainability', 'Evaluation & Verstetigung'), desc: t('Results, dissemination, sustainability.', 'Ergebnisse, Verbreitung, Verstetigung.') },
+                { n: '1', period: 'Sep 2024 to Aug 2025', title: t('Project Launch & MEP Development', 'Start & MEP-Entwicklung'), desc: t('First cohort and programme design.', 'Erste Kohorte und Programmentwicklung.') },
+                { n: '2', period: 'Sep 2025 to Aug 2026', title: t('Full Implementation & Research', 'Umsetzung & Forschung'), desc: t('Full programmes and data collection.', 'Volle Umsetzung und Datenerhebung.'), active: true },
+                { n: '3', period: 'Sep 2026 to Aug 2027', title: t('Evaluation & Sustainability', 'Evaluation & Verstetigung'), desc: t('Results, dissemination, sustainability.', 'Ergebnisse, Verbreitung, Verstetigung.') },
               ].map((ph) => (
                 <div key={ph.n} className="relative z-[1]">
                   <div
@@ -409,8 +409,8 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             </h2>
             <p className="mt-4 text-base leading-relaxed text-white/80">
               {t(
-                'As a participant, mentor, or partner — together we build bridges to an inclusive academic future. September 2024 – August 2027.',
-                'Als Teilnehmer*in, Mentor*in oder Partner*in — gemeinsam für eine inklusive akademische Zukunft. Sep 2024 – Aug 2027.'
+                'As a participant, mentor, or partner. Together we build bridges to an inclusive academic future. September 2024 to August 2027.',
+                'Als Teilnehmer*in, Mentor*in oder Partner*in. Gemeinsam für eine inklusive akademische Zukunft. Sep 2024 bis Aug 2027.'
               )}
             </p>
           </div>
@@ -458,7 +458,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
                   <div className="relative h-[34px] w-[70px] shrink-0">
                     <Image src="/Projektpartner Logos/FU Berlin logo.png" alt="" fill className="object-contain object-left" />
                   </div>
-                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('Project Management – FU Berlin (TP1)', 'Projektleitung – FU Berlin (TP1)')}</div>
+                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('Project Management, FU Berlin (TP1)', 'Projektleitung, FU Berlin (TP1)')}</div>
                 </div>
                 <p className="text-[0.85rem] leading-relaxed text-[#6B5F8A]">
                   Univ.-Prof. Dr. Claudia Calvano
@@ -475,7 +475,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
                   <div className="relative h-[34px] w-[70px] shrink-0">
                     <Image src="/Projektpartner Logos/Stiftung SPI Logo.png" alt="" fill className="object-contain object-left" />
                   </div>
-                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('SPI Foundation – MEP (TP2)', 'Stiftung SPI – MEP (TP2)')}</div>
+                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('SPI Foundation, MEP (TP2)', 'Stiftung SPI, MEP (TP2)')}</div>
                 </div>
                 <p className="text-[0.85rem] leading-relaxed text-[#6B5F8A]">
                   M.A. Celiana Kiefer
@@ -492,7 +492,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
                   <div className="relative h-[34px] w-[70px] shrink-0">
                     <Image src="/Projektpartner Logos/UDE_Logo.png" alt="" fill className="object-contain object-left" />
                   </div>
-                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('University of Duisburg-Essen – TP3', 'Universität Duisburg-Essen – TP3')}</div>
+                  <div className="text-[0.9rem] font-bold text-[#1A1033]">{t('University of Duisburg-Essen, TP3', 'Universität Duisburg-Essen, TP3')}</div>
                 </div>
                 <p className="text-[0.85rem] leading-relaxed text-[#6B5F8A]">
                   Prof. Dr. Hannes Rothe · {t('Faculty of Computer Science', 'Fakultät für Informatik')}
@@ -532,9 +532,9 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
 const EVENTS = [
   { badge: 'Networking & Exchange', date: 'Jan 14, 2026 · 6 PM · Online', title: 'Online introductions to mentors' },
   { badge: 'Individual Mentoring', date: 'Jan – Nov 2026', title: 'Individual Mentoring' },
-  { badge: 'Workshop', date: 'Mar 2026', title: 'Mentoring Workshop II – Johanna Eck' },
+  { badge: 'Workshop', date: 'Mar 2026', title: 'Mentoring Workshop II, Johanna Eck' },
   { badge: 'Self-care', date: 'Apr 2026', title: 'SELF CARE I' },
-  { badge: 'Vision & Goals', date: 'Apr 25, 2026 · All day', title: 'Mentoring Workshop II – Vision' },
+  { badge: 'Vision & Goals', date: 'Apr 25, 2026 · All day', title: 'Mentoring Workshop II, Vision' },
   { badge: 'Self-care', date: 'May 15, 2026', title: 'Self Care II' },
   { badge: 'Skills', date: 'Jun 12, 2026', title: 'Skills Training I' },
   { badge: 'Skills', date: 'Aug 3, 2026', title: 'Skills Training II' },
@@ -546,7 +546,7 @@ const PAST_EVENTS = [
   { date: 'Oct 8, 2025', title: 'Introductory Workshop with Johanna Eck' },
   { date: 'Nov 22, 2025', title: 'Opening Event' },
   { date: 'Dec 9, 2025', title: 'Get-together' },
-  { date: 'Dec 18, 2025', title: 'Pearls & Power Workshop – Johanna Eck' },
+  { date: 'Dec 18, 2025', title: 'Pearls & Power Workshop, Johanna Eck' },
 ];
 
 function TeamTpBlock({

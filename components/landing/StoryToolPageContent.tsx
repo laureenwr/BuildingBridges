@@ -139,8 +139,8 @@ export function StoryToolPageContent({
               </h1>
               <p className="mt-2.5 max-w-[520px] text-[13.5px] leading-[1.55] text-white/60">
                 {isDe
-                  ? 'Fünf geführte Schritte, bei denen du die Kontrolle behältst — überspringe jeden, komm jederzeit zurück, veröffentliche erst wenn du bereit bist.'
-                  : "Five guided steps you're always in control of — skip any, revisit any, publish only when you're ready."}
+                  ? 'Fünf geführte Schritte, bei denen du die Kontrolle behältst. Überspringe jeden, komm jederzeit zurück, veröffentliche erst wenn du bereit bist.'
+                  : "Five guided steps you're always in control of. Skip any, revisit any, publish only when you're ready."}
               </p>
             </div>
 

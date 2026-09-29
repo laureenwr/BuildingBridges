@@ -6,20 +6,24 @@ import { useLanguage } from '@/lib/hooks/useLanguage';
 const glossary: { term: string; en: string; de: string }[] = [
   {
     term: 'FLINTA*',
-    en: 'Female, Lesbian, Inter, Non-binary, Trans and Agender — the asterisk signals openness beyond the binary.',
-    de: 'Frauen, Lesben, Inter, Nicht-binäre, Trans und Agender — das * steht für Offenheit jenseits der Binärkeit.',
+    en: 'FLINTA* stands for Female, Lesbian, Inter, Non-binary, Trans and Agender. The asterisk shows that other gender identities are included too.',
+    de: 'FLINTA* steht für Frauen, Lesben, Inter, Nichtbinäre, Trans und Agender. Das Sternchen zeigt, dass weitere Geschlechtsidentitäten dazugehören.',
   },
   {
     term: 'BIPoC',
-    en: 'Black, Indigenous and People of Colour — centres racialised experiences and resistance to racism.',
-    de: 'Black, Indigenous and People of Colour — rückt rassifizierte Erfahrungen und Widerstand gegen Rassismus in den Mittelpunkt.',
+    en: 'BIPoC stands for Black, Indigenous and People of Colour. The term centres racialised experiences and resistance to racism.',
+    de: 'BIPoC steht für Black, Indigenous and People of Colour. Der Begriff rückt rassifizierte Erfahrungen und Widerstand gegen Rassismus in den Mittelpunkt.',
   },
   {
     term: 'M*oC',
-    en: 'Mädchen* of Colour — girls and FLINTA* of Colour; the asterisk includes non-binary identities.',
-    de: 'Mädchen* of Colour — das * schließt nicht-binäre Identitäten ein.',
+    en: 'M*oC stands for Mädchen* of Colour: girls and FLINTA* of Colour. The asterisk includes identities beyond the binary.',
+    de: 'M*oC steht für Mädchen* of Colour: Mädchen und FLINTA* of Colour. Das Sternchen schließt Identitäten jenseits der Binarität ein.',
   },
-  { term: 'MEP Program', en: 'Mentoring & Empowerment Program — workshops, mentoring, peer exchange.', de: 'Mentoring- & Empowerment-Programm.' },
+  {
+    term: 'MEP Program',
+    en: 'MEP is the Mentoring and Empowerment Program: workshops, mentoring and peer exchange.',
+    de: 'MEP ist das Mentoring und Empowerment Programm: Workshops, Mentoring und Austausch unter Gleichen.',
+  },
 ];
 
 export function LandingKnowledge() {
@@ -39,12 +43,12 @@ export function LandingKnowledge() {
         </h2>
         <p className="mb-8 max-w-[680px] text-[0.97rem] text-[#6B5F8A]">
           {isDe
-            ? 'Eine wachsende Wissensplattform mit multimodalen Inhalten – Texten, Videos, Infografiken und Beispielgeschichten – in verständlicher Sprache auf Deutsch und Englisch.'
-            : 'A growing, living resource hub with multimodal content - text, video, infographics, and example stories - in accessible language in both German and English.'}
+            ? 'Eine wachsende Wissensplattform mit multimodalen Inhalten: Texten, Videos, Infografiken und Beispielgeschichten, in verständlicher Sprache auf Deutsch und Englisch.'
+            : 'A growing, living resource hub with multimodal content: text, video, infographics, and example stories, in accessible language in both German and English.'}
         </p>
 
         <div className="mt-12 rounded-[24px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-8">
-          <h4 className="font-lora text-xl font-bold text-[#1A1033]">📖 {isDe ? 'Glossar – zentrale Begriffe' : 'Glossary - Key Terms'}</h4>
+          <h4 className="font-lora text-xl font-bold text-[#1A1033]">📖 {isDe ? 'Glossar: zentrale Begriffe' : 'Glossary: key terms'}</h4>
           <p className="mb-4 mt-1 text-[0.85rem] text-[#6B5F8A]">{isDe ? 'Tippe auf einen Begriff für eine kurze Definition.' : 'Tap a term for a short definition.'}</p>
           <div className="flex flex-wrap gap-2">
             {glossary.map((g) => (

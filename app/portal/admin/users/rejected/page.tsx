@@ -5,7 +5,7 @@ export default function AdminRejectedUsersPage() {
     <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-8 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
       <h1 className="font-lora text-2xl font-semibold text-[#1A1033]">Rejected Users</h1>
       <p className="mt-3 max-w-prose leading-relaxed text-[#5C5275]">
-        Optionally retain a trimmed archive for moderator context — tie to audit logs when you connect the backend.
+        Optionally retain a trimmed archive for moderator context. Tie to audit logs when you connect the backend.
       </p>
       <Link
         href="/portal/admin"

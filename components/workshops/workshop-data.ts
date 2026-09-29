@@ -170,7 +170,7 @@ const archiveSources: ArchiveSource[] = [
   },
   {
     id: 'archive-mentoring-wellbeing',
-    title: { en: 'Mentoring workshop — Johanna-Eck', de: 'Mentoring-Workshop — Johanna-Eck' },
+    title: { en: 'Mentoring workshop, Johanna-Eck', de: 'Mentoring-Workshop, Johanna-Eck' },
     type: { en: 'Empowerment workshop', de: 'Empowerment-Workshop' },
     date: '02.03.2026',
     status: { en: 'Past workshop', de: 'Vergangener Workshop' },
@@ -188,7 +188,7 @@ const archiveSources: ArchiveSource[] = [
   },
   {
     id: 'archive-johanna-eck-intro',
-    title: { en: 'Kick-off workshop — Johanna-Eck', de: 'Auftaktworkshop — Johanna-Eck' },
+    title: { en: 'Kick-off workshop, Johanna-Eck', de: 'Auftaktworkshop, Johanna-Eck' },
     type: { en: 'Introduction workshop', de: 'Kennenlern-Workshop' },
     date: '08.10.2025',
     status: { en: 'Past workshop', de: 'Vergangener Workshop' },
@@ -344,7 +344,7 @@ export function getWorkshopPageLabels(lang: AppLanguage): WorkshopPageLabels {
         eyebrow: 'Angebote & Veranstaltungen',
         title: 'Workshops & Community-Lernen',
         intro:
-          'Mentoring, Empowerment, Forschungsaustausch und inklusives Community-Lernen — mit Storytelling im Mittelpunkt.',
+          'Mentoring, Empowerment, Forschungsaustausch und inklusives Community-Lernen. Mit Storytelling im Mittelpunkt.',
         feedEyebrow: 'Kommende Termine',
         feedTitle: 'Bevorstehende Workshops',
         feedEmptyTitle: 'Zurzeit keine kommenden Workshops',

@@ -18,7 +18,7 @@ const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
   },
   {
     date: { en: 'Thursday, December 18, 2025', de: 'Donnerstag, 18.12.2025' },
-    title: { en: 'Perlen & Power – Johanna-Eck', de: 'Perlen & Power – Johanna-Eck' },
+    title: { en: 'Perlen & Power, Johanna-Eck', de: 'Perlen & Power, Johanna-Eck' },
   },
   {
     date: { en: 'Wednesday, October 8, 2025 · 1:00–4:00 PM', de: 'Mittwoch, 08.10.2025 · 13:00–16:00 Uhr' },

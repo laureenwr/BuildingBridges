@@ -13,7 +13,7 @@ export function DashboardDevelopmentPreviewBanner() {
     >
       <p className="flex items-center justify-center gap-2 font-primary text-[0.8rem] font-semibold text-amber-950 sm:text-[0.85rem]">
         <Eye className="h-4 w-4 shrink-0 text-amber-800" aria-hidden />
-        Preview Mode — Authentication is disabled for development
+        Preview Mode. Authentication is disabled for development
       </p>
     </div>
   );

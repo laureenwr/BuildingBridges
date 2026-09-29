@@ -33,6 +33,7 @@ export type PublicApprovedStory = {
   summary: string;
   empowermentMessage: string;
   submittedOn: string;
+  storyType: 'mentor' | 'participant' | 'awareness';
   timeline: { label: string; text: string; quote: string; icon: string }[];
   quotes: { label: string; text: string }[];
 };
@@ -65,6 +66,16 @@ function parseTimeline(value: unknown): PublicApprovedStory['timeline'] {
     .filter((item): item is PublicApprovedStory['timeline'][number] => item !== null);
 }
 
+function parseStoryType(value: unknown): PublicApprovedStory['storyType'] {
+  if (!Array.isArray(value)) return 'participant';
+  for (const item of value) {
+    const row = asRecord(item);
+    const type = row ? asText(row.storyType) : '';
+    if (type === 'mentor' || type === 'participant' || type === 'awareness') return type;
+  }
+  return 'participant';
+}
+
 function parseQuotes(value: unknown): PublicApprovedStory['quotes'] {
   if (!Array.isArray(value)) return [];
   return value
@@ -87,6 +98,7 @@ export async function getApprovedStoriesForPublic(): Promise<PublicApprovedStory
         empowermentMessage: stories.empowermentMessage,
         timeline: stories.timeline,
         quotes: stories.quotes,
+        rawConversation: stories.rawConversation,
         createdAt: stories.createdAt,
       })
       .from(stories)
@@ -99,6 +111,7 @@ export async function getApprovedStoriesForPublic(): Promise<PublicApprovedStory
       summary: row.summary,
       empowermentMessage: row.empowermentMessage,
       submittedOn: formatSubmittedOn(row.createdAt),
+      storyType: parseStoryType(row.rawConversation),
       timeline: parseTimeline(row.timeline),
       quotes: parseQuotes(row.quotes),
     }));

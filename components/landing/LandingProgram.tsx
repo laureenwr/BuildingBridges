@@ -2,7 +2,7 @@ const goals = [
   { icon: '📋', title: 'Developing an MEP Program', body: 'Empowering BIPoC girls and FLINTA* through a needs-based, intersectionality-sensitive mentoring program.' },
   { icon: '🎓', title: 'Promoting Academic Careers', body: 'Promoting academic careers in the psychosocial field and strengthening the resources of M*oC for the path into science.' },
   { icon: '⭐', title: 'Creating Role Models', body: 'Integration of mentors and role models of colour to highlight successful educational biographies and empowerment.' },
-  { icon: '🌐', title: 'Digital Platform', body: 'Creation of a participatory digital platform for context-sensitive storytelling and sustainable peer-to-peer exchange.' },
+  { icon: '🌐', title: 'Digital Platform', body: 'Creation of a participatory digital platform for context-sensitive storytelling and sustainable peer exchange.' },
   { icon: '🔍', title: 'Research Barriers', body: 'Investigation of experiences of discrimination and barriers and conditions for increased participation in academic settings.' },
   { icon: '💪', title: 'Strengthening Resilience', body: 'Strengthening resilience and performance potential through the identification and activation of individual talents and resources.' },
 ];

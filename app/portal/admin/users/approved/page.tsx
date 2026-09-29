@@ -5,7 +5,7 @@ export default function AdminApprovedUsersPage() {
     <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-8 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
       <h1 className="font-lora text-2xl font-semibold text-[#1A1033]">Approved Users</h1>
       <p className="mt-3 max-w-prose leading-relaxed text-[#5C5275]">
-        List approved mentors, mentees, and researchers — filter by role after your API exposes{' '}
+        List approved mentors, mentees, and researchers. Filter by role after your API exposes{' '}
         <code className="rounded-md bg-[#FAF8FF] px-1 py-0.5 text-[0.8rem] text-[#7339E0]">approval_status === &apos;approved&apos;</code>.
       </p>
       <Link

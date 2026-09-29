@@ -53,7 +53,7 @@ export function LandingTeam() {
           )}
         </h2>
         <p className="mb-14 max-w-[640px] text-[0.97rem] text-[#6B5F8A]">
-          {isDe ? 'Drei Partnerinstitutionen – eine gemeinsame Mission.' : 'Three partner institutions – one shared mission.'}
+          {isDe ? 'Drei Partnerinstitutionen. Eine gemeinsame Mission.' : 'Three partner institutions. One shared mission.'}
         </p>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

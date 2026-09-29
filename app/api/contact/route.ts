@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const subject = inquirySubject
       ? `Building Bridges contact: ${inquirySubject}`
-      : `New message from ${name} — Building Bridges`;
+      : `New message from ${name}, Building Bridges`;
     const details = [
       `Name: ${name}`,
       `Email: ${email}`,

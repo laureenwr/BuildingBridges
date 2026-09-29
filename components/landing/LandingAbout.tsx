@@ -27,7 +27,7 @@ const pillars = [
     icon: '💬',
     title: 'Digital platform',
     body:
-      'Participatory development of a "living" digital platform for context-sensitive storytelling that enables audiovisual experience reports and promotes sustainable peer-to-peer exchange.',
+      'Participatory development of a "living" digital platform for context-sensitive storytelling that enables audiovisual experience reports and promotes sustainable peer exchange.',
     cardClass: 'border-[#d3dfef] bg-[#dbe7f6]',
     iconClass: 'text-[#4f7dcf]',
     chip: 'TP3',

@@ -40,7 +40,7 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    default: 'Building Bridges: Empowering Girls and FLINTA* of Colour',
     template: '%s | Building Bridges',
   },
   description: 'Building Bridges empowers Girls and FLINTA* of Colour through mentorship, education, and community support. Join our community for workshops, mentoring programs, and scholarships.',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'de_DE',
     url: 'https://www.building-bridges.app',
-    title: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    title: 'Building Bridges: Empowering Girls and FLINTA* of Colour',
     description: 'Empowerment und Mentoring für Mädchen & FLINTA of Color',
     siteName: 'Building Bridges',
     images: [
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Building Bridges - Empowering Girls & FLINTA* of Colour',
+    title: 'Building Bridges: Empowering Girls and FLINTA* of Colour',
     description: 'Empowerment und Mentoring für Mädchen & FLINTA of Color',
     images: ['/logo_graphic.png'],
   },

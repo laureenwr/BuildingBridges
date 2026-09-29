@@ -8,11 +8,11 @@ import { BookOpen, Languages } from 'lucide-react';
 const germanTerms = [
   {
     term: 'Akademische Teilhabe',
-    definition: 'Teilhabe bedeutet Einbezogensein. Dazu gehört, Mit-Entscheiden, Mit-Erleben, Mit-Wissen und Mit-Machen zu dürfen. Bei akademischer Teilhabe bezieht sich das Einbezogensein auf alle Bildungsformen, gerade auf Universitäten und Hochschulen. Das bedeutet, dass du unabhängig von deinem Hintergrund Zugang zu Universitäten hast und am Universitätsleben beteiligt wirst.'
+    definition: 'Teilhabe bedeutet Einbezogensein. Dazu gehört, mitentscheiden, miterleben, mitwissen und mitmachen zu dürfen. Bei akademischer Teilhabe bezieht sich das Einbezogensein auf alle Bildungsformen, gerade auf Universitäten und Hochschulen. Das bedeutet, dass du unabhängig von deinem Hintergrund Zugang zu Universitäten hast und am Universitätsleben beteiligt wirst.'
   },
   {
     term: 'BIPoC',
-    definition: 'BIPoC ist eine Abkürzung. Lang heißt es: Black, Indigenous, and other People of Color. Es handelt sich um einen Sammelbegriff, mit dem sich nicht-weiße und/ oder von Rassismus betroffene Menschen selbst bezeichnen, also unter anderem Schwarze, indigene oder andere migrantisierte Personen.'
+    definition: 'BIPoC ist eine Abkürzung. Lang heißt es: Black, Indigenous, and other People of Color. Es handelt sich um einen Sammelbegriff, mit dem sich nichtweiße und/oder von Rassismus betroffene Menschen selbst bezeichnen, also unter anderem Schwarze, indigene oder andere migrantisierte Personen.'
   },
   {
     term: 'Diversitätssensibel',
@@ -24,11 +24,11 @@ const germanTerms = [
   },
   {
     term: 'FLINTA*',
-    definition: 'FLINTA* ist eine Abkürzung. Lang heißt es: Frauen, Lesben, intergeschlechlichtliche, nichtbinäre. transgeschlichtliche, agender Personen. Der angehängte Stern ist ein Platzhalter für alle Personen, die sich in keinem der Buchstaben wiederfinden. Es handelt sich bei FLINTA* also um einen Sammelbegriff für alle Personen, die aufgrund ihrer Geschlechtsidentität Sexismus und/oder Transfeindlichkeit ausgesetzt sind.'
+    definition: 'FLINTA* ist eine Abkürzung. Lang heißt es: Frauen, Lesben, intergeschlechtliche, nichtbinäre, transgeschlechtliche, agender Personen. Der angehängte Stern ist ein Platzhalter für alle Personen, die sich in keinem der Buchstaben wiederfinden. Es handelt sich bei FLINTA* also um einen Sammelbegriff für alle Personen, die aufgrund ihrer Geschlechtsidentität Sexismus und/oder Transfeindlichkeit ausgesetzt sind.'
   },
   {
     term: 'LGBTQIA+',
-    definition: 'LGBTQIA+ ist eine Abkürzung. Lang heißt es: Lesben, Gays, Bi-Sexuelle, Transpersonen, Queers, Inter-Personen, Asexuelle. Das angehängte Plus ist ein Platzhalter für alle Personen, die sich in keinem der Buchstaben wiederfinden. Es handelt sich also um einen Sammelbegriff für alle Personen, die aufgrund ihrer Sexualität oder Geschlechtsidentität Sexismus, Transfeindlichkeit und/oder Homofeindlichkeit ausgesetzt sind.'
+    definition: 'LGBTQIA+ ist eine Abkürzung. Lang heißt es: Lesben, Gays, Bisexuelle, Transpersonen, Queers, intergeschlechtliche Personen, Asexuelle. Das angehängte Plus ist ein Platzhalter für alle Personen, die sich in keinem der Buchstaben wiederfinden. Es handelt sich also um einen Sammelbegriff für alle Personen, die aufgrund ihrer Sexualität oder Geschlechtsidentität Sexismus, Transfeindlichkeit und/oder Homofeindlichkeit ausgesetzt sind.'
   },
   {
     term: 'Mentoring',
@@ -48,7 +48,7 @@ const germanTerms = [
   },
   {
     term: 'Queer',
-    definition: 'Man spricht das Wort kwier aus. Queer ist ein Sammelbegriff. Das bedeutet: Viele Menschen, die bi-sexuell, lesbisch, schwul, inter- oder transgeschlechtlich sind, nennen sich queer. Damit wollen sie zeigen, dass sie zusammen gehören und Teil einer Gemeinschaft sind.'
+    definition: 'Man spricht das Wort kwier aus. Queer ist ein Sammelbegriff. Das bedeutet: Viele Menschen, die bisexuell, lesbisch, schwul, intergeschlechtlich oder transgeschlechtlich sind, nennen sich queer. Damit wollen sie zeigen, dass sie zusammen gehören und Teil einer Gemeinschaft sind.'
   },
   {
     term: 'Resilienz',
@@ -74,8 +74,8 @@ const englishTerms = [
     definition: 'BIPoC is an abbreviation. It stands for Black, Indigenous, and other People of Color. It is a collective term used by non-white people and/or people affected by racism to describe themselves, including Black, Indigenous, and other migrant people.'
   },
   {
-    term: 'Diversity-sensitive',
-    definition: 'Being diversity-sensitive means recognizing that your own life is only one of many, i.e., that people can shape their lives under different conditions. Living conditions that can differ between people include, for example, money, origin, religion, gender, sexuality, etc.'
+    term: 'Diversity sensitive',
+    definition: 'Being diversity sensitive means recognizing that your own life is only one of many, i.e., that people can shape their lives under different conditions. Living conditions that can differ between people include, for example, money, origin, religion, gender, sexuality, etc.'
   },
   {
     term: 'Empowerment',
@@ -98,7 +98,7 @@ const englishTerms = [
     definition: 'Just like your body, your mind can also become ill. When this happens, you may feel very sad and tired, or you may often feel anxious. You can seek help from specialists called psychotherapists.'
   },
   {
-    term: 'Migrantized/ Minoritised',
+    term: 'Migrantized or minoritised',
     definition: 'These terms are used for people who are assumed to have a migrant background based on their appearance, culture, religion, or other characteristics. This assumption may or may not be accurate. Migrantization/ minoritization is often accompanied by various forms of racism.'
   },
   {

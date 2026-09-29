@@ -34,8 +34,8 @@ export function LandingRegister() {
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/80">
             {isDe
-              ? 'Ob als Teilnehmende, Mentor:in oder Kooperationspartner – gemeinsam bauen wir Brücken zu einer vielfältigen und inklusiven akademischen Zukunft. Das Projekt läuft von September 2024 bis August 2027.'
-              : 'Whether as a participant, mentor or cooperation partner - together we build bridges to a diverse and inclusive academic future. The project runs from September 2024 to August 2027.'}
+              ? 'Ob als Teilnehmende, Mentor:in oder Kooperationspartner. Gemeinsam bauen wir Brücken zu einer vielfältigen und inklusiven akademischen Zukunft. Das Projekt läuft von September 2024 bis August 2027.'
+              : 'Whether as a participant, mentor or cooperation partner. Together we build bridges to a diverse and inclusive academic future. The project runs from September 2024 to August 2027.'}
           </p>
         </div>
         <div className="flex flex-col gap-4">

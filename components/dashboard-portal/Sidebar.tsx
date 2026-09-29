@@ -29,7 +29,7 @@ export type SidebarProps = {
   variant: Variant;
   open: boolean;
   onClose: () => void;
-  /** // TEMP: Dashboard preview mode (remove before production) — offset below development preview banner */
+  /** // TEMP: Dashboard preview mode (remove before production). Offset below development preview banner */
   developmentPreviewBanner?: boolean;
 };
 

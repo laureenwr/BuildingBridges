@@ -13,7 +13,7 @@ const GLOSSARY: { term: string; en: string; de: string }[] = [
   {
     term: 'FLINTA*',
     en: 'FLINTA* stands for Female, Lesbian, Inter, Non-binary, Trans and Agender. The asterisk (*) signals openness to all gender identities not covered by the binary.',
-    de: 'FLINTA* steht für Frauen, Lesben, Intergeschlechtliche, Nicht-binäre, Trans und Agender-Personen. Das Sternchen (*) signalisiert Offenheit für alle nicht-binären Geschlechtsidentitäten.',
+    de: 'FLINTA* steht für Frauen, Lesben, Intergeschlechtliche, Nichtbinäre, Trans und Agender Personen. Das Sternchen (*) signalisiert Offenheit für alle nichtbinären Geschlechtsidentitäten.',
   },
   {
     term: 'BIPoC',
@@ -22,28 +22,28 @@ const GLOSSARY: { term: string; en: string; de: string }[] = [
   },
   {
     term: 'M*oC',
-    en: 'M*oC stands for Mädchen* of Colour — girls and FLINTA* of Colour. The asterisk includes all gender identities beyond the binary.',
-    de: 'M*oC steht für Mädchen* of Colour – Mädchen und FLINTA* of Colour. Das Sternchen schließt alle Geschlechtsidentitäten jenseits der Binarität ein.',
+    en: 'M*oC stands for Mädchen* of Colour: girls and FLINTA* of Colour. The asterisk includes all gender identities beyond the binary.',
+    de: 'M*oC steht für Mädchen* of Colour: Mädchen und FLINTA* of Colour. Das Sternchen schließt alle Geschlechtsidentitäten jenseits der Binarität ein.',
   },
   {
     term: 'Intersectionality',
-    en: 'Intersectionality describes how different aspects of identity — such as race, gender, class and disability — overlap and create compounding forms of discrimination or privilege.',
-    de: 'Intersektionalität beschreibt, wie verschiedene Identitätsmerkmale – wie Herkunft, Geschlecht, Klasse und Behinderung – sich überschneiden und sich gegenseitig verstärkende Formen von Diskriminierung oder Privileg erzeugen.',
+    en: 'Intersectionality describes how different aspects of identity (such as race, gender, class and disability) overlap and create compounding forms of discrimination or privilege.',
+    de: 'Intersektionalität beschreibt, wie verschiedene Identitätsmerkmale (wie Herkunft, Geschlecht, Klasse und Behinderung) sich überschneiden und sich gegenseitig verstärkende Formen von Diskriminierung oder Privileg erzeugen.',
   },
   {
     term: 'Empowerment',
-    en: 'Empowerment refers to the process of strengthening self-determination, self-confidence and collective agency — especially for marginalised groups.',
-    de: 'Empowerment bezeichnet den Prozess der Stärkung von Selbstbestimmung, Selbstvertrauen und kollektiver Handlungsfähigkeit – insbesondere für marginalisierte Gruppen.',
+    en: 'Empowerment refers to the process of strengthening self-determination, self-confidence and collective agency, especially for marginalised groups.',
+    de: 'Empowerment bezeichnet den Prozess der Stärkung von Selbstbestimmung, Selbstvertrauen und kollektiver Handlungsfähigkeit, insbesondere für marginalisierte Gruppen.',
   },
   {
     term: 'Mentoring',
-    en: 'Mentoring is a supportive relationship in which a more experienced person guides someone with less experience — sharing knowledge, encouragement and networks.',
-    de: 'Mentoring ist eine unterstützende Beziehung, in der eine erfahrenere Person jemanden mit weniger Erfahrung begleitet – durch Wissen, Ermutigung und Netzwerke.',
+    en: 'Mentoring is a supportive relationship in which a more experienced person guides someone with less experience, sharing knowledge, encouragement and networks.',
+    de: 'Mentoring ist eine unterstützende Beziehung, in der eine erfahrenere Person jemanden mit weniger Erfahrung begleitet, durch Wissen, Ermutigung und Netzwerke.',
   },
   {
     term: 'MEP Program',
-    en: 'The MEP (Mentoring & Empowerment Program) is the core practical program of Building Bridges — offering workshops, individual mentoring and peer exchange for BIPoC girls and FLINTA*.',
-    de: 'Das MEP (Mentoring- & Empowerment-Programm) ist das zentrale Praxisprogramm von Building Bridges – mit Workshops, individuellem Mentoring und Peer-Austausch für BIPoC-Mädchen und FLINTA*.',
+    en: 'The MEP (Mentoring and Empowerment Program) is the core practical program of Building Bridges. It offers workshops, individual mentoring and peer exchange for BIPoC girls and FLINTA*.',
+    de: 'Das MEP (Mentoring und Empowerment Programm) ist das zentrale Praxisprogramm von Building Bridges, mit Workshops, individuellem Mentoring und Austausch unter Gleichen für BIPoC Mädchen und FLINTA*.',
   },
   {
     term: 'Resilience',
@@ -52,8 +52,8 @@ const GLOSSARY: { term: string; en: string; de: string }[] = [
   },
   {
     term: 'Psychosocial',
-    en: 'Psychosocial refers to the interaction between psychological and social factors — covering fields like psychology, social work, counselling and therapy.',
-    de: 'Psychosozial bezieht sich auf das Zusammenspiel von psychologischen und sozialen Faktoren – und umfasst Felder wie Psychologie, Soziale Arbeit, Beratung und Therapie.',
+    en: 'Psychosocial refers to the interaction between psychological and social factors. It covers fields like psychology, social work, counselling and therapy.',
+    de: 'Psychosozial bezieht sich auf das Zusammenspiel von psychologischen und sozialen Faktoren und umfasst Felder wie Psychologie, Soziale Arbeit, Beratung und Therapie.',
   },
   {
     term: 'Discrimination',
@@ -61,8 +61,8 @@ const GLOSSARY: { term: string; en: string; de: string }[] = [
     de: 'Diskriminierung bedeutet, Menschen aufgrund von Merkmalen wie Herkunft, Geschlecht oder Identität ungerecht zu behandeln. Sie kann individuell, institutionell oder strukturell sein.',
   },
   {
-    term: 'Micro-aggressions',
-    en: 'Micro-aggressions are subtle, often unintentional comments or actions that communicate hostility or bias toward marginalised people.',
+    term: 'Microaggressions',
+    en: 'Microaggressions are subtle, often unintentional comments or actions that communicate hostility or bias toward marginalised people.',
     de: 'Mikroaggressionen sind subtile, oft unbeabsichtigte Kommentare oder Handlungen, die Feindseligkeit oder Vorurteile gegenüber marginalisierten Menschen ausdrücken.',
   },
   {
@@ -71,14 +71,14 @@ const GLOSSARY: { term: string; en: string; de: string }[] = [
     de: 'Ein Safe Space ist ein Umfeld, in dem Menschen sich ohne Angst vor Urteilen, Diskriminierung oder Schaden ausdrücken können.',
   },
   {
-    term: 'Peer-to-Peer',
-    en: 'Peer-to-peer exchange means learning and support between people at a similar stage or with shared experiences.',
-    de: 'Peer-to-Peer-Austausch bedeutet Lernen und Unterstützung zwischen Menschen auf ähnlichen Wegen oder mit geteilten Erfahrungen.',
+    term: 'Peer exchange',
+    en: 'Peer exchange means learning and support between people at a similar stage or with shared experiences.',
+    de: 'Austausch unter Gleichen bedeutet Lernen und Unterstützung zwischen Menschen auf ähnlichen Wegen oder mit geteilten Erfahrungen.',
   },
   {
     term: 'WCAG',
-    en: 'WCAG stands for Web Content Accessibility Guidelines — international standards that ensure digital content is accessible to people with disabilities.',
-    de: 'WCAG steht für Web Content Accessibility Guidelines – internationale Standards, die sicherstellen, dass digitale Inhalte für Menschen mit Behinderungen zugänglich sind.',
+    en: 'WCAG stands for Web Content Accessibility Guidelines, international standards that ensure digital content is accessible to people with disabilities.',
+    de: 'WCAG steht für Web Content Accessibility Guidelines, internationale Standards, die sicherstellen, dass digitale Inhalte für Menschen mit Behinderungen zugänglich sind.',
   },
 ];
 
@@ -109,8 +109,8 @@ export function KnowledgeSection() {
       'Wissen, <em>Ressourcen & Lernen</em>'
     ),
     intro: t(
-      'A growing, living resource hub with multimodal content — text, video, infographics, and example stories — presented in accessible language in both German and English.',
-      'Ein wachsender, lebendiger Ressourcen-Hub mit multimodalen Inhalten – in leicht zugänglicher Sprache auf Deutsch und Englisch.'
+      'A growing, living resource hub with multimodal content: text, video, infographics, and example stories, presented in accessible language in both German and English.',
+      'Ein wachsender, lebendiger Ressourcen Hub mit multimodalen Inhalten, in leicht zugänglicher Sprache auf Deutsch und Englisch.'
     ),
     evolvingLead: t('This section is evolving.', 'Dieser Bereich befindet sich im Aufbau.'),
     evolvingRest: t(
@@ -128,7 +128,7 @@ export function KnowledgeSection() {
       'Dieser Abschnitt behandelt Diskriminierungserfahrungen und strukturelle Barrieren.'
     ),
     skipRes: t('Skip to Resilience →', 'Zu Resilienz springen →'),
-    glossaryTitle: t('📖 Glossary — Key Terms Explained', '📖 Glossar — Zentrale Begriffe erklärt'),
+    glossaryTitle: t('📖 Glossary: key terms explained', '📖 Glossar: zentrale Begriffe erklärt'),
     glossaryIntro: t(
       'Click any term to see its definition. Available in German and English.',
       'Tippe auf einen Begriff für die Erklärung. Verfügbar auf Deutsch und Englisch.'
@@ -227,8 +227,8 @@ export function KnowledgeSection() {
         icon: '📋',
         title: t('About the MEP Program', 'Über das MEP-Programm'),
         body: t(
-          'Comprehensive overview of the Mentoring & Empowerment Program — structure, goals, eligibility, and what to expect.',
-          'Überblick über Aufbau, Ziele und Ablauf des Mentoring- & Empowerment-Programms.'
+          'Comprehensive overview of the Mentoring and Empowerment Program: structure, goals, eligibility, and what to expect.',
+          'Überblick über Aufbau, Ziele und Ablauf des Mentoring und Empowerment Programms.'
         ),
       },
       {
@@ -371,7 +371,7 @@ export function KnowledgeSection() {
             <button
               type="button"
               className="rounded-full border-[1.5px] border-[rgba(145,82,255,0.15)] px-5 py-2 font-[family-name:var(--font-sora)] text-[0.83rem] font-semibold text-[#6B5F8A]"
-              onClick={() => alert(t('Thank you — a short survey will be available soon.', 'Danke — ein kurzes Formular folgt bald.'))}
+              onClick={() => alert(t('Thank you. A short survey will be available soon.', 'Danke. Ein kurzes Formular folgt bald.'))}
             >
               {L.leaveFb}
             </button>

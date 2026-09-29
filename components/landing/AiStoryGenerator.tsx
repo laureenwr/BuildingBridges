@@ -136,7 +136,7 @@ export function AiStoryGenerator() {
     <div id="ai-story-tool" className="mt-20 scroll-mt-[90px] border-t border-white/10 pt-16">
       <div className="mb-8">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.4)] bg-[rgba(145,82,255,0.2)] px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#B580FF]">
-          ✦ {t('Story Generator — Sample Mode', 'Story-Generator — Demo-Modus')}
+          ✦ {t('Story Generator: sample mode', 'Story-Generator: Demo-Modus')}
         </div>
         <h3 className="font-[family-name:var(--font-lora)] text-[clamp(1.5rem,2.5vw,2rem)] font-semibold leading-tight text-white">
           {t('From interview to ', 'Vom Interview zur ')}
@@ -192,7 +192,7 @@ export function AiStoryGenerator() {
             </div>
             <p className="mb-4 text-[0.84rem] text-white/45">
               {t(
-                "Raw transcript is fine — interviewer questions included. The preview uses the interviewee's answers.",
+                "Raw transcript is fine. Interviewer questions included. The preview uses the interviewee's answers.",
                 'Rohtext ist in Ordnung. Die Vorschau nutzt überwiegend längere Antwortpassagen.'
               )}
             </p>
@@ -264,15 +264,15 @@ export function AiStoryGenerator() {
                 <div className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">{t('Privacy level', 'Privatsphäre')}</div>
                 <label className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65">
                   <input type="radio" name="aiPrivacy" value="strict" defaultChecked className="mt-0.5 accent-[#9152FF]" />
-                  {t('Strict — no names, ages or locations', 'Streng — keine Namen, Alter, Orte')}
+                  {t('Strict. No names, ages or locations', 'Streng. Keine Namen, Alter, Orte')}
                 </label>
                 <label className="mb-2 flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65">
                   <input type="radio" name="aiPrivacy" value="moderate" className="mt-0.5 accent-[#9152FF]" />
-                  {t('Moderate — general age range & country ok', 'Moderat — grobe Altersangabe & Land ok')}
+                  {t('Moderate. General age range & country ok', 'Moderat. Grobe Altersangabe & Land ok')}
                 </label>
                 <label className="flex cursor-pointer items-start gap-2 text-[0.82rem] text-white/65">
                   <input type="radio" name="aiPrivacy" value="open" className="mt-0.5 accent-[#9152FF]" />
-                  {t('Open — keep demographic details', 'Offen — demografische Details behalten')}
+                  {t('Open. Keep demographic details', 'Offen. Demografische Details behalten')}
                 </label>
               </div>
               <div className="rounded-[14px] border border-white/10 bg-white/5 p-5">
@@ -319,7 +319,7 @@ export function AiStoryGenerator() {
 
         {step === 4 && (
           <div className="p-8">
-            <div className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{t('Step 4 — Review & use', 'Schritt 4 — Prüfen & nutzen')}</div>
+            <div className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{t('Step 4: Review and use', 'Schritt 4: Prüfen und nutzen')}</div>
             <div className="mb-1 font-[family-name:var(--font-lora)] text-xl font-semibold text-white">{t('Choose your storytelling format', 'Storytelling-Format wählen')}</div>
             <p className="mb-6 text-[0.84rem] text-white/45">{t('Preview in two formats. More layouts coming with API integration.', 'Zwei Vorschau-Layouts. Weitere Formate folgen mit der API.')}</p>
             <div className="mb-6 flex flex-wrap gap-4">
