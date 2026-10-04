@@ -42,13 +42,15 @@ export function getPortalNavItems(user: PortalUser | null | undefined): PortalNa
   if (!user) {
     return [{ href: '/sign-in?redirect=/logged-in', key: 'signIn', primary: true }];
   }
+
+  const role = user.role;
   if (userHasAdminAccess(user)) {
     return [
       { href: '/portal/admin', key: 'admin', primary: true },
       { href: '/portal', key: 'mentor', primary: false },
     ];
   }
-  if (user.role === 'MENTOR') {
+  if (role === 'MENTOR') {
     return [{ href: '/portal', key: 'mentor', primary: true }];
   }
   return [{ href: '/portal', key: 'participant', primary: true }];
