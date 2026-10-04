@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from 'drizzle-orm';
+import { requireApiStorySubmitter } from '@/lib/auth/access';
 import { db } from '@/lib/db';
 
 export const runtime = 'nodejs';
@@ -90,6 +91,11 @@ function parseBody(body: StorySubmitBody): { ok: true; data: ValidStorySubmitBod
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiStorySubmitter();
+  if (auth.response) {
+    return auth.response;
+  }
+
   const configuredApiKey = process.env.STORIES_API_KEY;
   const incomingApiKey = request.headers.get('x-api-key');
 

@@ -1,4 +1,5 @@
 import { count, desc, isNull, sql } from 'drizzle-orm';
+import { requireAdminUser } from '@/lib/auth/access';
 import { db } from '@/lib/db/drizzle';
 import { stories, users } from '@/lib/db/schema';
 import { getWorkshopFeed } from '@/components/workshops/workshop-data';
@@ -98,6 +99,8 @@ function roleLabel(role: string) {
 }
 
 export async function getRegisteredUsers(limit = 20): Promise<PortalUserRow[]> {
+  await requireAdminUser();
+
   try {
     const rows = await db
       .select({

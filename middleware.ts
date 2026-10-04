@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 // Define protected paths by role
 const adminOnlyPaths = [
   '/dashboard/admin',
   '/dashboard/settings/users',
+  '/portal/admin',
 ];
 
 const mentorOnlyPaths = [
@@ -100,23 +102,25 @@ export async function middleware(request: NextRequest) {
   const userRole = typeof (token as { role?: unknown }).role === 'string'
     ? (token as { role: string }).role
     : undefined;
+  const userEmail = typeof (token as { email?: unknown }).email === 'string'
+    ? (token as { email: string }).email
+    : undefined;
+  const accessUser = { role: userRole, email: userEmail };
 
   if (pathname === '/dashboard' || pathname === '/dashboard/') {
-    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
+    return NextResponse.redirect(new URL(getPostLoginHref(accessUser), request.url));
   }
-  
-  // Only bounce known non-admins. A missing JWT role must not default to student
-  // or Admin dashboard clicks get sent to the mentor portal.
-  if (isAdminOnlyPath(pathname) && userRole && userRole !== 'ADMIN') {
+
+  if (isAdminOnlyPath(pathname) && !userHasAdminAccess(accessUser)) {
     return NextResponse.redirect(new URL('/portal', request.url));
   }
   
-  if (isMentorOnlyPath(pathname) && userRole !== 'MENTOR') {
-    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
+  if (isMentorOnlyPath(pathname) && userRole !== 'MENTOR' && !userHasAdminAccess(accessUser)) {
+    return NextResponse.redirect(new URL(getPostLoginHref(accessUser), request.url));
   }
   
   if (isStudentOnlyPath(pathname) && userRole !== 'STUDENT') {
-    return NextResponse.redirect(new URL(getPostLoginHref(userRole), request.url));
+    return NextResponse.redirect(new URL(getPostLoginHref(accessUser), request.url));
   }
   
   return NextResponse.next();

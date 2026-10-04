@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 import { getUser } from '@/lib/db/queries';
 import { getPostLoginHref, safeAuthRedirect } from '@/lib/nav/dashboard-href';
 
@@ -16,9 +17,15 @@ export default async function LoggedInPage({
   }
 
   const requested = safeAuthRedirect(searchParams?.redirect);
-  if (requested === '/portal' || requested === '/portal/admin') {
-    redirect(requested);
+  if (requested === '/portal/admin') {
+    redirect(userHasAdminAccess(user) ? '/portal/admin' : '/portal');
+  }
+  if (requested === '/portal') {
+    redirect('/portal');
+  }
+  if (requested === '/story-tool') {
+    redirect('/story-tool');
   }
 
-  redirect(getPostLoginHref(user.role));
+  redirect(getPostLoginHref(user));
 }

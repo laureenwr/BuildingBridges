@@ -18,7 +18,7 @@ type ChapterAssist = {
 
 async function requestStoryAssist(input: {
   locale: 'en' | 'de';
-  action: 'grammar' | 'titles' | 'story-title';
+  action: 'grammar' | 'titles' | 'story-title' | 'draft';
   text: string;
   currentLabel?: string;
 }) {
@@ -31,6 +31,9 @@ async function requestStoryAssist(input: {
     success?: boolean;
     text?: string;
     titles?: string[];
+    title?: string;
+    category?: StoryKind;
+    draft?: string;
     message?: string;
     code?: string;
   };
@@ -110,6 +113,9 @@ export function AiStoryTool() {
   const [titleBusy, setTitleBusy] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
+  const [draftBusy, setDraftBusy] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
+  const [draftReady, setDraftReady] = useState(false);
   const sessionIdRef = useRef('');
   const lastSourceKeyRef = useRef('');
 
@@ -282,6 +288,47 @@ export function AiStoryTool() {
     }
   };
 
+  const generateFirstDraft = async () => {
+    const source =
+      collectMode === 'interview'
+        ? answers.map((answer) => answer.text).join('\n\n').trim()
+        : transcript.trim();
+    if (!source) {
+      setDraftError(L('Add some of your story first.', 'Bitte teile zuerst etwas von deiner Geschichte.'));
+      return;
+    }
+    setDraftBusy(true);
+    setDraftError(null);
+    try {
+      const result = await requestStoryAssist({
+        locale: isDe ? 'de' : 'en',
+        action: 'draft',
+        text: source,
+      });
+      if (!result.success || !result.title || !result.draft || !result.category) {
+        setDraftError(assistErrorCopy(L, result));
+        return;
+      }
+      setStoryTitle(result.title);
+      setStoryType(result.category);
+      setChapters([
+        makeChapter(
+          {
+            label: L('First draft', 'Erster Entwurf'),
+            text: result.draft,
+          },
+          0
+        ),
+      ]);
+      lastSourceKeyRef.current = sourceKey;
+      setDraftReady(true);
+    } catch {
+      setDraftError(L('AI help is not available right now.', 'KI-Hilfe ist gerade nicht verfügbar.'));
+    } finally {
+      setDraftBusy(false);
+    }
+  };
+
   const mergeWithPrevious = (id: string) => {
     setChapters((current) => {
       const index = current.findIndex((chapter) => chapter.id === id);
@@ -304,6 +351,8 @@ export function AiStoryTool() {
     setAssistByChapter({});
     setTitleSuggestions([]);
     setTitleError(null);
+    setDraftError(null);
+    setDraftReady(false);
     setConsentGiven(false);
     setSubmissionStatus(null);
     sessionIdRef.current = '';
@@ -555,8 +604,8 @@ export function AiStoryTool() {
             <h4 className="font-lora text-xl font-semibold text-white">{L('Title and story type', 'Titel und Story-Typ')}</h4>
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
               {L(
-                'Give the story a name and say whose story it is. You will shape the chapters in the next step.',
-                'Gib der Story einen Namen und sage, wessen Geschichte es ist. Die Kapitel formst du im nächsten Schritt.'
+                'Give the story a name and say whose story it is. Optional AI can draft a title, type, and first-person text from the full interview. You can edit everything. Nothing is published until an admin reviews it.',
+                'Gib der Story einen Namen und sage, wessen Geschichte es ist. Optional kann die KI aus dem ganzen Interview einen Titel, Typ und Ich-Entwurf vorschlagen. Du kannst alles ändern. Nichts wird veröffentlicht, bevor eine Admin-Person prüft.'
               )}
             </p>
             <label className="mb-3 block">
@@ -616,6 +665,27 @@ export function AiStoryTool() {
                   {label}
                 </label>
               ))}
+            </div>
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={() => void generateFirstDraft()}
+                disabled={draftBusy}
+                className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.78rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)] disabled:opacity-50"
+              >
+                {draftBusy
+                  ? L('Reading the full interview…', 'Das ganze Interview wird gelesen…')
+                  : L('✦ Generate first draft', '✦ Ersten Entwurf erzeugen')}
+              </button>
+              {draftError ? <p className="mt-2 text-[0.78rem] text-rose-200/80">{draftError}</p> : null}
+              {draftReady && !draftError ? (
+                <p className="mt-2 text-[0.78rem] text-[#C9A6FF]">
+                  {L(
+                    'Draft ready. Title and type are filled in. Open the next step to edit the narrative. This stays a draft until an admin approves it.',
+                    'Entwurf bereit. Titel und Typ sind ausgefüllt. Im nächsten Schritt kannst du den Text bearbeiten. Das bleibt ein Entwurf, bis eine Admin-Person zustimmt.'
+                  )}
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-wrap justify-between gap-4">
               <button

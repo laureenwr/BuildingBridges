@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { requireAdminUser } from '@/lib/auth/access';
 import { StoryReviewTable } from '@/components/dashboard-portal/StoryReviewTable';
 import { getPendingStoriesForReview } from '@/lib/actions/stories';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminStoriesReviewPage() {
+  await requireAdminUser();
   const storyRows = await getPendingStoriesForReview();
 
   return (

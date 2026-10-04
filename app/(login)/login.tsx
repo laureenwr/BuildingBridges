@@ -22,8 +22,6 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const inviteId = searchParams.get('inviteId');
   const error = searchParams.get('error');
   const success = searchParams.get('success');
-  const defaultRole = redirect?.startsWith('/portal/admin') ? 'ADMIN' : 'MENTOR';
-  
   // Add client-side validation state
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
@@ -79,9 +77,6 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
       : 'Account created. Please sign in.',
     nameLabel: isDe ? 'Name' : 'Name',
     namePlaceholder: isDe ? 'Ihr Name' : 'Your name',
-    roleLabel: isDe ? 'Ich möchte öffnen' : 'I want to open',
-    roleMentor: isDe ? 'Mentorinnen-Dashboard' : 'Mentor dashboard',
-    roleAdmin: isDe ? 'Admin-Dashboard' : 'Admin dashboard',
     emailLabel: isDe ? 'E-Mail-Adresse' : 'Email address',
     emailPlaceholder: isDe ? 'ihre.email@beispiel.de' : 'you@example.com',
     passwordLabel: isDe ? 'Passwort' : 'Password',
@@ -152,13 +147,13 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   redirect: false,
                   email,
                   password,
-                  callbackUrl: requestedCallback,
+                  callbackUrl: '/logged-in',
                 });
                 if (result?.ok) {
                   window.location.href =
                     requestedCallback === '/logged-in'
                       ? '/logged-in'
-                      : requestedCallback;
+                      : `/logged-in?redirect=${encodeURIComponent(requestedCallback)}`;
                 } else {
                   window.location.href = '/sign-in?error=invalid-credentials';
                 }
@@ -204,19 +199,6 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                       placeholder={t.namePlaceholder}
                     />
                   </div>
-                  <fieldset>
-                    <legend className="text-gray-700 font-medium">{t.roleLabel}</legend>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50 has-[:checked]:text-purple-800">
-                        <input type="radio" name="role" value="MENTOR" defaultChecked={defaultRole === 'MENTOR'} className="accent-purple-600" />
-                        {t.roleMentor}
-                      </label>
-                      <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50 has-[:checked]:text-purple-800">
-                        <input type="radio" name="role" value="ADMIN" defaultChecked={defaultRole === 'ADMIN'} className="accent-purple-600" />
-                        {t.roleAdmin}
-                      </label>
-                    </div>
-                  </fieldset>
                 </>
               ) : null}
 

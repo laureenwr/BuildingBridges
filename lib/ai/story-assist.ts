@@ -1,14 +1,20 @@
 import OpenAI from 'openai';
 
-export type StoryAssistAction = 'grammar' | 'titles' | 'story-title';
+export type StoryAssistAction = 'grammar' | 'titles' | 'story-title' | 'draft';
+export type StoryDraftCategory = 'mentor' | 'participant' | 'awareness';
 
 export type StoryAssistResult = {
   text?: string;
   titles?: string[];
+  title?: string;
+  category?: StoryDraftCategory;
+  draft?: string;
   source: 'openai';
 };
 
 const MAX_TEXT_CHARS = 4000;
+const MAX_DRAFT_CHARS = 12000;
+const STORY_CATEGORIES: StoryDraftCategory[] = ['mentor', 'participant', 'awareness'];
 
 export function classifyStoryAssistError(error: unknown): {
   status: number;
@@ -54,8 +60,14 @@ function requireOpenAi() {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
 
-function clipText(value: string) {
-  return value.trim().slice(0, MAX_TEXT_CHARS);
+function clipText(value: string, max = MAX_TEXT_CHARS) {
+  return value.trim().slice(0, max);
+}
+
+function parseCategory(value: unknown): StoryDraftCategory | null {
+  return typeof value === 'string' && STORY_CATEGORIES.includes(value as StoryDraftCategory)
+    ? (value as StoryDraftCategory)
+    : null;
 }
 
 function asStringArray(value: unknown, max = 3) {
@@ -75,7 +87,7 @@ export async function assistStoryDraft(input: {
   const openai = requireOpenAi();
   const locale = input.locale === 'de' ? 'de' : 'en';
   const language = locale === 'de' ? 'German' : 'English';
-  const text = clipText(input.text);
+  const text = clipText(input.text, input.action === 'draft' ? MAX_DRAFT_CHARS : MAX_TEXT_CHARS);
   if (!text) {
     throw new Error('empty');
   }
@@ -83,6 +95,20 @@ export async function assistStoryDraft(input: {
   const currentLabel = input.currentLabel?.trim().slice(0, 80) ?? '';
 
   const prompts = {
+    draft: {
+      system: `You turn a Building Bridges interview transcript into an editable first draft.
+Rules:
+- Read the COMPLETE transcript. Do not use only the first line or first sentences.
+- Reply in ${language} only.
+- title: 3 to 10 words, based on the whole account. Do not invent places, names, or events.
+- category: exactly one of mentor, participant, awareness.
+  mentor = a role-model / mentoring path; participant = a personal programme or school experience; awareness = a wider empowerment or structural issue.
+- draft: a coherent first-person narrative in the speaker's voice, covering the main arc of the full transcript.
+- Keep facts. Do not add drama, morals, or details that are not in the transcript.
+- This is a DRAFT for the storyteller and a human reviewer. It must not be treated as published.
+- Return JSON only: {"title":"...","category":"mentor|participant|awareness","draft":"..."}`,
+      user: `Full interview transcript:\n\n${text}`,
+    },
     grammar: {
       system: `You help Building Bridges storytellers with light grammar fixes.
 Rules:
@@ -118,8 +144,8 @@ Rules:
   const prompt = prompts[input.action];
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
-    temperature: input.action === 'grammar' ? 0.2 : 0.5,
-    max_tokens: input.action === 'grammar' ? 900 : 220,
+    temperature: input.action === 'grammar' ? 0.2 : input.action === 'draft' ? 0.4 : 0.5,
+    max_tokens: input.action === 'draft' ? 2200 : input.action === 'grammar' ? 900 : 220,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: prompt.system },
@@ -132,7 +158,21 @@ Rules:
     throw new Error('empty-response');
   }
 
-  const parsed = JSON.parse(content) as { text?: unknown; titles?: unknown };
+  const parsed = JSON.parse(content) as {
+    text?: unknown;
+    titles?: unknown;
+    title?: unknown;
+    category?: unknown;
+    draft?: unknown;
+  };
+
+  if (input.action === 'draft') {
+    const title = typeof parsed.title === 'string' ? parsed.title.trim() : '';
+    const draft = typeof parsed.draft === 'string' ? parsed.draft.trim() : '';
+    const category = parseCategory(parsed.category);
+    if (!title || !draft || !category) throw new Error('empty-response');
+    return { title, category, draft, source: 'openai' };
+  }
 
   if (input.action === 'grammar') {
     const next = typeof parsed.text === 'string' ? parsed.text.trim() : '';

@@ -1,6 +1,8 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { userCanSubmitStories } from '@/lib/auth/admin-emails';
+import { getUser } from '@/lib/db/queries';
 
 type StoryToolSubmissionPayload = {
   sessionId: string;
@@ -49,6 +51,11 @@ function getRequestOrigin() {
 }
 
 export async function submitStoryToolStory(payload: StoryToolSubmissionPayload): Promise<StoryToolSubmissionResult> {
+  const user = await getUser();
+  if (!userCanSubmitStories(user)) {
+    return { success: false, message: 'Please sign in to submit a story.' };
+  }
+
   const validationError = validatePayload(payload);
   if (validationError) {
     return { success: false, message: validationError };
@@ -65,11 +72,13 @@ export async function submitStoryToolStory(payload: StoryToolSubmissionPayload):
   }
 
   try {
+    const cookie = headers().get('cookie');
     const response = await fetch(`${origin}/api/stories/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
+        ...(cookie ? { cookie } : {}),
       },
       body: JSON.stringify(payload),
       cache: 'no-store',

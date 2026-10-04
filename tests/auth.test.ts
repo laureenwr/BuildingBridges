@@ -21,10 +21,15 @@ describe('callbackUrl sanitization', () => {
 });
 
 describe('sign-up flow invariants', () => {
-  it('accepts Mentor or Admin roles for public signup', () => {
-    const allowed = ['MENTOR', 'ADMIN', 'STUDENT'];
-    expect(allowed).toContain('MENTOR');
-    expect(allowed).toContain('ADMIN');
+  it('does not let public signup self-assign Admin', () => {
+    const requestedRole = 'ADMIN';
+    const isPlatformAdminEmail = false;
+    const role = isPlatformAdminEmail
+      ? 'ADMIN'
+      : requestedRole === 'STUDENT'
+        ? 'STUDENT'
+        : 'MENTOR';
+    expect(role).toBe('MENTOR');
   });
 });
 

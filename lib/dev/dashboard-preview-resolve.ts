@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { requireAdminUser, requireSignedInUser } from '@/lib/auth/access';
 import { getUser } from '@/lib/db/queries';
 import type { User } from '@/lib/db/schema';
 
@@ -14,10 +14,7 @@ export async function resolveUserPortalShell(): Promise<{
   user: User;
   showDevelopmentPreviewBanner: boolean;
 }> {
-  const user = await getUser();
-  if (!user) {
-    redirect('/sign-in');
-  }
+  const user = await requireSignedInUser();
   return { user, showDevelopmentPreviewBanner: false };
 }
 
@@ -25,9 +22,6 @@ export async function resolveAdminPortalShell(): Promise<{
   user: User;
   showDevelopmentPreviewBanner: boolean;
 }> {
-  const user = await getUser();
-  if (!user) {
-    redirect('/sign-in');
-  }
+  const user = await requireAdminUser();
   return { user, showDevelopmentPreviewBanner: false };
 }

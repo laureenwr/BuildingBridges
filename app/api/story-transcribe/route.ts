@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireApiStorySubmitter } from '@/lib/auth/access';
 import { transcribeStoryAnswer } from '@/lib/ai/story-transcribe';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiStorySubmitter();
+  if (auth.response) return auth.response;
+
   try {
     const form = await request.formData();
     const audio = form.get('audio');

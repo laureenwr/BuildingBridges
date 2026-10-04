@@ -11,5 +11,5 @@ export default async function DashboardPage() {
     redirect('/sign-in?redirect=/logged-in');
   }
 
-  redirect(getPostLoginHref(user.role));
+  redirect(getPostLoginHref(user));
 }

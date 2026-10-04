@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireApiStorySubmitter } from '@/lib/auth/access';
 import {
   conductStoryInterview,
   sanitizeInterviewMessages,
@@ -10,6 +11,9 @@ export const runtime = 'nodejs';
 const ACTIONS: InterviewAction[] = ['start', 'reply', 'skip', 'finish'];
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiStorySubmitter();
+  if (auth.response) return auth.response;
+
   try {
     const body = (await request.json()) as {
       locale?: unknown;

@@ -48,7 +48,7 @@ export function AdminPortalHome({
       <div className="rounded-2xl border border-[rgba(145,82,255,0.14)] bg-gradient-to-br from-white via-[#FAF8FF] to-emerald-50/30 p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
         <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Safety & care</h2>
         <p className="mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-[#4B4266]">
-          Only signed-in users can open these dashboards. Stories stay in review until an admin approves or rejects them.
+          Only authorised admins can open this dashboard. Stories stay in review until an admin approves or rejects them.
         </p>
         <Link
           href="/stories"

@@ -8,6 +8,7 @@ import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 import { db } from '@/lib/db/drizzle';
 import { getUser } from '@/lib/db/queries';
 import { stories, users } from '@/lib/db/schema';
+import { requireAdminUser } from '@/lib/auth/access';
 
 type StoryReviewActionState = {
   type: 'success' | 'error' | null;
@@ -122,6 +123,8 @@ export async function getApprovedStoriesForPublic(): Promise<PublicApprovedStory
 }
 
 export async function getPendingStoriesForReview() {
+  await requireAdminUser();
+
   const rows = await db
     .select({
       id: stories.id,

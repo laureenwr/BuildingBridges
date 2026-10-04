@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { StoryToolPageContent } from '@/components/landing/StoryToolPageContent';
 import { getApprovedStoriesForPublic } from '@/lib/actions/stories';
+import { userCanSubmitStories } from '@/lib/auth/admin-emails';
+import { getUser } from '@/lib/db/queries';
 
 export const metadata: Metadata = {
   title: 'Story Creation Tool (in development)',
@@ -11,7 +13,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function StoryToolPage() {
-  const approvedStories = await getApprovedStoriesForPublic();
+  const [approvedStories, user] = await Promise.all([
+    getApprovedStoriesForPublic(),
+    getUser(),
+  ]);
 
   return (
     <div className="relative min-h-[calc(100dvh-70px)] overflow-hidden bg-[#1A1033] px-6 py-16 text-white sm:px-10 sm:py-20">
@@ -20,7 +25,10 @@ export default async function StoryToolPage() {
         aria-hidden
       />
       <div className="relative z-[1] mx-auto max-w-[1280px]">
-        <StoryToolPageContent approvedStories={approvedStories} />
+        <StoryToolPageContent
+          approvedStories={approvedStories}
+          canCreateStories={userCanSubmitStories(user)}
+        />
       </div>
     </div>
   );

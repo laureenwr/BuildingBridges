@@ -18,6 +18,9 @@ test.describe('Dashboard Access', () => {
       '/dashboard/personal',
       '/dashboard/security',
       '/dashboard/workshops',
+      '/portal',
+      '/portal/admin',
+      '/portal/admin/stories/review',
       '/onboarding',
     ];
 

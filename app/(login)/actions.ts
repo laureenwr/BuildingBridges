@@ -647,11 +647,9 @@ export async function signUpAction(formData: FormData) {
   const requestedRole = String(formData.get('role') ?? 'MENTOR').toUpperCase();
   const role = isPlatformAdminEmail(email)
     ? 'ADMIN'
-    : requestedRole === 'ADMIN'
-      ? 'ADMIN'
-      : requestedRole === 'STUDENT'
-        ? 'STUDENT'
-        : 'MENTOR';
+    : requestedRole === 'STUDENT'
+      ? 'STUDENT'
+      : 'MENTOR';
 
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');

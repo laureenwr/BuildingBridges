@@ -80,8 +80,10 @@ function ToggleChip({
 
 export function StoryToolPageContent({
   approvedStories = [],
+  canCreateStories = false,
 }: {
   approvedStories?: PublicApprovedStory[];
+  canCreateStories?: boolean;
 }) {
   const { isDe } = useLanguage();
   const scrollAi = () => document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth' });
@@ -231,7 +233,34 @@ export function StoryToolPageContent({
         </div>
       </section>
 
-      <AiStoryTool />
+      {canCreateStories ? (
+        <AiStoryTool />
+      ) : (
+        <section
+          id="ai-story-tool"
+          className="scroll-mt-24 rounded-[28px] border border-white/10 bg-white/[0.05] px-6 py-10 sm:px-10"
+        >
+          <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-[#C9A2FF]">
+            {isDe ? 'Anmeldung nötig' : 'Sign in required'}
+          </p>
+          <h2 className="mt-2 font-lora text-[clamp(1.4rem,2.2vw,1.8rem)] font-bold text-white">
+            {isDe
+              ? 'Das Story-Werkzeug ist für angemeldete Nutzer:innen'
+              : 'The story tool is for signed-in users'}
+          </h2>
+          <p className="mt-3 max-w-[640px] text-[0.95rem] leading-relaxed text-white/70">
+            {isDe
+              ? 'Du kannst veröffentlichte Community-Stories weiter unten lesen. Zum Erstellen und Einreichen bitte anmelden.'
+              : 'You can still read published community stories below. Sign in to create and submit a story.'}
+          </p>
+          <a
+            href="/sign-in?redirect=/story-tool"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-5 py-2.5 text-[0.9rem] font-bold text-white transition hover:brightness-110"
+          >
+            {isDe ? 'Anmelden' : 'Sign in'}
+          </a>
+        </section>
+      )}
 
       <div className="mt-20 -mx-6 sm:-mx-10">
         <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />

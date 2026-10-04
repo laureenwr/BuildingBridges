@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireApiStorySubmitter } from '@/lib/auth/access';
 import { assistStoryDraft, classifyStoryAssistError, type StoryAssistAction } from '@/lib/ai/story-assist';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const ACTIONS: StoryAssistAction[] = ['grammar', 'titles', 'story-title'];
+const ACTIONS: StoryAssistAction[] = ['grammar', 'titles', 'story-title', 'draft'];
 
 export async function POST(request: NextRequest) {
+  const auth = await requireApiStorySubmitter();
+  if (auth.response) return auth.response;
+
   try {
     const body = (await request.json()) as {
       locale?: unknown;

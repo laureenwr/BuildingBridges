@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { requireAdminUser } from '@/lib/auth/access';
 import { ApprovedStoriesList } from '@/components/stories/ApprovedStoriesList';
 import { getApprovedStoriesForPublic } from '@/lib/actions/stories';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminStoriesPublishedPage() {
+  await requireAdminUser();
   const approvedStories = await getApprovedStoriesForPublic();
 
   return (
