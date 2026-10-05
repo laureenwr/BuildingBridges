@@ -12,7 +12,7 @@ export default async function UserPortalLayout({ children }: { children: React.R
   const roleLabel = user.role === 'ADMIN' ? 'Admin' : user.role === 'MENTOR' ? 'Mentor' : 'Mentee';
 
   return (
-    <DashboardLayout variant="user" userName={userName} roleLabel={roleLabel} dashboardHref="/portal">
+    <DashboardLayout variant="user" userName={userName} roleLabel={roleLabel}>
       {children}
     </DashboardLayout>
   );

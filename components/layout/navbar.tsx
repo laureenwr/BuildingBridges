@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, User, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '@/lib/auth/index';
@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -21,6 +20,7 @@ import { DashboardMenuButton } from '@/components/layout/DashboardMenuButton';
 import { useTranslation } from 'react-i18next';
 import { setStoredLanguage } from '@/lib/i18n/language';
 import { useLanguage } from '@/lib/hooks/useLanguage';
+import { userHasAdminAccess } from '@/lib/auth/admin-emails';
 
 function NavDrop({
   label,
@@ -68,6 +68,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang } = useLanguage();
   const { t } = useTranslation('common');
+  const showAdmin = userHasAdminAccess(user);
 
   return (
     <header className="fixed left-0 right-0 top-0 z-[9999] overflow-visible border-b border-[rgba(145,82,255,0.15)] bg-[rgba(255,255,255,0.97)] shadow-[0_1px_20px_rgba(145,82,255,0.06)] backdrop-blur-xl">
@@ -106,10 +107,7 @@ export function Navbar() {
           </NavDrop>
           <NavDrop label={t('nav.platform', { defaultValue: 'Platform' })} href="/#knowledge">
             <NavDropLink href="/#knowledge">{t('nav.knowledgeResources', { defaultValue: 'Knowledge & Resources' })}</NavDropLink>
-            <NavDropLink href="/portal">{t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' })}</NavDropLink>
-            <NavDropLink href="/portal/admin">{t('nav.adminDashboard', { defaultValue: 'Admin dashboard' })}</NavDropLink>
             <NavDropLink href="/story-tool">{t('nav.storyTool', { defaultValue: 'Story Creation Tool' })}</NavDropLink>
-            <NavDropLink href="/story-tool">{t('nav.digitalToolkit', { defaultValue: 'Digital Toolkit' })}</NavDropLink>
           </NavDrop>
           <li>
             <Link
@@ -152,7 +150,16 @@ export function Navbar() {
           >
             {t('nav.contact', { defaultValue: 'Contact us' })}
           </Link>
-          <DashboardMenuButton />
+          {user ? (
+            <DashboardMenuButton showAdmin={showAdmin} />
+          ) : (
+            <Link
+              href="/sign-in"
+              className="whitespace-nowrap rounded-full border-[1.5px] border-[rgba(145,82,255,0.38)] px-4 py-2 text-[0.82rem] font-semibold text-[#9152FF] transition hover:border-[#9152FF] hover:bg-[#9152FF] hover:text-white"
+            >
+              {t('nav.signIn')}
+            </Link>
+          )}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -173,26 +180,12 @@ export function Navbar() {
               >
                 <DropdownMenuLabel>{t('account.myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <Link href="/portal" className="block">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>{t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' })}</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/portal/admin" className="block">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>{t('nav.adminDashboard', { defaultValue: 'Admin dashboard' })}</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/dashboard/general" className="block">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>{t('account.settings')}</span>
-                    </DropdownMenuItem>
-                  </Link>
-                </DropdownMenuGroup>
+                <Link href={showAdmin ? '/portal/admin' : '/portal'} className="block">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>{showAdmin ? t('nav.adminDashboard', { defaultValue: 'Admin' }) : t('nav.portal', { defaultValue: 'Portal' })}</span>
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"
@@ -216,7 +209,16 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <DashboardMenuButton compact />
+          {user ? (
+            <DashboardMenuButton compact showAdmin={showAdmin} />
+          ) : (
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center whitespace-nowrap rounded-full bg-[#9152FF] px-3 py-1.5 text-[0.75rem] font-semibold text-white shadow-[0_3px_12px_rgba(145,82,255,0.35)]"
+            >
+              {t('nav.signIn')}
+            </Link>
+          )}
           <button
             type="button"
             className="flex flex-col justify-center gap-1.5 rounded-lg p-1.5"
@@ -237,8 +239,6 @@ export function Navbar() {
             className="fixed left-0 right-0 top-[70px] z-[9998] flex flex-col gap-0.5 overflow-hidden border-b border-[rgba(145,82,255,0.15)] bg-white px-4 py-4 shadow-lg md:hidden"
           >
             {[
-              [t('nav.mentorDashboard', { defaultValue: 'Mentor dashboard' }), '/portal'],
-              [t('nav.adminDashboard', { defaultValue: 'Admin dashboard' }), '/portal/admin'],
               [t('nav.home'), '/#home'],
               [t('nav.aboutProject'), '/#about'],
               [t('nav.team'), '/#team'],
@@ -248,6 +248,13 @@ export function Navbar() {
               [t('nav.workshopsEvents'), '/#events'],
               [t('nav.partners'), '/#partners'],
               [t('nav.contact'), '/contact'],
+              ...(user
+                ? [
+                    showAdmin
+                      ? [t('nav.adminDashboard', { defaultValue: 'Admin' }), '/portal/admin']
+                      : [t('nav.portal', { defaultValue: 'Portal' }), '/portal'],
+                  ]
+                : [[t('nav.signIn'), '/sign-in']]),
             ].map(([label, href]) => (
               <Link
                 key={href + label}

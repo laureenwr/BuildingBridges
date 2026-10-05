@@ -4,20 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
-  UserRound,
   PenLine,
   BookOpenCheck,
-  MessageCircle,
-  Users,
   CalendarDays,
-  Library,
-  Settings,
-  Shield,
   UserPlus,
-  UserCheck,
-  UserX,
   FileSearch,
   Globe,
+  Shield,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -29,21 +22,8 @@ export type SidebarProps = {
   variant: Variant;
   open: boolean;
   onClose: () => void;
-  /** // TEMP: Dashboard preview mode (remove before production). Offset below development preview banner */
   developmentPreviewBanner?: boolean;
 };
-
-const userLinks: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { href: '/portal', label: 'My portal', icon: LayoutDashboard },
-  { href: '/portal/profile', label: 'My Profile', icon: UserRound },
-  { href: '/story-tool', label: 'Story Creation Tool', icon: PenLine },
-  { href: '/portal/stories', label: 'My Stories', icon: BookOpenCheck },
-  { href: '/portal/messages', label: 'Messages', icon: MessageCircle },
-  { href: '/portal/community', label: 'Community', icon: Users },
-  { href: '/portal/events', label: 'Events & Workshops', icon: CalendarDays },
-  { href: '/portal/resources', label: 'Resources', icon: Library },
-  { href: '/portal/settings', label: 'Settings', icon: Settings },
-];
 
 function NavButton({
   href,
@@ -80,60 +60,22 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
   const { isDe } = useLanguage();
   const belowHeaderTop = developmentPreviewBanner ? 'calc(70px + 2.75rem)' : '70px';
 
-  const adminSections: {
-    heading: string;
-    items: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[];
-  }[] = [
-    {
-      heading: isDe ? 'Überblick' : 'Overview',
-      items: [{ href: '/portal/admin', label: isDe ? 'Admin-Portal' : 'Admin Portal', icon: LayoutDashboard }],
-    },
-    {
-      heading: isDe ? 'Nutzer:innen' : 'Users',
-      items: [
-        { href: '/portal/admin/users/pending', label: isDe ? 'Benutzerverwaltung' : 'User management', icon: UserPlus },
-        { href: '/portal/admin/users/approved', label: isDe ? 'Freigegebene Nutzer:innen' : 'Approved Users', icon: UserCheck },
-        { href: '/portal/admin/users/rejected', label: isDe ? 'Abgelehnte Nutzer:innen' : 'Rejected Users', icon: UserX },
-      ],
-    },
-    {
-      heading: isDe ? 'Stories' : 'Stories',
-      items: [
-        { href: '/portal/admin/stories/review', label: isDe ? 'Stories zur Prüfung' : 'Stories for Review', icon: FileSearch },
-        { href: '/portal/admin/stories/published', label: isDe ? 'Veröffentlichte Stories' : 'Published Stories', icon: Globe },
-      ],
-    },
-    {
-      heading: isDe ? 'System' : 'System',
-      items: [{ href: '/portal/admin/settings', label: isDe ? 'Einstellungen' : 'Settings', icon: Settings }],
-    },
+  const userLinks = [
+    { href: '/portal', label: isDe ? 'Start' : 'Home', icon: LayoutDashboard },
+    { href: '/story-tool', label: isDe ? 'Story erstellen' : 'Create a story', icon: PenLine },
+    { href: '/stories', label: isDe ? 'Stories' : 'Stories', icon: BookOpenCheck },
+    { href: '/workshops', label: isDe ? 'Workshops' : 'Workshops', icon: CalendarDays },
   ];
 
-  const localizedUserLinks = userLinks.map((item) => ({
-    ...item,
-    label:
-      !isDe
-        ? item.label
-        : item.href === '/portal'
-          ? 'Mein Portal'
-          : item.href === '/portal/profile'
-            ? 'Mein Profil'
-            : item.href === '/story-tool'
-              ? 'Story-Werkzeug'
-              : item.href === '/portal/stories'
-                ? 'Meine Stories'
-                : item.href === '/portal/messages'
-                  ? 'Nachrichten'
-                  : item.href === '/portal/community'
-                    ? 'Community'
-                    : item.href === '/portal/events'
-                      ? 'Events & Workshops'
-                      : item.href === '/portal/resources'
-                        ? 'Ressourcen'
-                        : item.href === '/portal/settings'
-                          ? 'Einstellungen'
-                          : item.label,
-  }));
+  const adminLinks = [
+    { href: '/portal/admin', label: isDe ? 'Überblick' : 'Overview', icon: LayoutDashboard },
+    { href: '/portal/admin/users/pending', label: isDe ? 'Nutzer:innen' : 'Users', icon: UserPlus },
+    { href: '/portal/admin/stories/review', label: isDe ? 'Stories prüfen' : 'Review stories', icon: FileSearch },
+    { href: '/portal/admin/stories/published', label: isDe ? 'Veröffentlicht' : 'Published stories', icon: Globe },
+    { href: '/story-tool', label: isDe ? 'Story erstellen' : 'Create a story', icon: PenLine },
+  ];
+
+  const links = variant === 'admin' ? adminLinks : userLinks;
 
   const shell = (
     <>
@@ -155,49 +97,27 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
         </div>
         <div>
           <p className="text-[0.7rem] font-bold uppercase tracking-wider text-[#9152FF]/90">
-            {variant === 'admin' ? (isDe ? 'Admin-Portal' : 'Admin portal') : isDe ? 'Dein Bereich' : 'Your space'}
+            {variant === 'admin' ? (isDe ? 'Admin' : 'Admin') : isDe ? 'Portal' : 'Portal'}
           </p>
           <p className="text-[0.8rem] text-[#6B5F8A]">Building Bridges</p>
         </div>
       </div>
 
       <nav className="flex flex-col gap-1" aria-label={isDe ? 'Dashboard-Navigation' : 'Dashboard'}>
-        {variant === 'user' &&
-          localizedUserLinks.map((item) => (
-            <NavButton
-              key={item.href}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-              active={pathname === item.href || (item.href !== '/portal' && pathname.startsWith(item.href))}
-              onNavigate={onClose}
-            />
-          ))}
-
-        {variant === 'admin' &&
-          adminSections.map((section) => (
-            <div key={section.heading} className="mb-4 last:mb-0">
-              <p className="mb-2 px-3 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#9A8CB3]">
-                {section.heading}
-              </p>
-              <div className="flex flex-col gap-0.5">
-                {section.items.map((item) => (
-                  <NavButton
-                    key={item.href}
-                    href={item.href}
-                    icon={item.icon}
-                    label={item.label}
-                    active={
-                      item.href === '/portal/admin'
-                        ? pathname === '/portal/admin'
-                        : pathname === item.href || pathname.startsWith(item.href + '/')
-                    }
-                    onNavigate={onClose}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+        {links.map((item) => (
+          <NavButton
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            active={
+              item.href === '/portal' || item.href === '/portal/admin'
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(`${item.href}/`)
+            }
+            onNavigate={onClose}
+          />
+        ))}
       </nav>
     </>
   );

@@ -37,7 +37,7 @@ export function safeAuthRedirect(
   return '/logged-in';
 }
 
-/** Labeled portal buttons so Admin and Mentor destinations are never mixed. */
+/** One signed-in destination: Admin home, or Portal for everyone else. */
 export function getPortalNavItems(user: PortalUser | null | undefined): PortalNavItem[] {
   if (!user) {
     return [{ href: '/sign-in?redirect=/logged-in', key: 'signIn', primary: true }];
@@ -45,10 +45,7 @@ export function getPortalNavItems(user: PortalUser | null | undefined): PortalNa
 
   const role = user.role;
   if (userHasAdminAccess(user)) {
-    return [
-      { href: '/portal/admin', key: 'admin', primary: true },
-      { href: '/portal', key: 'mentor', primary: false },
-    ];
+    return [{ href: '/portal/admin', key: 'admin', primary: true }];
   }
   if (role === 'MENTOR') {
     return [{ href: '/portal', key: 'mentor', primary: true }];
@@ -59,6 +56,5 @@ export function getPortalNavItems(user: PortalUser | null | undefined): PortalNa
 export function portalNavLabelKey(key: PortalNavKey) {
   if (key === 'signIn') return 'nav.signIn' as const;
   if (key === 'admin') return 'nav.adminPortal' as const;
-  if (key === 'mentor') return 'nav.mentorPortal' as const;
-  return 'nav.participantPortal' as const;
+  return 'nav.portal' as const;
 }

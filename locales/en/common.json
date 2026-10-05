@@ -23,13 +23,14 @@
     "digitalToolkit": "Digital Toolkit",
     "partners": "Partners",
     "contact": "Contact us",
-    "dashboard": "Dashboard",
+    "dashboard": "Portal",
     "signIn": "Sign in",
-    "adminPortal": "Admin dashboard",
-    "mentorPortal": "Mentor dashboard",
-    "participantPortal": "Participant Portal",
-    "mentorDashboard": "Mentor dashboard",
-    "adminDashboard": "Admin dashboard",
+    "portal": "Portal",
+    "adminPortal": "Admin",
+    "mentorPortal": "Portal",
+    "participantPortal": "Portal",
+    "mentorDashboard": "Portal",
+    "adminDashboard": "Admin",
     "registerNow": "Register Now →",
     "team": "Team"
   },
@@ -61,9 +62,9 @@
   "account": {
     "myAccount": "My Account",
     "workshopsDashboard": "Workshops dashboard",
-    "adminPortal": "Admin Portal",
-    "mentorPortal": "Mentor Portal",
-    "participantPortal": "Participant Portal",
+    "adminPortal": "Admin",
+    "mentorPortal": "Portal",
+    "participantPortal": "Portal",
     "settings": "Settings",
     "logOut": "Log out",
     "register": "Register →",
@@ -71,9 +72,9 @@
     "closeMenu": "Close menu"
   },
   "platformPreview": {
-    "title": "Choose a portal",
-    "userDashboard": "Mentor Portal",
-    "adminDashboard": "Admin Portal"
+    "title": "Your portal",
+    "userDashboard": "Portal",
+    "adminDashboard": "Admin"
   },
   "story": {
     "shareStory": "Share your story",

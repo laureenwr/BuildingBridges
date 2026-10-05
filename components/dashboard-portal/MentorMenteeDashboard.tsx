@@ -2,18 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  LayoutDashboard,
-  Sparkles,
-  ArrowRight,
-  CalendarRange,
-  Lightbulb,
-  HeartHandshake,
-  ShieldAlert,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Sparkles, ArrowRight, CalendarRange, ShieldAlert } from 'lucide-react';
 import { ActionCard } from '@/components/dashboard-portal/ActionCard';
-import { ProgressCard } from '@/components/dashboard-portal/ProgressCard';
 import { EventCard } from '@/components/dashboard-portal/EventCard';
 
 export type MentorMenteeDashboardProps = {
@@ -31,14 +21,6 @@ export function MentorMenteeDashboard({
   events,
   storyCounts,
 }: MentorMenteeDashboardProps) {
-  const router = useRouter();
-  const checklist = [
-    { id: '1', label: 'Create or continue a story', done: storyCounts.total > 0 },
-    { id: '2', label: 'Browse upcoming workshops', done: false },
-    { id: '3', label: 'Update your profile', done: false },
-  ];
-  const percent = Math.round((checklist.filter((item) => item.done).length / checklist.length) * 100);
-
   return (
     <div className="space-y-8">
       {pendingApproval ? (
@@ -75,119 +57,79 @@ export function MentorMenteeDashboard({
             priority
           />
         </div>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#9152FF]/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 h-60 w-60 rounded-full bg-emerald-300/25 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-10 right-[10%] h-44 w-44 rounded-full bg-amber-200/30 blur-3xl" />
-
-        <div className="relative z-[1] flex flex-col gap-6 px-6 py-8 sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-          <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.22)] bg-white/85 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-[#7339E0] shadow-sm backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Your dashboard
-            </div>
-            <h1 className="mt-4 font-lora text-[clamp(1.85rem,4vw,2.35rem)] font-bold tracking-tight text-[#1A1033]">
-              Welcome back, {greetingName}! <span aria-hidden>👋</span>
-            </h1>
-            <p className="mt-3 text-[0.98rem] leading-relaxed text-[#4B4266] sm:text-[1.05rem]">
-              This is your safe space to create, share and be part of a supportive community.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {storiesAllowed ? (
-                <Link
-                  href="/story-tool"
-                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-7 py-2.5 text-[0.9rem] font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.38)] transition hover:brightness-105"
-                >
-                  Create a Story
-                </Link>
-              ) : (
-                <span
-                  className="inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#E8E0F7] px-7 py-2.5 text-[0.9rem] font-semibold text-[#9A8CB3]"
-                  title="Available after approval"
-                  aria-disabled
-                >
-                  Create a Story
-                </span>
-              )}
+        <div className="relative z-[1] px-6 py-8 sm:px-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.22)] bg-white/85 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-[#7339E0] shadow-sm backdrop-blur">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            Your dashboard
+          </div>
+          <h1 className="mt-4 font-lora text-[clamp(1.85rem,4vw,2.35rem)] font-bold tracking-tight text-[#1A1033]">
+            Welcome back, {greetingName}! <span aria-hidden>👋</span>
+          </h1>
+          <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-[#4B4266] sm:text-[1.05rem]">
+            Create a story, read community stories, or check upcoming workshops.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {storiesAllowed ? (
               <Link
                 href="/story-tool"
-                className="inline-flex items-center justify-center rounded-full border border-[rgba(145,82,255,0.35)] bg-white/90 px-7 py-2.5 text-[0.9rem] font-semibold text-[#7339E0] shadow-sm backdrop-blur transition hover:bg-[#F5F0FF]"
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-7 py-2.5 text-[0.9rem] font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.38)] transition hover:brightness-105"
               >
-                Explore Stories
-                <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
+                Create a story
               </Link>
-            </div>
-            {!storiesAllowed ? (
-              <p className="mt-3 text-[0.85rem] text-[#7339E0]" id="story-tool-hint">
-                Story Creation unlocks once your profile is approved.
-              </p>
-            ) : null}
-          </div>
-          <div className="relative hidden min-h-[200px] w-full max-w-sm shrink-0 overflow-hidden rounded-2xl border border-white/70 bg-white/70 p-5 shadow-inner backdrop-blur-md lg:flex lg:flex-col lg:justify-center">
-            <div className="font-lora text-lg font-semibold text-[#1A1033]">Today's invitation</div>
-            <ul className="mt-4 space-y-3 text-[0.9rem] text-[#5C5275]">
-              <li className="flex gap-2">
-                <HeartHandshake className="mt-0.5 h-4 w-4 shrink-0 text-[#9152FF]" aria-hidden />
-                Take one small storytelling step. You choose the pace.
-              </li>
-              <li className="flex gap-2">
-                <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
-                Drafts autosave. Your voice stays yours.
-              </li>
-              <li className="flex gap-2">
-                <LayoutDashboard className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
-                Need support? The community is cheering for you.
-              </li>
-            </ul>
+            ) : (
+              <span
+                className="inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#E8E0F7] px-7 py-2.5 text-[0.9rem] font-semibold text-[#9A8CB3]"
+                title="Available after approval"
+                aria-disabled
+              >
+                Create a story
+              </span>
+            )}
+            <Link
+              href="/stories"
+              className="inline-flex items-center justify-center rounded-full border border-[rgba(145,82,255,0.35)] bg-white/90 px-7 py-2.5 text-[0.9rem] font-semibold text-[#7339E0] shadow-sm backdrop-blur transition hover:bg-[#F5F0FF]"
+            >
+              Stories
+              <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </div>
       </section>
 
-      <section aria-labelledby="journey-heading" className="space-y-4">
-        <h2 id="journey-heading" className="font-lora text-xl font-semibold text-[#1A1033]">
-          Continue your journey
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          <ActionCard
-            title="Create a new story"
-            description="Share your experiences in your own way."
-            actionLabel="Start now"
-            href={storiesAllowed ? '/story-tool' : '#'}
-            accent="purple"
-            disabled={!storiesAllowed}
-          />
-          <ActionCard
-            title="My stories"
-            description="View, edit or manage your existing stories."
-            actionLabel="Go to my stories"
-            href="/stories"
-            accent="green"
-          />
-          <ActionCard
-            title="Community"
-            description="Connect, support and grow together."
-            actionLabel="Join community"
-            href="/portal/community"
-            accent="orange"
-          />
-        </div>
+      <section className="grid gap-4 md:grid-cols-2">
+        <ActionCard
+          title="Create a story"
+          description="Share your experiences in your own way."
+          actionLabel="Start now"
+          href={storiesAllowed ? '/story-tool' : '#'}
+          accent="purple"
+          disabled={!storiesAllowed}
+        />
+        <ActionCard
+          title="Workshops"
+          description="See upcoming Building Bridges events."
+          actionLabel="View workshops"
+          href="/workshops"
+          accent="green"
+        />
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1.05fr_minmax(0,0.95fr)]">
-        <ProgressCard percent={percent} items={checklist} onContinue={() => router.push('/story-tool')} />
-        <div
-          className="flex flex-col gap-4 rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]"
-          aria-labelledby="events-heading"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id="events-heading" className="font-lora text-lg font-semibold text-[#1A1033]">
-              Upcoming events
-            </h2>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Upcoming workshops</h2>
             <CalendarRange className="h-5 w-5 text-[#9152FF]" aria-hidden />
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="mt-4 flex flex-col gap-3">
             {events.length > 0 ? (
-              events.map((e) => (
-                <EventCard key={e.id} title={e.title} date={e.date} time={e.time} format={e.format} />
+              events.slice(0, 2).map((event) => (
+                <EventCard
+                  key={event.id}
+                  title={event.title}
+                  date={event.date}
+                  time={event.time}
+                  format={event.format}
+                />
               ))
             ) : (
               <p className="rounded-xl border border-dashed border-[rgba(145,82,255,0.2)] bg-[#FAF8FF] px-4 py-6 text-center text-[0.9rem] text-[#6B5F8A]">
@@ -195,61 +137,26 @@ export function MentorMenteeDashboard({
               </p>
             )}
           </div>
-          <Link
-            href="/workshops"
-            className="mt-auto inline-flex w-full items-center justify-center rounded-full border border-[rgba(145,82,255,0.35)] bg-white px-5 py-2.5 text-[0.88rem] font-semibold text-[#7339E0] transition hover:bg-[#F5F0FF] md:w-auto"
-          >
-            See full calendar
-          </Link>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-gradient-to-br from-white to-[#F7F3FF] p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
-          <h3 className="font-lora text-lg font-semibold text-[#1A1033]">Quick tips</h3>
-          <ul className="mt-4 space-y-3">
-            <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#9152FF]" aria-hidden />
-              <strong className="text-[#1A1033]">You are in control</strong>. Pause anytime, edit gently, publish only when ready.
-            </li>
-            <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden />
-              <strong className="text-[#1A1033]">Your privacy matters</strong>. You decide what stays private or shared with mentors.
-            </li>
-            <li className="flex gap-2 rounded-xl border border-[rgba(145,82,255,0.1)] bg-white/85 px-3 py-2.5 text-[0.92rem] text-[#4B4266]">
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden />
-              <strong className="text-[#1A1033]">Support each other</strong>. Kind words can change someone&apos;s day.
-            </li>
-          </ul>
-          <Link
-            href="/portal/community"
-            className="mt-5 inline-flex items-center justify-center rounded-full bg-[#EDE4FF] px-5 py-2.5 text-[0.88rem] font-semibold text-[#7339E0] transition hover:bg-[#E4DAFF]"
-          >
-            Community guidelines
-          </Link>
         </div>
 
-        <div className="flex flex-col justify-between rounded-2xl border border-[rgba(145,82,255,0.14)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
-          <div>
-            <h3 className="font-lora text-lg font-semibold text-[#1A1033]">Community stories</h3>
-            <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl bg-[#FAF8FF] px-4 py-3">
-                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-[#9A8CB3]">Submitted</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-[#1A1033]">{storyCounts.total}</dd>
-              </div>
-              <div className="rounded-xl bg-emerald-50/90 px-4 py-3">
-                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">Published</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">{storyCounts.approved}</dd>
-              </div>
-              <div className="rounded-xl bg-amber-50/90 px-4 py-3">
-                <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">In review</dt>
-                <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
-              </div>
-            </dl>
-          </div>
-          <blockquote className="mt-6 border-l-4 border-[#9152FF] pl-4 text-[0.95rem] italic leading-relaxed text-[#4B4266]">
-            “Every story you share can inspire someone's journey.”
-          </blockquote>
+        <div className="rounded-2xl border border-[rgba(145,82,255,0.14)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
+          <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Stories</h2>
+          <dl className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-emerald-50/90 px-4 py-3">
+              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">Published</dt>
+              <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">{storyCounts.approved}</dd>
+            </div>
+            <div className="rounded-xl bg-amber-50/90 px-4 py-3">
+              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">In review</dt>
+              <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
+            </div>
+          </dl>
+          <Link
+            href="/stories"
+            className="mt-5 inline-flex text-[0.9rem] font-semibold text-[#7339E0] underline-offset-4 hover:underline"
+          >
+            Open stories
+          </Link>
         </div>
       </section>
     </div>

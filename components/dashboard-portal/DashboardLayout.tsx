@@ -12,8 +12,6 @@ export type DashboardLayoutProps = {
   roleLabel: 'Mentee' | 'Mentor' | 'Admin';
   userName: string;
   children: React.ReactNode;
-  /** TopNav “Dashboard” button target */
-  dashboardHref?: string;
   /** // TEMP: Dashboard preview mode (remove before production) */
   developmentPreviewBanner?: boolean;
 };
@@ -26,7 +24,6 @@ export function DashboardLayout({
   roleLabel,
   userName,
   children,
-  dashboardHref,
   developmentPreviewBanner = false,
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -41,7 +38,6 @@ export function DashboardLayout({
         userName={userName}
         roleLabel={roleLabel}
         onMenuClick={() => setSidebarOpen(true)}
-        dashboardHref={dashboardHref ?? (variant === 'admin' ? '/portal/admin' : '/portal')}
       />
 
       {developmentPreviewBanner ? (

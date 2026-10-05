@@ -10,7 +10,7 @@ export default async function AdminPortalLayout({ children }: { children: React.
     'Moderator';
 
   return (
-    <DashboardLayout variant="admin" userName={userName} roleLabel="Admin" dashboardHref="/portal/admin">
+    <DashboardLayout variant="admin" userName={userName} roleLabel="Admin">
       {children}
     </DashboardLayout>
   );

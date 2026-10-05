@@ -74,9 +74,9 @@ export function LandingNav() {
     partners: t('Partners', 'Partner'),
     contact: t('Contact', 'Kontakt'),
     register: t('Register', 'Anmelden'),
-    adminPortal: t('Admin Portal', 'Admin-Portal'),
-    mentorPortal: t('Mentor Portal', 'Mentorinnen-Portal'),
-    participantPortal: t('Participant Portal', 'Teilnehmerinnen-Portal'),
+    adminPortal: t('Admin', 'Admin'),
+    mentorPortal: t('Portal', 'Portal'),
+    participantPortal: t('Portal', 'Portal'),
     signIn: t('Sign In', 'Anmelden'),
     signOut: t('Log out', 'Abmelden'),
   };
@@ -184,18 +184,6 @@ export function LandingNav() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="bottom" sideOffset={12} avoidCollisions={false} className="w-52">
                   <DropdownMenuLabel>{user.email ?? 'Account'}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {portalItems.map((item) => (
-                    <DropdownMenuItem key={item.key} asChild>
-                      <Link href={item.href}>
-                        {item.key === 'admin'
-                          ? L.adminPortal
-                          : item.key === 'mentor'
-                            ? L.mentorPortal
-                            : L.participantPortal}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={async () => {

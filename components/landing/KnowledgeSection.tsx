@@ -243,8 +243,8 @@ export function KnowledgeSection() {
         icon: '🔐',
         title: t('Sign In / Login', 'Anmelden / Login'),
         body: t(
-          'Registered participants and mentors can log in to access their mentoring dashboard and private story space.',
-          'Registrierte Teilnehmende und Mentor*innen können sich für Dashboard und Story-Bereich einloggen.'
+          'Registered participants and mentors can log in to access the portal and private story space.',
+          'Registrierte Teilnehmende und Mentor*innen können sich anmelden, um das Portal und den Story-Bereich zu nutzen.'
         ),
       },
     ],

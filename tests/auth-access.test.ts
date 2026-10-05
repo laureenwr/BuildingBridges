@@ -108,8 +108,14 @@ describe('portal navigation', () => {
   it('sends allowlisted admins to the admin portal even without an ADMIN role', () => {
     expect(getPostLoginHref({ role: 'MENTOR', email: 'sumerasajid99@gmail.com' })).toBe('/portal/admin');
     expect(getPostLoginHref({ role: 'MENTOR', email: 'mentor@example.com' })).toBe('/portal');
-    expect(getPortalNavItems({ role: 'STUDENT', email: 'laureen.warikoru@uni-due.de' })[0]?.key).toBe('admin');
-    expect(getPortalNavItems({ role: 'MENTOR', email: 'mentor@example.com' })[0]?.key).toBe('mentor');
+    expect(getPortalNavItems({ role: 'STUDENT', email: 'laureen.warikoru@uni-due.de' })).toEqual([
+      { href: '/portal/admin', key: 'admin', primary: true },
+    ]);
+    expect(getPortalNavItems({ role: 'MENTOR', email: 'mentor@example.com' })).toEqual([
+      { href: '/portal', key: 'mentor', primary: true },
+    ]);
+    expect(getPortalNavItems({ role: 'ADMIN', email: 'anyone@example.com' })).toHaveLength(1);
+    expect(getPortalNavItems({ role: 'STUDENT', email: 'mentee@example.com' })).toHaveLength(1);
   });
 
   it('does not honour an admin redirect for arbitrary URLs', () => {
