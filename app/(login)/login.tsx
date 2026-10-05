@@ -58,6 +58,10 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
         return isDe
           ? 'Das Passwort muss mindestens eine Zahl enthalten.'
           : 'Your password must include at least one number.';
+      case 'admin-restricted':
+        return isDe
+          ? 'Die Admin-Registrierung ist auf autorisierte Projekt-Administratorinnen beschränkt. Bitte registriere dich als Mentorin oder kontaktiere das Projektteam, wenn du administrativen Zugang benötigst.'
+          : 'Admin registration is restricted to authorized project administrators. Please register as a Mentor or contact the project team if you need administrative access.';
       default:
         return null;
     }
@@ -83,6 +87,13 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
     passwordHintSignup: isDe
       ? 'Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten'
       : 'Password must be at least 8 characters and include one uppercase letter and one number',
+    roleLabel: isDe ? 'Kontoart' : 'Account type',
+    roleMentor: isDe ? 'Mentorin' : 'Mentor',
+    roleParticipant: isDe ? 'Teilnehmerin' : 'Participant',
+    roleAdmin: isDe ? 'Admin' : 'Admin',
+    roleHint: isDe
+      ? 'Admin-Konten sind auf das Projektteam beschränkt. Unbefugte Admin-Anfragen werden nicht angelegt.'
+      : 'Admin accounts are limited to the project team. Unauthorized Admin requests are not created.',
     submitSignin: isDe ? 'Anmelden' : 'Sign in',
     submitSignup: isDe ? 'Konto erstellen' : 'Create account',
     forgotPassword: isDe ? 'Passwort vergessen?' : 'Forgot password?',
@@ -165,6 +176,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               
               {error && (
                 <motion.div
+                  role="alert"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center"
@@ -262,6 +274,33 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                   <p className="mt-2 text-xs text-gray-500">{t.passwordHintSignup}</p>
                 )}
               </div>
+
+              {mode === 'signup' ? (
+                <fieldset className="space-y-3">
+                  <legend className="text-gray-700 font-medium">{t.roleLabel}</legend>
+                  <div className="space-y-2">
+                    {(
+                      [
+                        ['MENTOR', t.roleMentor],
+                        ['STUDENT', t.roleParticipant],
+                        ['ADMIN', t.roleAdmin],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <label key={value} className="flex cursor-pointer items-start gap-2 text-sm text-gray-700">
+                        <input
+                          type="radio"
+                          name="role"
+                          value={value}
+                          defaultChecked={value === 'MENTOR'}
+                          className="mt-0.5 accent-purple-600"
+                        />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500">{t.roleHint}</p>
+                </fieldset>
+              ) : null}
 
               <Button
                 type="submit"

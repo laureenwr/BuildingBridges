@@ -127,6 +127,39 @@ export async function getRegisteredUsers(limit = 20): Promise<PortalUserRow[]> {
   }
 }
 
+export type ManagedAccountRow = {
+  id: number;
+  name: string | null;
+  email: string;
+  role: 'ADMIN' | 'STUDENT' | 'MENTOR';
+  createdAtLabel: string;
+};
+
+export async function getManagedAccounts(limit = 200): Promise<ManagedAccountRow[]> {
+  await requireAdminUser();
+
+  const rows = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      createdAt: users.createdAt,
+    })
+    .from(users)
+    .where(isNull(users.deletedAt))
+    .orderBy(desc(users.createdAt))
+    .limit(limit);
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    createdAtLabel: formatJoinedOn(row.createdAt),
+  }));
+}
+
 export async function getUserCount(): Promise<number> {
   try {
     const rows = await db

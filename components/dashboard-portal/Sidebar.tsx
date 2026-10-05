@@ -91,7 +91,7 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
     {
       heading: isDe ? 'Nutzer:innen' : 'Users',
       items: [
-        { href: '/portal/admin/users/pending', label: isDe ? 'Ausstehende Freigaben' : 'Pending Approvals', icon: UserPlus },
+        { href: '/portal/admin/users/pending', label: isDe ? 'Benutzerverwaltung' : 'User management', icon: UserPlus },
         { href: '/portal/admin/users/approved', label: isDe ? 'Freigegebene Nutzer:innen' : 'Approved Users', icon: UserCheck },
         { href: '/portal/admin/users/rejected', label: isDe ? 'Abgelehnte Nutzer:innen' : 'Rejected Users', icon: UserX },
       ],

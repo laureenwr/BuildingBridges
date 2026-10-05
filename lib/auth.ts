@@ -118,6 +118,9 @@ export const authOptions: NextAuthOptions = {
           (token as { role?: string }).role = role;
           if (dbUser.name) token.name = dbUser.name;
           if (dbUser.email) token.email = dbUser.email;
+        } else {
+          delete token.sub;
+          delete (token as { role?: string }).role;
         }
       }
 

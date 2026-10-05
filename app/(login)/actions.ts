@@ -21,7 +21,7 @@ import {
   roleEnum,
   verificationTokens,
 } from '@/lib/db/schema';
-import { isPlatformAdminEmail } from '@/lib/auth/admin-emails';
+import { resolveSignupRole } from '@/lib/auth/admin-emails';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies, headers } from 'next/headers';
@@ -89,7 +89,15 @@ const signUpSchema = z.object({
 
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   try {
-    const { email, password, inviteId, role } = data;
+    const { email, password, inviteId, role: requestedRole } = data;
+    const assigned = resolveSignupRole(email, requestedRole);
+    if (!assigned.ok) {
+      return {
+        error:
+          'Admin registration is restricted to authorized project administrators. Please register as a Mentor or contact the project team if you need administrative access.',
+      };
+    }
+    const role = assigned.role;
 
     // Check for existing user with detailed error message
     const existingUser = await db
@@ -645,15 +653,17 @@ export async function signUpAction(formData: FormData) {
   const password = String(formData.get('password') ?? '');
   const name = String(formData.get('name') ?? '').trim().slice(0, 100);
   const requestedRole = String(formData.get('role') ?? 'MENTOR').toUpperCase();
-  const role = isPlatformAdminEmail(email)
-    ? 'ADMIN'
-    : requestedRole === 'STUDENT'
-      ? 'STUDENT'
-      : 'MENTOR';
+  const assigned = resolveSignupRole(email, requestedRole);
 
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');
   }
+
+  if (!assigned.ok) {
+    redirect('/sign-up?error=admin-restricted');
+  }
+
+  const role = assigned.role;
 
   try {
     const existingUser = await db
