@@ -122,32 +122,134 @@ export async function getApprovedStoriesForPublic(): Promise<PublicApprovedStory
   }
 }
 
-export async function getPendingStoriesForReview() {
-  await requireAdminUser();
+export type StoryReviewItem = {
+  id: number;
+  sessionId: string;
+  title: string;
+  summary: string;
+  empowermentMessage: string;
+  storyType: PublicApprovedStory['storyType'];
+  timeline: PublicApprovedStory['timeline'];
+  quotes: PublicApprovedStory['quotes'];
+  submitterName: string | null;
+  submitterEmail: string | null;
+  consentGiven: boolean;
+  status: string;
+  submittedOn: string;
+};
 
-  const rows = await db
-    .select({
-      id: stories.id,
-      sessionId: stories.sessionId,
-      title: stories.title,
-      summary: stories.summary,
-      consentGiven: stories.consentGiven,
-      status: stories.status,
-      createdAt: stories.createdAt,
-    })
-    .from(stories)
-    .where(eq(stories.status, 'pending_review'))
-    .orderBy(desc(stories.createdAt));
+export type MySubmittedStory = {
+  id: number;
+  title: string;
+  status: string;
+  submittedOn: string;
+};
 
-  return rows.map((row) => ({
+function mapReviewRow(row: {
+  id: number;
+  sessionId: string;
+  title: string;
+  summary: string;
+  empowermentMessage: string;
+  timeline: unknown;
+  quotes: unknown;
+  rawConversation: unknown;
+  consentGiven: boolean;
+  status: string;
+  createdAt: Date;
+  submitterName?: string | null;
+  submitterEmail?: string | null;
+}): StoryReviewItem {
+  return {
     id: row.id,
     sessionId: row.sessionId,
     title: row.title,
     summary: row.summary,
+    empowermentMessage: row.empowermentMessage,
+    storyType: parseStoryType(row.rawConversation),
+    timeline: parseTimeline(row.timeline),
+    quotes: parseQuotes(row.quotes),
+    submitterName: row.submitterName ?? null,
+    submitterEmail: row.submitterEmail ?? null,
     consentGiven: row.consentGiven,
     status: row.status,
     submittedOn: formatSubmittedOn(row.createdAt),
-  }));
+  };
+}
+
+export async function getPendingStoriesForReview(): Promise<StoryReviewItem[]> {
+  await requireAdminUser();
+
+  try {
+    const rows = await db
+      .select({
+        id: stories.id,
+        sessionId: stories.sessionId,
+        title: stories.title,
+        summary: stories.summary,
+        empowermentMessage: stories.empowermentMessage,
+        timeline: stories.timeline,
+        quotes: stories.quotes,
+        rawConversation: stories.rawConversation,
+        consentGiven: stories.consentGiven,
+        status: stories.status,
+        createdAt: stories.createdAt,
+        submitterName: users.name,
+        submitterEmail: users.email,
+      })
+      .from(stories)
+      .leftJoin(users, eq(stories.userId, users.id))
+      .where(eq(stories.status, 'pending_review'))
+      .orderBy(desc(stories.createdAt));
+
+    return rows.map(mapReviewRow);
+  } catch (error) {
+    console.error('Failed to load pending stories with submitter; falling back without user link:', error);
+    const rows = await db
+      .select({
+        id: stories.id,
+        sessionId: stories.sessionId,
+        title: stories.title,
+        summary: stories.summary,
+        empowermentMessage: stories.empowermentMessage,
+        timeline: stories.timeline,
+        quotes: stories.quotes,
+        rawConversation: stories.rawConversation,
+        consentGiven: stories.consentGiven,
+        status: stories.status,
+        createdAt: stories.createdAt,
+      })
+      .from(stories)
+      .where(eq(stories.status, 'pending_review'))
+      .orderBy(desc(stories.createdAt));
+
+    return rows.map(mapReviewRow);
+  }
+}
+
+export async function getStoriesSubmittedByUser(userId: number): Promise<MySubmittedStory[]> {
+  try {
+    const rows = await db
+      .select({
+        id: stories.id,
+        title: stories.title,
+        status: stories.status,
+        createdAt: stories.createdAt,
+      })
+      .from(stories)
+      .where(eq(stories.userId, userId))
+      .orderBy(desc(stories.createdAt));
+
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      status: row.status,
+      submittedOn: formatSubmittedOn(row.createdAt),
+    }));
+  } catch (error) {
+    console.error('Failed to load stories submitted by user:', error);
+    return [];
+  }
 }
 
 function asFormData(

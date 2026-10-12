@@ -1,4 +1,4 @@
-import { count, desc, isNull, sql } from 'drizzle-orm';
+import { count, isNull, sql } from 'drizzle-orm';
 import { requireAdminUser } from '@/lib/auth/access';
 import { db } from '@/lib/db/drizzle';
 import { stories, users } from '@/lib/db/schema';
@@ -98,33 +98,17 @@ function roleLabel(role: string) {
   return 'Mentee';
 }
 
-export async function getRegisteredUsers(limit = 20): Promise<PortalUserRow[]> {
-  await requireAdminUser();
+function asAccountRole(value: string): ManagedAccountRow['role'] {
+  const role = value.trim().toUpperCase();
+  if (role === 'ADMIN' || role === 'MENTOR') return role;
+  return 'STUDENT';
+}
 
-  try {
-    const rows = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role,
-        createdAt: users.createdAt,
-      })
-      .from(users)
-      .where(isNull(users.deletedAt))
-      .orderBy(desc(users.createdAt))
-      .limit(limit);
-
-    return rows.map((row) => ({
-      id: String(row.id),
-      user: row.name?.trim() || row.email,
-      role: roleLabel(row.role),
-      joinedOn: formatJoinedOn(row.createdAt),
-    }));
-  } catch (error) {
-    console.error('Failed to load registered users:', error);
-    return [];
-  }
+function accountDisplayName(name: string | null | undefined, email: string) {
+  const trimmed = name?.trim();
+  if (trimmed) return trimmed;
+  if (email.includes('@')) return email.split('@')[0]!;
+  return email;
 }
 
 export type ManagedAccountRow = {
@@ -135,29 +119,61 @@ export type ManagedAccountRow = {
   createdAtLabel: string;
 };
 
-export async function getManagedAccounts(limit = 200): Promise<ManagedAccountRow[]> {
+type AccountQueryRow = {
+  id: number;
+  name: string | null;
+  email: string;
+  role: string;
+  created_at: Date | string;
+};
+
+function asQueryRows<T>(result: unknown): T[] {
+  if (Array.isArray(result)) return result as T[];
+  if (result && typeof result === 'object' && 'rows' in result) {
+    const rows = (result as { rows?: unknown }).rows;
+    if (Array.isArray(rows)) return rows as T[];
+  }
+  return [];
+}
+
+async function loadActiveAccounts(limit = 1000): Promise<ManagedAccountRow[]> {
+  const result = await db.execute<AccountQueryRow>(sql`
+    SELECT id, name, email, role::text AS role, created_at
+    FROM users
+    WHERE deleted_at IS NULL
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  `);
+
+  return asQueryRows<AccountQueryRow>(result).map((row) => ({
+    id: Number(row.id),
+    name: accountDisplayName(row.name, row.email),
+    email: row.email,
+    role: asAccountRole(String(row.role ?? '')),
+    createdAtLabel: formatJoinedOn(row.created_at),
+  }));
+}
+
+export async function getRegisteredUsers(limit = 50): Promise<PortalUserRow[]> {
   await requireAdminUser();
 
-  const rows = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .where(isNull(users.deletedAt))
-    .orderBy(desc(users.createdAt))
-    .limit(limit);
+  try {
+    const rows = await loadActiveAccounts(limit);
+    return rows.map((row) => ({
+      id: String(row.id),
+      user: row.name?.trim() || row.email,
+      role: roleLabel(row.role),
+      joinedOn: row.createdAtLabel,
+    }));
+  } catch (error) {
+    console.error('Failed to load registered users:', error);
+    return [];
+  }
+}
 
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    role: row.role,
-    createdAtLabel: formatJoinedOn(row.createdAt),
-  }));
+export async function getManagedAccounts(limit = 500): Promise<ManagedAccountRow[]> {
+  await requireAdminUser();
+  return loadActiveAccounts(limit);
 }
 
 export async function getUserCount(): Promise<number> {

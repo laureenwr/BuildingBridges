@@ -92,9 +92,10 @@ function parseBody(body: StorySubmitBody): { ok: true; data: ValidStorySubmitBod
 
 export async function POST(request: NextRequest) {
   const auth = await requireApiStorySubmitter();
-  if (auth.response) {
-    return auth.response;
+  if (auth.response || !auth.user) {
+    return auth.response ?? NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
+  const submitterId = auth.user.id;
 
   const configuredApiKey = process.env.STORIES_API_KEY;
   const incomingApiKey = request.headers.get('x-api-key');
@@ -152,6 +153,7 @@ export async function POST(request: NextRequest) {
     const inserted = await db.execute<{ id: number }>(sql`
       INSERT INTO stories (
         session_id,
+        user_id,
         title,
         summary,
         timeline,
@@ -162,6 +164,7 @@ export async function POST(request: NextRequest) {
         status
       ) VALUES (
         ${data.sessionId},
+        ${submitterId},
         ${data.story.title},
         ${data.story.summary},
         CAST(${JSON.stringify(data.story.timeline)} AS jsonb),

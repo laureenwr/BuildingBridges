@@ -1,6 +1,7 @@
 const HARDCODED_PLATFORM_ADMIN_EMAILS = [
   'sumerasajid99@gmail.com',
   'laureen.warikoru@uni-due.de',
+  'daniel.courtney@uni-due.de',
 ] as const;
 
 function extraAdminEmailsFromEnv() {

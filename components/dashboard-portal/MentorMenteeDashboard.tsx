@@ -12,6 +12,7 @@ export type MentorMenteeDashboardProps = {
   storiesAllowed: boolean;
   events: { id: string; title: string; date: string; time: string; format: string }[];
   storyCounts: { total: number; pending: number; approved: number };
+  myStories: { id: number; title: string; status: string; submittedOn: string }[];
 };
 
 export function MentorMenteeDashboard({
@@ -20,6 +21,7 @@ export function MentorMenteeDashboard({
   storiesAllowed,
   events,
   storyCounts,
+  myStories,
 }: MentorMenteeDashboardProps) {
   return (
     <div className="space-y-8">
@@ -151,11 +153,30 @@ export function MentorMenteeDashboard({
               <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
             </div>
           </dl>
+          <div className="mt-5 space-y-2">
+            {myStories.length > 0 ? (
+              myStories.map((story) => (
+                <div key={story.id} className="rounded-xl bg-[#FAF8FF] px-3 py-2">
+                  <p className="text-[0.88rem] font-semibold text-[#1A1033]">{story.title}</p>
+                  <p className="text-[0.75rem] text-[#6B5F8A]">
+                    {story.status === 'pending_review'
+                      ? 'In review'
+                      : story.status === 'approved'
+                        ? 'Published'
+                        : story.status}{' '}
+                    · {story.submittedOn}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-[0.85rem] text-[#6B5F8A]">You have not submitted a story yet.</p>
+            )}
+          </div>
           <Link
             href="/stories"
             className="mt-5 inline-flex text-[0.9rem] font-semibold text-[#7339E0] underline-offset-4 hover:underline"
           >
-            Open stories
+            Open published stories
           </Link>
         </div>
       </section>

@@ -14,8 +14,7 @@ export default async function AdminStoriesReviewPage() {
       <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-8 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
         <h1 className="font-lora text-2xl font-semibold text-[#1A1033]">Stories for Review</h1>
         <p className="mt-3 max-w-prose leading-relaxed text-[#5C5275]">
-          Dedicated moderation queue powered by{' '}
-          <code className="rounded-md bg-[#FAF8FF] px-1 py-0.5 text-[0.8rem] text-[#7339E0]">stories.status === &apos;pending_review&apos;</code>.
+          Read the full submitted story, including chapters and who sent it, before you approve or reject it.
         </p>
         <Link
           href="/portal/admin"
@@ -25,7 +24,7 @@ export default async function AdminStoriesReviewPage() {
         </Link>
       </div>
 
-      <StoryReviewTable rows={storyRows} title="Pending stories" />
+      <StoryReviewTable rows={storyRows} title="Pending stories" defaultExpanded />
     </div>
   );
 }

@@ -102,28 +102,7 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
 }
 
 /** Set when a new upcoming workshop should be featured as “Next up”. */
-const featuredSource: WorkshopSource | null = {
-  id: 'wege-nach-der-schule',
-  title: {
-    en: 'Paths after school',
-    de: 'Wege nach der Schule',
-  },
-  description: {
-    en: 'Online workshop for girls and young FLINTA* of Colour from 9th grade. We talk about self-organisation and self-care without burning out; paths after school such as a year abroad, internships and university; how to start making the right decision for your future; finding community and friends, especially at university; jobs and pay in social professions; and how much school grades really count.',
-    de: 'Online-Workshop für Mädchen und junge FLINTA* of Color ab der 9. Klasse: Selbstorganisation & Selbstfürsorge, Wege nach der Schule (Auslandsjahr, Praktikum, Studium), Anschluss & Freundschaft, Jobs in sozialen Berufen und wie viel Schulnoten wirklich zählen.',
-  },
-  date: { en: 'Monday, 21 September 2026', de: 'Montag, 21. September 2026' },
-  time: { en: '18:00 – 20:00', de: '18:00 – 20:00 Uhr' },
-  location: { en: 'Online', de: 'Online' },
-  mode: 'Online',
-  category: 'Workshop',
-  image: UPDATED_FLYERS.wegeNachDerSchule,
-  registrationUrl: 'mailto:buildingbridges@lvs.stiftung-spi.de',
-  tags: {
-    en: ['Upcoming', 'Online', 'Empowerment'],
-    de: ['Bevorstehend', 'Online', 'Empowerment'],
-  },
-};
+const featuredSource: WorkshopSource | null = null;
 
 const feedSources: WorkshopSource[] = featuredSource ? [featuredSource] : [];
 
@@ -138,6 +117,15 @@ type ArchiveSource = {
 };
 
 const archiveSources: ArchiveSource[] = [
+  {
+    id: 'archive-wege-nach-der-schule',
+    title: { en: 'Paths after school', de: 'Wege nach der Schule' },
+    type: { en: 'Online workshop', de: 'Online-Workshop' },
+    date: '21.09.2026',
+    status: { en: 'Past workshop', de: 'Vergangener Workshop' },
+    image: UPDATED_FLYERS.wegeNachDerSchule,
+    href: UPDATED_FLYERS.wegeNachDerSchule,
+  },
   {
     id: 'archive-online-workshop-tp3',
     title: {

@@ -145,6 +145,7 @@ export const onboardingData = pgTable('onboarding_data', {
 export const stories = pgTable('stories', {
   id: serial('id').primaryKey(),
   sessionId: text('session_id').notNull(),
+  userId: integer('user_id').references(() => users.id),
   title: text('title').notNull(),
   summary: text('summary').notNull(),
   timeline: jsonb('timeline').$type<unknown[]>().notNull(),

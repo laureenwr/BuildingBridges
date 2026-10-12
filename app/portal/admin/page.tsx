@@ -10,7 +10,7 @@ export default async function AdminPortalHomePage() {
 
   const [storyRows, users, userCount, storyCounts] = await Promise.all([
     getPendingStoriesForReview(),
-    getRegisteredUsers(12),
+    getRegisteredUsers(50),
     getUserCount(),
     getStoryCounts(),
   ]);

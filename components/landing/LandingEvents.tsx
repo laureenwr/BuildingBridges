@@ -10,6 +10,10 @@ type LocalizedText = { en: string; de: string };
 
 const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
   {
+    date: { en: 'Monday, September 21, 2026 · 18:00–20:00 · Online', de: 'Montag, 21.09.2026 · 18:00–20:00 Uhr · Online' },
+    title: { en: 'Paths after school', de: 'Wege nach der Schule' },
+  },
+  {
     date: { en: 'Friday, July 31, 2026 · Time TBD · 90 minutes · Zoom + Miro', de: 'Freitag, 31.07.2026 · Uhrzeit folgt · 90 Minuten · Zoom + Miro' },
     title: {
       en: 'Online workshop: Evaluating storytelling formats with mentors',
