@@ -10,9 +10,10 @@ import { Label } from '@/components/ui/label';
 import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
 import { signUpAction } from './actions';
 import { signIn as nextAuthSignIn } from 'next-auth/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 import { safeAuthRedirect } from '@/lib/nav/dashboard-href';
+import { TurnstileField } from '@/components/auth/TurnstileField';
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const { isDe } = useLanguage();
@@ -27,6 +28,8 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
     email?: string;
     password?: string;
   }>({});
+  const signupStartedAtRef = useRef(String(Date.now()));
+  const [signupRole, setSignupRole] = useState<'MENTOR' | 'STUDENT' | 'ADMIN'>('MENTOR');
 
   const getErrorMessage = (errorCode: string | null) => {
     switch (errorCode) {
@@ -62,6 +65,22 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
         return isDe
           ? 'Die Admin-Registrierung ist auf autorisierte Projekt-Administratorinnen beschränkt. Bitte registriere dich als Mentorin oder kontaktiere das Projektteam, wenn du administrativen Zugang benötigst.'
           : 'Admin registration is restricted to authorized project administrators. Please register as a Mentor or contact the project team if you need administrative access.';
+      case 'blocked-email':
+        return isDe
+          ? 'Bitte nutze eine dauerhafte E-Mail-Adresse, keine Wegwerf-Adresse.'
+          : 'Please use a lasting email address, not a temporary or disposable one.';
+      case 'too-many-signups':
+        return isDe
+          ? 'Zu viele Registrierungen in kurzer Zeit. Bitte warte etwas und versuche es erneut.'
+          : 'Too many sign-ups in a short time. Please wait a little, then try again.';
+      case 'suspicious-name':
+        return isDe
+          ? 'Bitte gib deinen echten Namen ein, ohne Links oder lange Zahlenfolgen.'
+          : 'Please enter your real name, without links or long number strings.';
+      case 'captcha':
+        return isDe
+          ? 'Bitte bestätige, dass du kein Roboter bist, und versuche es erneut.'
+          : 'Please confirm you are not a robot, then try again.';
       default:
         return null;
     }
@@ -94,6 +113,9 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
     roleHint: isDe
       ? 'Admin-Konten sind auf das Projektteam beschränkt. Unbefugte Admin-Anfragen werden nicht angelegt.'
       : 'Admin accounts are limited to the project team. Unauthorized Admin requests are not created.',
+    participantDeveloping: isDe
+      ? 'Das Teilnehmerinnen-Portal wird noch entwickelt. Zurzeit gibt es nur das Mentorinnen-Portal und das Admin-Portal. Bitte registriere dich als Mentorin, wenn du die Plattform jetzt nutzen möchtest.'
+      : 'The participant portal is still being developed. For now we only have the Mentor portal and the Admin portal. Please register as a Mentor if you want to use the platform now.',
     submitSignin: isDe ? 'Anmelden' : 'Sign in',
     submitSignup: isDe ? 'Konto erstellen' : 'Create account',
     forgotPassword: isDe ? 'Passwort vergessen?' : 'Forgot password?',
@@ -173,6 +195,21 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               <input type="hidden" name="redirect" value={redirect || ''} />
               <input type="hidden" name="priceId" value={priceId || ''} />
               <input type="hidden" name="inviteId" value={inviteId || ''} />
+              {mode === 'signup' ? (
+                <>
+                  <input type="hidden" name="signupStartedAt" value={signupStartedAtRef.current} />
+                  <div aria-hidden="true" className="absolute -left-[10000px] h-0 w-0 overflow-hidden">
+                    <label htmlFor="website">Website</label>
+                    <input
+                      id="website"
+                      name="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
+                </>
+              ) : null}
               
               {error && (
                 <motion.div
@@ -291,16 +328,28 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                           type="radio"
                           name="role"
                           value={value}
-                          defaultChecked={value === 'MENTOR'}
+                          checked={signupRole === value}
+                          onChange={() => setSignupRole(value)}
                           className="mt-0.5 accent-purple-600"
                         />
                         <span>{label}</span>
                       </label>
                     ))}
                   </div>
+                  {signupRole === 'STUDENT' ? (
+                    <div
+                      className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
+                      role="status"
+                    >
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden />
+                      <p>{t.participantDeveloping}</p>
+                    </div>
+                  ) : null}
                   <p className="text-xs text-gray-500">{t.roleHint}</p>
                 </fieldset>
               ) : null}
+
+              {mode === 'signup' ? <TurnstileField language={isDe ? 'de' : 'en'} /> : null}
 
               <Button
                 type="submit"

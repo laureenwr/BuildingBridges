@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { Sparkles, ArrowRight, CalendarRange, ShieldAlert } from 'lucide-react';
 import { ActionCard } from '@/components/dashboard-portal/ActionCard';
 import { EventCard } from '@/components/dashboard-portal/EventCard';
+import { getWorkshopFeed } from '@/components/workshops/workshop-data';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+import { portalText } from '@/lib/portal/portal-copy';
 
 export type MentorMenteeDashboardProps = {
   greetingName: string;
   pendingApproval: boolean;
   storiesAllowed: boolean;
-  events: { id: string; title: string; date: string; time: string; format: string }[];
   storyCounts: { total: number; pending: number; approved: number };
   myStories: { id: number; title: string; status: string; submittedOn: string }[];
 };
@@ -19,10 +21,18 @@ export function MentorMenteeDashboard({
   greetingName,
   pendingApproval,
   storiesAllowed,
-  events,
   storyCounts,
   myStories,
 }: MentorMenteeDashboardProps) {
+  const { isDe, lang } = useLanguage();
+  const events = getWorkshopFeed(lang).slice(0, 2);
+
+  const storyStatus = (status: string) => {
+    if (status === 'pending_review') return portalText(isDe, 'In review', 'In Prüfung');
+    if (status === 'approved') return portalText(isDe, 'Published', 'Veröffentlicht');
+    return status;
+  };
+
   return (
     <div className="space-y-8">
       {pendingApproval ? (
@@ -33,9 +43,15 @@ export function MentorMenteeDashboard({
           <div className="flex gap-3">
             <ShieldAlert className="mt-0.5 h-10 w-10 shrink-0 text-amber-600" aria-hidden />
             <div>
-              <p className="font-lora text-base font-semibold text-amber-950">Approval pending</p>
+              <p className="font-lora text-base font-semibold text-amber-950">
+                {portalText(isDe, 'Approval pending', 'Freigabe ausstehend')}
+              </p>
               <p className="mt-1 text-[0.9rem] leading-relaxed text-amber-900/90">
-                Your profile is waiting for approval. Story publishing will be available after approval.
+                {portalText(
+                  isDe,
+                  'Your profile is waiting for approval. Story publishing will be available after approval.',
+                  'Dein Profil wartet auf Freigabe. Das Veröffentlichen von Stories ist danach möglich.'
+                )}
               </p>
             </div>
           </div>
@@ -43,7 +59,7 @@ export function MentorMenteeDashboard({
             href="/contact"
             className="inline-flex shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white px-4 py-2 text-[0.85rem] font-semibold text-amber-950 transition hover:bg-amber-100"
           >
-            Need help?
+            {portalText(isDe, 'Need help?', 'Hilfe benötigt?')}
           </Link>
         </div>
       ) : null}
@@ -62,13 +78,18 @@ export function MentorMenteeDashboard({
         <div className="relative z-[1] px-6 py-8 sm:px-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(145,82,255,0.22)] bg-white/85 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-[#7339E0] shadow-sm backdrop-blur">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            Your dashboard
+            {portalText(isDe, 'Your dashboard', 'Dein Portal')}
           </div>
           <h1 className="mt-4 font-lora text-[clamp(1.85rem,4vw,2.35rem)] font-bold tracking-tight text-[#1A1033]">
-            Welcome back, {greetingName}! <span aria-hidden>👋</span>
+            {portalText(isDe, `Welcome back, ${greetingName}!`, `Willkommen zurück, ${greetingName}!`)}{' '}
+            <span aria-hidden>👋</span>
           </h1>
           <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-[#4B4266] sm:text-[1.05rem]">
-            Create a story, read community stories, or check upcoming workshops.
+            {portalText(
+              isDe,
+              'Create a story, read community stories, or check upcoming workshops.',
+              'Erstelle eine Story, lies Community-Stories oder schau dir kommende Workshops an.'
+            )}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             {storiesAllowed ? (
@@ -76,15 +97,15 @@ export function MentorMenteeDashboard({
                 href="/story-tool"
                 className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9152FF] to-[#7339E0] px-7 py-2.5 text-[0.9rem] font-semibold text-white shadow-[0_8px_24px_rgba(145,82,255,0.38)] transition hover:brightness-105"
               >
-                Create a story
+                {portalText(isDe, 'Create a story', 'Story erstellen')}
               </Link>
             ) : (
               <span
                 className="inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#E8E0F7] px-7 py-2.5 text-[0.9rem] font-semibold text-[#9A8CB3]"
-                title="Available after approval"
+                title={portalText(isDe, 'Available after approval', 'Nach der Freigabe verfügbar')}
                 aria-disabled
               >
-                Create a story
+                {portalText(isDe, 'Create a story', 'Story erstellen')}
               </span>
             )}
             <Link
@@ -100,17 +121,25 @@ export function MentorMenteeDashboard({
 
       <section className="grid gap-4 md:grid-cols-2">
         <ActionCard
-          title="Create a story"
-          description="Share your experiences in your own way."
-          actionLabel="Start now"
+          title={portalText(isDe, 'Create a story', 'Story erstellen')}
+          description={portalText(
+            isDe,
+            'Share your experiences in your own way.',
+            'Teile deine Erfahrungen auf deine Weise.'
+          )}
+          actionLabel={portalText(isDe, 'Start now', 'Jetzt starten')}
           href={storiesAllowed ? '/story-tool' : '#'}
           accent="purple"
           disabled={!storiesAllowed}
         />
         <ActionCard
           title="Workshops"
-          description="See upcoming Building Bridges events."
-          actionLabel="View workshops"
+          description={portalText(
+            isDe,
+            'See upcoming Building Bridges events.',
+            'Sieh dir kommende Building-Bridges-Termine an.'
+          )}
+          actionLabel={portalText(isDe, 'View workshops', 'Workshops ansehen')}
           href="/workshops"
           accent="green"
         />
@@ -119,23 +148,29 @@ export function MentorMenteeDashboard({
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-[rgba(145,82,255,0.12)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Upcoming workshops</h2>
+            <h2 className="font-lora text-lg font-semibold text-[#1A1033]">
+              {portalText(isDe, 'Upcoming workshops', 'Kommende Workshops')}
+            </h2>
             <CalendarRange className="h-5 w-5 text-[#9152FF]" aria-hidden />
           </div>
           <div className="mt-4 flex flex-col gap-3">
             {events.length > 0 ? (
-              events.slice(0, 2).map((event) => (
+              events.map((event) => (
                 <EventCard
                   key={event.id}
                   title={event.title}
                   date={event.date}
                   time={event.time}
-                  format={event.format}
+                  format={event.modeLabel || event.location}
                 />
               ))
             ) : (
               <p className="rounded-xl border border-dashed border-[rgba(145,82,255,0.2)] bg-[#FAF8FF] px-4 py-6 text-center text-[0.9rem] text-[#6B5F8A]">
-                No upcoming workshops are listed right now.
+                {portalText(
+                  isDe,
+                  'No upcoming workshops are listed right now.',
+                  'Aktuell sind keine kommenden Workshops eingetragen.'
+                )}
               </p>
             )}
           </div>
@@ -145,11 +180,15 @@ export function MentorMenteeDashboard({
           <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Stories</h2>
           <dl className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-emerald-50/90 px-4 py-3">
-              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">Published</dt>
+              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">
+                {portalText(isDe, 'Published', 'Veröffentlicht')}
+              </dt>
               <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">{storyCounts.approved}</dd>
             </div>
             <div className="rounded-xl bg-amber-50/90 px-4 py-3">
-              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">In review</dt>
+              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">
+                {portalText(isDe, 'In review', 'In Prüfung')}
+              </dt>
               <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
             </div>
           </dl>
@@ -159,24 +198,21 @@ export function MentorMenteeDashboard({
                 <div key={story.id} className="rounded-xl bg-[#FAF8FF] px-3 py-2">
                   <p className="text-[0.88rem] font-semibold text-[#1A1033]">{story.title}</p>
                   <p className="text-[0.75rem] text-[#6B5F8A]">
-                    {story.status === 'pending_review'
-                      ? 'In review'
-                      : story.status === 'approved'
-                        ? 'Published'
-                        : story.status}{' '}
-                    · {story.submittedOn}
+                    {storyStatus(story.status)} · {story.submittedOn}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-[0.85rem] text-[#6B5F8A]">You have not submitted a story yet.</p>
+              <p className="text-[0.85rem] text-[#6B5F8A]">
+                {portalText(isDe, 'You have not submitted a story yet.', 'Du hast noch keine Story eingereicht.')}
+              </p>
             )}
           </div>
           <Link
             href="/stories"
             className="mt-5 inline-flex text-[0.9rem] font-semibold text-[#7339E0] underline-offset-4 hover:underline"
           >
-            Open published stories
+            {portalText(isDe, 'Open published stories', 'Veröffentlichte Stories öffnen')}
           </Link>
         </div>
       </section>

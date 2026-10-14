@@ -22,6 +22,8 @@ import {
   verificationTokens,
 } from '@/lib/db/schema';
 import { resolveSignupRole } from '@/lib/auth/admin-emails';
+import { evaluateSignupGuard } from '@/lib/auth/signup-guard';
+import { verifyTurnstileToken } from '@/lib/auth/turnstile';
 import { comparePasswords, hashPassword } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies, headers } from 'next/headers';
@@ -501,7 +503,7 @@ export async function resetPassword(formData: FormData) {
         console.info('Password reset requested for an email address with no active account.');
         return {
           error: '',
-          success: 'Falls ein Konto mit dieser E-Mail-Adresse existiert, erhalten Sie einen Link zum Zurücksetzen des Passworts.'
+          success: 'reset-email-sent',
         };
       }
 
@@ -554,36 +556,36 @@ export async function resetPassword(formData: FormData) {
 
       return {
         error: '',
-        success: 'Falls ein Konto mit dieser E-Mail-Adresse existiert, erhalten Sie einen Link zum Zurücksetzen des Passworts.'
+        success: 'reset-email-sent',
       };
     } else if (token && newPassword) {
       // Step 2: Reset password with token
       if (!confirmPassword || newPassword !== confirmPassword) {
         return {
-          error: 'Die Passwörter stimmen nicht überein.',
-          success: ''
+          error: 'passwords-mismatch',
+          success: '',
         };
       }
 
       // Validate password strength
       if (newPassword.length < 8) {
         return {
-          error: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
-          success: ''
+          error: 'password-too-short',
+          success: '',
         };
       }
 
       if (!/[A-Z]/.test(newPassword)) {
         return {
-          error: 'Das Passwort muss mindestens einen Großbuchstaben enthalten.',
-          success: ''
+          error: 'password-no-uppercase',
+          success: '',
         };
       }
 
       if (!/[0-9]/.test(newPassword)) {
         return {
-          error: 'Das Passwort muss mindestens eine Zahl enthalten.',
-          success: ''
+          error: 'password-no-number',
+          success: '',
         };
       }
 
@@ -596,8 +598,8 @@ export async function resetPassword(formData: FormData) {
 
       if (!verificationToken) {
         return {
-          error: 'Ungültiger oder abgelaufener Token. Bitte fordern Sie einen neuen Link an.',
-          success: ''
+          error: 'invalid-token',
+          success: '',
         };
       }
 
@@ -608,8 +610,8 @@ export async function resetPassword(formData: FormData) {
           .where(eq(verificationTokens.token, token));
 
         return {
-          error: 'Der Token ist abgelaufen. Bitte fordern Sie einen neuen Link an.',
-          success: ''
+          error: 'expired-token',
+          success: '',
         };
       }
 
@@ -629,19 +631,19 @@ export async function resetPassword(formData: FormData) {
 
       return {
         error: '',
-        success: 'Passwort wurde erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.'
+        success: 'password-updated',
       };
     }
 
     return {
-      error: 'Ungültige Anfrage',
-      success: ''
+      error: 'invalid-request',
+      success: '',
     };
   } catch (error) {
     console.error('Password reset error:', error);
     return {
-      error: 'Fehler beim Zurücksetzen des Passworts. Bitte versuchen Sie es erneut.',
-      success: ''
+      error: 'server-error',
+      success: '',
     };
   }
 }
@@ -654,6 +656,33 @@ export async function signUpAction(formData: FormData) {
   const name = String(formData.get('name') ?? '').trim().slice(0, 100);
   const requestedRole = String(formData.get('role') ?? 'MENTOR').toUpperCase();
   const assigned = resolveSignupRole(email, requestedRole);
+  const requestHeaders = headers();
+  const ip =
+    requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    requestHeaders.get('x-real-ip') ||
+    'unknown';
+  const guard = evaluateSignupGuard({
+    honeypot: String(formData.get('website') ?? ''),
+    startedAt: String(formData.get('signupStartedAt') ?? ''),
+    email,
+    name,
+    ip,
+  });
+
+  if (!guard.ok) {
+    if (guard.code === 'honeypot' || guard.code === 'too-fast') {
+      redirect('/sign-in?success=1');
+    }
+    redirect(`/sign-up?error=${guard.code}`);
+  }
+
+  const captcha = await verifyTurnstileToken(
+    String(formData.get('cf-turnstile-response') ?? ''),
+    ip
+  );
+  if (!captcha.ok) {
+    redirect('/sign-up?error=captcha');
+  }
 
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');

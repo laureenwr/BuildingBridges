@@ -46,7 +46,7 @@ export function TopNav({
         <button
           type="button"
           className="flex rounded-lg p-2 text-[#1A1033] hover:bg-[#F5F0FF] lg:hidden"
-          aria-label="Open sidebar"
+          aria-label={isDe ? 'Menü öffnen' : 'Open sidebar'}
           onClick={onMenuClick}
         >
           <Menu className="h-6 w-6" />
@@ -66,7 +66,7 @@ export function TopNav({
         </Link>
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <div className="hidden items-center gap-0.5 rounded-full border border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-0.5 sm:flex">
+          <div className="flex items-center gap-0.5 rounded-full border border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-0.5">
             <button
               type="button"
               onClick={() => setStoredLanguage('en')}

@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { reviewStoryAction } from '@/lib/actions/stories';
 import type { StoryReviewItem } from '@/lib/actions/stories';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+import { portalText } from '@/lib/portal/portal-copy';
 import { cn } from '@/lib/utils';
 
 export type StoryReviewRow = StoryReviewItem;
@@ -21,23 +23,52 @@ type ReviewState = {
   message: string;
 };
 
-const STORY_TYPE_LABEL: Record<StoryReviewRow['storyType'], string> = {
-  mentor: 'Mentor',
-  participant: 'Participant',
-  awareness: 'Awareness',
-};
+function storyTypeLabel(isDe: boolean, type: StoryReviewRow['storyType']) {
+  if (type === 'mentor') return portalText(isDe, 'Mentor', 'Mentor:in');
+  if (type === 'participant') return portalText(isDe, 'Participant', 'Teilnehmer:in');
+  return portalText(isDe, 'Awareness', 'Awareness');
+}
+
+function storyStatusLabel(isDe: boolean, status: string) {
+  if (status === 'pending_review') return portalText(isDe, 'In review', 'In Prüfung');
+  if (status === 'approved') return portalText(isDe, 'Published', 'Veröffentlicht');
+  if (status === 'rejected') return portalText(isDe, 'Rejected', 'Abgelehnt');
+  return status;
+}
+
+function localizeReviewMessage(isDe: boolean, message: string) {
+  if (!isDe) return message;
+  const approved = message.match(/^Story "(.+)" was approved\.$/);
+  if (approved) return `Story „${approved[1]}“ wurde freigegeben.`;
+  const rejected = message.match(/^Story "(.+)" was rejected\.$/);
+  if (rejected) return `Story „${rejected[1]}“ wurde abgelehnt.`;
+  const deleted = message.match(/^Story "(.+)" was deleted\.$/);
+  if (deleted) return `Story „${deleted[1]}“ wurde gelöscht.`;
+  if (message.includes('already been reviewed')) {
+    return 'Die Story wurde nicht gefunden oder ist bereits geprüft.';
+  }
+  if (message.includes('already been deleted')) {
+    return 'Die Story wurde nicht gefunden oder ist bereits gelöscht.';
+  }
+  if (message.includes('Unauthorized')) {
+    return 'Nicht autorisiert. Nur Admins können Stories prüfen.';
+  }
+  return 'Der Prüfstatus der Story konnte nicht aktualisiert werden.';
+}
 
 export function StoryReviewTable({
   rows,
-  title = 'Stories for review',
+  title,
   className,
   defaultExpanded = false,
 }: StoryReviewTableProps) {
+  const { isDe } = useLanguage();
   const router = useRouter();
   const [state, setState] = useState<ReviewState>({ type: null, message: '' });
   const [openIds, setOpenIds] = useState<number[]>(() =>
     defaultExpanded ? rows.map((row) => row.id) : []
   );
+  const heading = title ?? portalText(isDe, 'Stories for review', 'Stories zur Prüfung');
 
   function toggleStory(id: number) {
     setOpenIds((current) => (current.includes(id) ? current.filter((value) => value !== id) : [...current, id]));
@@ -46,13 +77,23 @@ export function StoryReviewTable({
   async function submitReview(formData: FormData) {
     try {
       const result = await reviewStoryAction({ type: null, message: '' }, formData);
-      setState(result);
+      setState({
+        type: result.type,
+        message: localizeReviewMessage(isDe, result.message),
+      });
       if (result.type === 'success') {
         router.refresh();
       }
     } catch (error) {
       console.error('Story review request failed:', error);
-      setState({ type: 'error', message: 'Could not update the story review status.' });
+      setState({
+        type: 'error',
+        message: portalText(
+          isDe,
+          'Could not update the story review status.',
+          'Der Prüfstatus der Story konnte nicht aktualisiert werden.'
+        ),
+      });
     }
   }
 
@@ -64,9 +105,13 @@ export function StoryReviewTable({
       )}
     >
       <div className="border-b border-[rgba(145,82,255,0.1)] px-5 py-4">
-        <h3 className="font-lora text-lg font-semibold text-[#1A1033]">{title}</h3>
+        <h3 className="font-lora text-lg font-semibold text-[#1A1033]">{heading}</h3>
         <p className="mt-1 text-[0.82rem] text-[#6B5F8A]">
-          Read the full story, not only the summary, before you approve or reject it.
+          {portalText(
+            isDe,
+            'Read the full story, not only the summary, before you approve or reject it.',
+            'Lies die vollständige Story, nicht nur die Zusammenfassung, bevor du freigibst oder ablehnst.'
+          )}
         </p>
         {state.message ? (
           <p
@@ -85,7 +130,7 @@ export function StoryReviewTable({
 
       {rows.length === 0 ? (
         <p className="px-5 py-6 text-center text-[0.88rem] text-[#5C5275]">
-          No stories are currently pending review.
+          {portalText(isDe, 'No stories are currently pending review.', 'Aktuell warten keine Stories auf Prüfung.')}
         </p>
       ) : (
         <div className="divide-y divide-[rgba(145,82,255,0.08)]">
@@ -94,7 +139,7 @@ export function StoryReviewTable({
             const submitter =
               row.submitterName?.trim() ||
               row.submitterEmail?.trim() ||
-              'Unknown submitter';
+              portalText(isDe, 'Unknown submitter', 'Unbekannte Einreicher:in');
 
             return (
               <article key={row.id} className="px-5 py-5">
@@ -102,14 +147,15 @@ export function StoryReviewTable({
                   <div className="min-w-0">
                     <h4 className="font-lora text-xl font-semibold text-[#1A1033]">{row.title}</h4>
                     <p className="mt-1 text-[0.82rem] text-[#6B5F8A]">
-                      Submitted by <span className="font-semibold text-[#4B4266]">{submitter}</span>
+                      {portalText(isDe, 'Submitted by', 'Eingereicht von')}{' '}
+                      <span className="font-semibold text-[#4B4266]">{submitter}</span>
                       {row.submitterEmail && row.submitterName ? ` · ${row.submitterEmail}` : ''}
                       {' · '}
                       {row.submittedOn}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <span className="rounded-full bg-[#FAF8FF] px-2.5 py-1 text-[0.72rem] font-semibold text-[#7339E0] ring-1 ring-[rgba(145,82,255,0.16)]">
-                        {STORY_TYPE_LABEL[row.storyType]}
+                        {storyTypeLabel(isDe, row.storyType)}
                       </span>
                       <span
                         className={cn(
@@ -119,10 +165,12 @@ export function StoryReviewTable({
                             : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200/80'
                         )}
                       >
-                        Consent {row.consentGiven ? 'given' : 'missing'}
+                        {row.consentGiven
+                          ? portalText(isDe, 'Consent given', 'Einwilligung vorhanden')
+                          : portalText(isDe, 'Consent missing', 'Einwilligung fehlt')}
                       </span>
                       <span className="rounded-full bg-[#FAF8FF] px-2.5 py-1 text-[0.72rem] font-semibold text-[#7339E0] ring-1 ring-[rgba(145,82,255,0.16)]">
-                        {row.status}
+                        {storyStatusLabel(isDe, row.status)}
                       </span>
                     </div>
                   </div>
@@ -132,20 +180,28 @@ export function StoryReviewTable({
                     className="shrink-0 rounded-full border border-[rgba(145,82,255,0.28)] bg-[#F5F0FF] px-4 py-2 text-[0.8rem] font-semibold text-[#7339E0] hover:bg-[#EDE4FF]"
                     aria-expanded={open}
                   >
-                    {open ? 'Hide full story' : 'Read full story'}
+                    {open
+                      ? portalText(isDe, 'Hide full story', 'Vollständige Story ausblenden')
+                      : portalText(isDe, 'Read full story', 'Vollständige Story lesen')}
                   </button>
                 </div>
 
                 {open ? (
                   <div className="mt-5 space-y-4">
                     <section className="rounded-xl bg-[#FAF8FF] px-4 py-3">
-                      <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">Summary</h5>
-                      <p className="mt-1 whitespace-pre-wrap text-[0.92rem] leading-relaxed text-[#4B4266]">{row.summary}</p>
+                      <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">
+                        {portalText(isDe, 'Summary', 'Zusammenfassung')}
+                      </h5>
+                      <p className="mt-1 whitespace-pre-wrap text-[0.92rem] leading-relaxed text-[#4B4266]">
+                        {row.summary}
+                      </p>
                     </section>
 
                     {row.timeline.length > 0 ? (
                       <section className="space-y-3">
-                        <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">Chapters</h5>
+                        <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">
+                          {portalText(isDe, 'Chapters', 'Kapitel')}
+                        </h5>
                         {row.timeline.map((chapter, index) => (
                           <div
                             key={`${row.id}-chapter-${index}`}
@@ -153,7 +209,8 @@ export function StoryReviewTable({
                           >
                             <p className="text-[0.82rem] font-semibold text-[#7339E0]">
                               {chapter.icon ? `${chapter.icon} ` : ''}
-                              {chapter.label || `Chapter ${index + 1}`}
+                              {chapter.label ||
+                                portalText(isDe, `Chapter ${index + 1}`, `Kapitel ${index + 1}`)}
                             </p>
                             <p className="mt-2 whitespace-pre-wrap text-[0.92rem] leading-relaxed text-[#1A1033]">
                               {chapter.text}
@@ -170,14 +227,20 @@ export function StoryReviewTable({
 
                     {row.quotes.length > 0 ? (
                       <section>
-                        <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">Quotes</h5>
+                        <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">
+                          {portalText(isDe, 'Quotes', 'Zitate')}
+                        </h5>
                         <ul className="mt-2 space-y-2">
                           {row.quotes.map((quote, index) => (
                             <li
                               key={`${row.id}-quote-${index}`}
                               className="rounded-xl bg-[#FAF8FF] px-4 py-3 text-[0.9rem] italic text-[#4B4266]"
                             >
-                              {quote.label ? <span className="mb-1 block not-italic text-[0.75rem] font-semibold text-[#7339E0]">{quote.label}</span> : null}
+                              {quote.label ? (
+                                <span className="mb-1 block not-italic text-[0.75rem] font-semibold text-[#7339E0]">
+                                  {quote.label}
+                                </span>
+                              ) : null}
                               {quote.text}
                             </li>
                           ))}
@@ -187,7 +250,7 @@ export function StoryReviewTable({
 
                     <section className="rounded-xl bg-emerald-50/70 px-4 py-3">
                       <h5 className="text-[0.72rem] font-bold uppercase tracking-wider text-emerald-800/80">
-                        Empowerment message
+                        {portalText(isDe, 'Empowerment message', 'Empowerment-Botschaft')}
                       </h5>
                       <p className="mt-1 whitespace-pre-wrap text-[0.92rem] leading-relaxed text-emerald-950">
                         {row.empowermentMessage}
@@ -198,31 +261,55 @@ export function StoryReviewTable({
                       <form action={submitReview} className="flex-1">
                         <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="approve" />
-                        <ReviewButton variant="approve" label="Approve" pendingLabel="Approving..." />
+                        <ReviewButton
+                          variant="approve"
+                          label={portalText(isDe, 'Approve', 'Freigeben')}
+                          pendingLabel={portalText(isDe, 'Approving...', 'Wird freigegeben...')}
+                        />
                       </form>
                       <form action={submitReview} className="flex-1">
                         <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="reject" />
-                        <ReviewButton variant="reject" label="Reject" pendingLabel="Rejecting..." />
+                        <ReviewButton
+                          variant="reject"
+                          label={portalText(isDe, 'Reject', 'Ablehnen')}
+                          pendingLabel={portalText(isDe, 'Rejecting...', 'Wird abgelehnt...')}
+                        />
                       </form>
                       <form
                         action={submitReview}
                         className="flex-1"
                         onSubmit={(event) => {
-                          if (!window.confirm(`Delete "${row.title}" permanently? This cannot be undone.`)) {
+                          if (
+                            !window.confirm(
+                              portalText(
+                                isDe,
+                                `Delete "${row.title}" permanently? This cannot be undone.`,
+                                `„${row.title}“ dauerhaft löschen? Das kann nicht rückgängig gemacht werden.`
+                              )
+                            )
+                          ) {
                             event.preventDefault();
                           }
                         }}
                       >
                         <input type="hidden" name="storyId" value={String(row.id)} />
                         <input type="hidden" name="decision" value="delete" />
-                        <ReviewButton variant="delete" label="Delete" pendingLabel="Deleting..." />
+                        <ReviewButton
+                          variant="delete"
+                          label={portalText(isDe, 'Delete', 'Löschen')}
+                          pendingLabel={portalText(isDe, 'Deleting...', 'Wird gelöscht...')}
+                        />
                       </form>
                     </div>
                   </div>
                 ) : (
                   <p className="mt-3 text-[0.85rem] text-[#6B5F8A]">
-                    Open the full story to read every chapter before you approve or reject it.
+                    {portalText(
+                      isDe,
+                      'Open the full story to read every chapter before you approve or reject it.',
+                      'Öffne die vollständige Story und lies jedes Kapitel, bevor du freigibst oder ablehnst.'
+                    )}
                   </p>
                 )}
               </article>

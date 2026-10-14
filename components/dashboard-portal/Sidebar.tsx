@@ -83,7 +83,7 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
         <span className="font-lora text-lg font-semibold text-[#1A1033]">{isDe ? 'Menü' : 'Menu'}</span>
         <button
           type="button"
-          aria-label="Close sidebar"
+          aria-label={isDe ? 'Menü schließen' : 'Close sidebar'}
           onClick={onClose}
           className="rounded-lg p-2 text-[#1A1033] hover:bg-[#F5F0FF]"
         >

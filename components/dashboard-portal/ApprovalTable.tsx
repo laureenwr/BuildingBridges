@@ -1,6 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/hooks/useLanguage';
+import { portalRoleLabel, portalText } from '@/lib/portal/portal-copy';
 
 export type ApprovalUserRow = {
   id: string;
@@ -18,10 +20,13 @@ export type ApprovalTableProps = {
 
 export function ApprovalTable({
   rows,
-  title = 'Registered users',
+  title,
   className,
   showActions = false,
 }: ApprovalTableProps) {
+  const { isDe } = useLanguage();
+  const heading = title ?? portalText(isDe, 'Registered users', 'Registrierte Nutzer:innen');
+
   return (
     <div
       className={cn(
@@ -30,17 +35,21 @@ export function ApprovalTable({
       )}
     >
       <div className="border-b border-[rgba(145,82,255,0.1)] px-5 py-4">
-        <h3 className="font-lora text-lg font-semibold text-[#1A1033]">{title}</h3>
+        <h3 className="font-lora text-lg font-semibold text-[#1A1033]">{heading}</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse text-left text-[0.88rem]">
           <thead>
             <tr className="bg-[#FAF8FF] text-[0.72rem] font-bold uppercase tracking-wider text-[#9A8CB3]">
-              <th className="whitespace-nowrap px-5 py-3 font-bold">User</th>
-              <th className="whitespace-nowrap px-5 py-3 font-bold">Role</th>
-              <th className="whitespace-nowrap px-5 py-3 font-bold">Joined On</th>
+              <th className="whitespace-nowrap px-5 py-3 font-bold">{portalText(isDe, 'User', 'Nutzer:in')}</th>
+              <th className="whitespace-nowrap px-5 py-3 font-bold">{portalText(isDe, 'Role', 'Rolle')}</th>
+              <th className="whitespace-nowrap px-5 py-3 font-bold">
+                {portalText(isDe, 'Joined On', 'Beigetreten')}
+              </th>
               {showActions ? (
-                <th className="whitespace-nowrap px-5 py-3 font-bold text-right">Action</th>
+                <th className="whitespace-nowrap px-5 py-3 font-bold text-right">
+                  {portalText(isDe, 'Action', 'Aktion')}
+                </th>
               ) : null}
             </tr>
           </thead>
@@ -51,14 +60,14 @@ export function ApprovalTable({
                   colSpan={showActions ? 4 : 3}
                   className="px-5 py-8 text-center text-[0.9rem] text-[#6B5F8A]"
                 >
-                  No registered users yet.
+                  {portalText(isDe, 'No registered users yet.', 'Noch keine registrierten Nutzer:innen.')}
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
                 <tr key={row.id} className="border-t border-[rgba(145,82,255,0.08)]">
                   <td className="px-5 py-3 font-semibold">{row.user}</td>
-                  <td className="px-5 py-3 text-[#5C5275]">{row.role}</td>
+                  <td className="px-5 py-3 text-[#5C5275]">{portalRoleLabel(isDe, row.role)}</td>
                   <td className="px-5 py-3 text-[#5C5275]">{row.joinedOn}</td>
                   {showActions ? (
                     <td className="px-5 py-3 text-right text-[0.8rem] text-[#6B5F8A]">—</td>
