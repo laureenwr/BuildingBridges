@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { AiStoryTool } from './AiStoryTool';
 import { CommunityStories } from './CommunityStories';
-import { StoryToolDevelopmentNotice } from './StoryToolDevelopmentNotice';
 import { mapApprovedStoryToCommunityStory } from '@/lib/content/communityStories';
 import type { PublicApprovedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
@@ -12,28 +11,28 @@ import { cn } from '@/lib/utils';
 const STEP_COLORS = [
   {
     ring: 'border-[#4EE1D6] text-[#4EE1D6]',
-    glow: 'hover:shadow-[0_0_0_6px_rgba(78,225,214,0.22)]',
-    tag: 'border-[rgba(78,225,214,0.32)] bg-[rgba(78,225,214,0.12)] text-[#4EE1D6]',
+    glow: 'shadow-[0_0_0_6px_rgba(78,225,214,0.22)]',
+    fill: 'bg-[#4EE1D6] text-[#10261F]',
   },
   {
     ring: 'border-[#B580FF] text-[#B580FF]',
-    glow: 'hover:shadow-[0_0_0_6px_rgba(181,128,255,0.22)]',
-    tag: 'border-[rgba(181,128,255,0.35)] bg-[rgba(181,128,255,0.14)] text-[#C9A2FF]',
+    glow: 'shadow-[0_0_0_6px_rgba(181,128,255,0.22)]',
+    fill: 'bg-[#B580FF] text-white',
   },
   {
     ring: 'border-[#FF8FB1] text-[#FF8FB1]',
-    glow: 'hover:shadow-[0_0_0_6px_rgba(255,143,177,0.22)]',
-    tag: 'border-[rgba(255,143,177,0.35)] bg-[rgba(255,143,177,0.14)] text-[#FFB0C8]',
+    glow: 'shadow-[0_0_0_6px_rgba(255,143,177,0.22)]',
+    fill: 'bg-[#FF8FB1] text-[#2A1020]',
   },
   {
     ring: 'border-[#FFC078] text-[#FFC078]',
-    glow: 'hover:shadow-[0_0_0_6px_rgba(255,192,120,0.22)]',
-    tag: 'border-[rgba(255,192,120,0.35)] bg-[rgba(255,192,120,0.14)] text-[#FFC078]',
+    glow: 'shadow-[0_0_0_6px_rgba(255,192,120,0.22)]',
+    fill: 'bg-[#FFC078] text-[#2A1A08]',
   },
   {
     ring: 'border-[#7FB1FF] text-[#7FB1FF]',
-    glow: 'hover:shadow-[0_0_0_6px_rgba(127,177,255,0.22)]',
-    tag: 'border-[rgba(127,177,255,0.35)] bg-[rgba(127,177,255,0.14)] text-[#A9CBFF]',
+    glow: 'shadow-[0_0_0_6px_rgba(127,177,255,0.22)]',
+    fill: 'bg-[#7FB1FF] text-[#10203A]',
   },
 ] as const;
 
@@ -86,31 +85,66 @@ export function StoryToolPageContent({
   canCreateStories?: boolean;
 }) {
   const { isDe } = useLanguage();
+  const [activeStep, setActiveStep] = useState(0);
+
   const scrollAi = () => document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollStories = () =>
+    document.getElementById('community-stories')?.scrollIntoView({ behavior: 'smooth' });
 
   const steps = isDe
     ? [
-        { n: '1', t: 'Story-Typ wählen', d: 'Alle Formen sind wertvoll.', tags: ['Erfahrung', 'Mentoring'] },
-        { n: '2', t: 'Kontext setzen', d: 'Du entscheidest, wie konkret du sein möchtest.', tags: ['Schule', 'Persönlich'] },
-        { n: '3', t: 'Erfahrung teilen', d: 'Impulsfragen, Vorlagen oder Freitext.', tags: ['⚠ Sensibles überspringen'] },
-        { n: '4', t: 'Empowerment-Botschaft', d: 'Was sollten andere wissen?', tags: [] },
-        { n: '5', t: 'Veröffentlichung wählen', d: 'Standardmäßig privater Entwurf.', tags: ['🔒 Privat', '🌐 Veröffentlichen'] },
+        {
+          t: 'Story-Typ wählen',
+          d: 'Eine Erfahrung, eine Mentoring-Geschichte oder eine Awareness-Geschichte. Alle sind gültig.',
+        },
+        {
+          t: 'Kontext setzen',
+          d: 'Wo, wann und für wen. Ein paar Details reichen, um die Geschichte zu verankern.',
+        },
+        {
+          t: 'Erfahrung teilen',
+          d: 'Schreibe in eigenen Worten, füge ein Interview ein oder starte mit einem Impuls. Teile nur, was sich richtig anfühlt.',
+        },
+        {
+          t: 'Empowerment-Botschaft hinzufügen',
+          d: 'Was sollen andere mitnehmen? Eine Hoffnung, eine Lehre oder ein Aufruf, zusammenzubleiben.',
+        },
+        {
+          t: 'Veröffentlichung wählen',
+          d: 'Privat halten, mit Peers teilen oder veröffentlichen, wenn du bereit bist. Nichts geht live, solange du nicht entscheidest.',
+        },
       ]
     : [
-        { n: '1', t: 'Choose your story type', d: 'All types are valid and valuable.', tags: ['Experience', 'Mentoring'] },
-        { n: '2', t: 'Set the context', d: 'You control how specific to be.', tags: ['School', 'Personal'] },
-        { n: '3', t: 'Share your experience', d: 'Guided prompts, templates, or free text.', tags: ['⚠ Skip sensitive'] },
-        { n: '4', t: 'Add your empowerment message', d: 'What would you like others to know?', tags: [] },
-        { n: '5', t: 'Choose how to publish', d: 'Saved as a private draft by default.', tags: ['🔒 Private', '🌐 Publish'] },
+        {
+          t: 'Choose your story type',
+          d: 'An experience, a mentoring story or an awareness story. All are valid.',
+        },
+        {
+          t: 'Set the context',
+          d: 'Where, when, and who this is for. A few details are enough to ground the story.',
+        },
+        {
+          t: 'Share your experience',
+          d: 'Write it in your own words, paste an interview, or speak from a prompt. Share only what feels right.',
+        },
+        {
+          t: 'Add your empowerment message',
+          d: 'What do you want others to take away? A hope, a lesson, or a call to stay together.',
+        },
+        {
+          t: 'Choose how to publish',
+          d: 'Keep it private, share with peers, or publish when you are ready. Nothing goes live unless you decide.',
+        },
       ];
+
+  const current = steps[activeStep];
+  const currentColor = STEP_COLORS[activeStep];
 
   return (
     <>
-      <StoryToolDevelopmentNotice />
-
       <section
         id="story-tool-preview"
-        className="relative -mx-6 mb-4 scroll-mt-24 overflow-hidden bg-[radial-gradient(120%_160%_at_12%_-15%,#2E1E4D_0%,#1A1129_42%,#100A1C_100%)] px-5 py-12 sm:-mx-10 sm:px-10 sm:py-14"
+        className="relative -mx-6 mb-4 scroll-mt-24 overflow-hidden bg-[radial-gradient(120%_160%_at_12%_-15%,#2E1E4D_0%,#1A1129_42%,#100A1C_100%)] px-5 py-10 sm:-mx-10 sm:px-10 sm:py-12"
       >
         <div
           className="pointer-events-none absolute -right-20 -top-[120px] h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle,rgba(181,128,255,0.30)_0%,rgba(181,128,255,0)_70%)] blur-[10px]"
@@ -121,113 +155,128 @@ export function StoryToolPageContent({
           aria-hidden
         />
 
-        <div className="relative z-[1] flex flex-col gap-7">
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div>
-              <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#C9A2FF]">
-                {isDe ? 'Story-Werkzeug · TP3' : 'Story Creation Tool · TP3'}
-              </p>
-              <h1 className="max-w-[620px] font-lora text-[clamp(1.5rem,2.4vw,1.9rem)] font-bold leading-[1.18] text-white">
-                {isDe ? (
-                  <>
-                    Ein gemeinsam gestalteter Raum für{' '}
-                    <em className="not-italic text-[#B580FF]">deine Geschichte</em>
-                  </>
-                ) : (
-                  <>
-                    A co-creative space for <em className="not-italic text-[#B580FF]">your story</em>
-                  </>
-                )}
-              </h1>
-              <p className="mt-2.5 max-w-[520px] text-[13.5px] leading-[1.55] text-white/60">
-                {isDe
-                  ? 'Fünf geführte Schritte, bei denen du die Kontrolle behältst. Überspringe jeden, komm jederzeit zurück, veröffentliche erst wenn du bereit bist.'
-                  : "Five guided steps you're always in control of. Skip any, revisit any, publish only when you're ready."}
-              </p>
-            </div>
+        <div className="relative z-[1] mx-auto flex max-w-[820px] flex-col items-center text-center">
+          <p
+            id="story-tool-notice"
+            role="status"
+            className="mb-5 max-w-[640px] text-[11px] leading-relaxed text-white/45"
+          >
+            <span className="font-bold uppercase tracking-[0.14em] text-amber-200/90">
+              {isDe ? 'In Entwicklung' : 'Under development'}
+            </span>
+            <span className="mx-1.5 text-white/25">·</span>
+            {isDe
+              ? 'Die Vorschau ist verfügbar. Der KI-Story-Generator läuft im Beispielmodus.'
+              : 'The preview is available. The AI story generator runs in sample mode.'}
+          </p>
 
-            <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-white/10 bg-white/5 py-2 pl-2.5 pr-4">
-              <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-[conic-gradient(#4EE1D6_0deg_72deg,#B580FF_72deg_144deg,#FF8FB1_144deg_216deg,#FFC078_216deg_288deg,#7FB1FF_288deg_360deg)]">
-                <span className="block h-5 w-5 rounded-full bg-[#1A1129]" />
-              </div>
-              <div>
-                <div className="text-[11.5px] font-bold text-white">
-                  {isDe ? '5 flexible Schritte' : '5 flexible steps'}
-                </div>
-                <div className="text-[10.5px] text-white/50">
-                  {isDe ? 'keiner ist Pflicht' : 'none required to finish'}
-                </div>
-              </div>
-            </div>
-          </div>
+          <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#C9A2FF]">
+            {isDe ? 'Story-Werkzeug · TP3' : 'Story Creation Tool · TP3'}
+          </p>
 
-          <div className="relative">
-            <div
-              className="absolute left-[9%] right-[9%] top-[22px] hidden h-0.5 bg-[linear-gradient(90deg,#4EE1D6,#B580FF,#FF8FB1,#FFC078,#7FB1FF)] opacity-45 min-[880px]:block"
-              aria-hidden
-            />
-            <div className="relative grid grid-cols-1 gap-x-[18px] gap-y-6 sm:grid-cols-2 min-[880px]:grid-cols-5">
-              {steps.map((row, idx) => {
-                const color = STEP_COLORS[idx];
-                return (
-                  <div
-                    key={row.n}
-                    className="flex flex-col items-start gap-2.5 transition-transform duration-[180ms] ease-out hover:-translate-y-1"
+          <h1 className="font-lora text-[clamp(1.7rem,3.4vw,2.25rem)] font-bold leading-[1.18] text-white">
+            {isDe ? (
+              <>
+                Wandle deine Erfahrung in{' '}
+                <em className="not-italic text-[#B580FF]">eine Geschichte</em>
+              </>
+            ) : (
+              <>
+                Turn your experience into{' '}
+                <em className="not-italic text-[#B580FF]">a story</em>
+              </>
+            )}
+          </h1>
+
+          <p className="mt-3 max-w-[640px] text-[14px] leading-[1.55] text-white/60">
+            {isDe
+              ? 'Schreibe sie, füge ein Interview ein oder starte mit einem Impuls. Du entscheidest, was du teilst – und nichts wird veröffentlicht, solange du nicht zustimmst.'
+              : 'Write it, paste an interview, or start from a prompt. You choose what to share, and nothing is published unless you decide.'}
+          </p>
+
+          <p className="mt-7 text-[12.5px] text-white/50">
+            {isDe
+              ? 'Fünf Schritte, keiner ist Pflicht. Tippe einen Schritt an, um zu sehen, was dazugehört.'
+              : 'Five steps, none required. Tap a step to see what it involves.'}
+          </p>
+
+          <div
+            className="mt-4 flex max-w-[680px] flex-wrap items-center justify-center gap-x-2 gap-y-2.5"
+            role="tablist"
+            aria-label={isDe ? 'Story-Schritte' : 'Story steps'}
+          >
+            {steps.map((step, idx) => {
+              const color = STEP_COLORS[idx];
+              const selected = idx === activeStep;
+              return (
+                <button
+                  key={step.t}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls="story-step-detail"
+                  id={`story-step-${idx + 1}`}
+                  onClick={() => setActiveStep(idx)}
+                  className={cn(
+                    'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-left transition duration-[180ms]',
+                    selected
+                      ? 'border-white/20 bg-white/[0.08] text-white'
+                      : 'border-white/[0.08] bg-white/[0.03] text-white/70 hover:border-white/16 hover:bg-white/[0.06] hover:text-white'
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold',
+                      selected ? `${color.fill} border-transparent ${color.glow}` : `bg-[#1A1129] ${color.ring}`
+                    )}
                   >
-                    <div
-                      className={cn(
-                        'flex h-11 w-11 items-center justify-center rounded-full border-2 bg-[#1A1129] font-lora text-base font-bold transition-[box-shadow] duration-[180ms] ease-out',
-                        color.ring,
-                        color.glow
-                      )}
-                    >
-                      {row.n}
-                    </div>
-                    <h2 className="text-[13.5px] font-bold leading-snug text-white">{row.t}</h2>
-                    <p className="min-h-[34px] text-[11.5px] leading-normal text-white/55">{row.d}</p>
-                    <div className="flex min-h-[22px] flex-wrap gap-[5px]">
-                      {row.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className={cn(
-                            'whitespace-nowrap rounded-full border px-2 py-[3px] text-[9.5px] font-semibold',
-                            color.tag
-                          )}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    {idx + 1}
+                  </span>
+                  <span className="text-[12.5px] font-medium leading-none">{step.t}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex flex-col items-start gap-[18px] rounded-2xl border border-white/10 bg-white/[0.045] px-[18px] py-3.5 min-[880px]:flex-row min-[880px]:items-center">
-            <div className="shrink-0 border-white/10 min-[880px]:border-r min-[880px]:pr-4">
-              <div className="text-[12.5px] font-bold text-white">
-                {isDe ? 'Du behältst die Kontrolle' : "You're always in control"}
-              </div>
-              <div className="text-[10.5px] text-white/50">
-                {isDe ? 'Jederzeit anpassbar' : 'Adjust anytime'}
-              </div>
-            </div>
+          <div
+            id="story-step-detail"
+            role="tabpanel"
+            aria-labelledby={`story-step-${activeStep + 1}`}
+            className="mt-6 w-full max-w-[680px] rounded-2xl border border-white/10 bg-white/[0.045] px-6 py-5 text-left sm:px-7 sm:py-6"
+          >
+            <p className={cn('text-[10.5px] font-bold uppercase tracking-[0.14em]', currentColor.ring.split(' ')[1])}>
+              {isDe ? `Schritt ${activeStep + 1} von 5` : `Step ${activeStep + 1} of 5`}
+            </p>
+            <h2 className="mt-1.5 font-lora text-[1.15rem] font-bold leading-snug text-white sm:text-[1.25rem]">
+              {current.t}
+            </h2>
+            <p className="mt-2 text-[13.5px] leading-relaxed text-white/65">{current.d}</p>
+          </div>
 
-            <div className="flex flex-grow flex-wrap items-center gap-2">
+          <div className="mt-7 flex flex-col items-center gap-3">
+            <p className="text-[12px] font-medium text-white/45">
+              {isDe ? 'Optionale Helfer' : 'Optional helpers'}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <ToggleChip label={isDe ? 'KI-Unterstützung' : 'AI assistance'} initialOn />
               <ToggleChip label={isDe ? 'Peer-Feedback' : 'Peer feedback'} />
-              <ToggleChip label={isDe ? 'Öffentlich' : 'Publish publicly'} />
-              <ToggleChip label={isDe ? 'Bilder' : 'Generate images'} initialOn variant="teal" />
-              <ToggleChip label={isDe ? 'Untertitel' : 'Subtitles'} initialOn variant="teal" />
             </div>
+          </div>
 
+          <div className="mt-6 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <button
               type="button"
               onClick={scrollAi}
-              className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-[18px] py-[11px] text-[12.5px] font-bold text-white transition hover:-translate-y-px hover:brightness-110 min-[880px]:w-auto"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-5 py-2.5 text-[13px] font-bold text-white transition hover:-translate-y-px hover:brightness-110"
             >
-              {isDe ? '✨ KI-Story-Generator ausprobieren' : '✨ Try the AI Story Generator'}
+              {isDe ? 'KI-Story-Generator ausprobieren' : 'Try the AI story generator'}
+            </button>
+            <button
+              type="button"
+              onClick={scrollStories}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/[0.05] px-5 py-2.5 text-[13px] font-bold text-white/90 transition hover:-translate-y-px hover:border-white/25 hover:bg-white/[0.08]"
+            >
+              {isDe ? 'Veröffentlichte Stories lesen' : 'Read published stories'}
             </button>
           </div>
         </div>
@@ -255,16 +304,14 @@ export function StoryToolPageContent({
           </p>
           <a
             href="/sign-in?redirect=/story-tool"
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-5 py-2.5 text-[0.9rem] font-bold text-white transition hover:brightness-110"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-5 py-2.5 text-[13px] font-bold text-white"
           >
             {isDe ? 'Anmelden' : 'Sign in'}
           </a>
         </section>
       )}
 
-      <div className="mt-20 -mx-6 sm:-mx-10">
-        <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />
-      </div>
+      <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />
     </>
   );
 }

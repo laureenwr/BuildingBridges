@@ -64,9 +64,10 @@ export default function TeamPage() {
   const { isDe } = useLanguage();
   const bySlug = new Map(teamMembers.map((m) => [m.slug, m] as const));
 
-  const TP1 = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
-  const TP2 = ['celiana-kiefer', 'dilara-yildirim'];
+  const TP1 = ['claudia-calvano', 'felicia-boma-lazaridou'];
+  const TP2 = ['celiana-kiefer'];
   const TP3 = ['hannes-rothe', 'daniel-courtney', 'laureen-warikoru', 'sumera-sajid'];
+  const FORMER = ['esther-kipnis', 'susanne-birnkammer', 'dilara-yildirim'];
 
   function renderSection(title: string, slugs: string[]) {
     const members = slugs
@@ -90,6 +91,11 @@ export default function TeamPage() {
                     className="object-cover"
                   />
                 </div>
+                {member.former ? (
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                    {isDe ? 'Ehemaliges Mitglied' : 'Former member'}
+                  </p>
+                ) : null}
                 <h3 className="text-xl font-bold text-gray-900 mb-1">
                   {member.name || `${member.firstName} ${member.lastName}`}
                 </h3>
@@ -132,6 +138,7 @@ export default function TeamPage() {
         {renderSection(isDe ? 'Teilprojekt 1 (TP1)' : 'Subproject 1 (TP1)', TP1)}
         {renderSection(isDe ? 'Teilprojekt 2 (TP2)' : 'Subproject 2 (TP2)', TP2)}
         {renderSection(isDe ? 'Teilprojekt 3 (TP3)' : 'Subproject 3 (TP3)', TP3)}
+        {renderSection(isDe ? 'Ehemalige Mitglieder' : 'Former members', FORMER)}
       </div>
     </main>
   );

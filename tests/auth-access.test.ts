@@ -22,6 +22,7 @@ describe('platform admin emails', () => {
     expect(isPlatformAdminEmail('sumerasajid99@gmail.com')).toBe(true);
     expect(isPlatformAdminEmail('Laureen.Warikoru@uni-due.de')).toBe(true);
     expect(isPlatformAdminEmail('daniel.courtney@uni-due.de')).toBe(true);
+    expect(isPlatformAdminEmail('courtneydb93@gmail.com')).toBe(true);
     expect(isPlatformAdminEmail('mentor@example.com')).toBe(false);
   });
 
@@ -37,6 +38,7 @@ describe('role helpers', () => {
     expect(userHasAdminAccess({ role: 'ADMIN', email: 'anyone@example.com' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'laureen.warikoru@uni-due.de' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'daniel.courtney@uni-due.de' })).toBe(true);
+    expect(userHasAdminAccess({ role: 'MENTOR', email: 'courtneydb93@gmail.com' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'mentor@example.com' })).toBe(false);
     expect(userHasAdminAccess(null)).toBe(false);
   });
@@ -53,6 +55,10 @@ describe('role helpers', () => {
       code: 'admin-restricted',
     });
     expect(resolveSignupRole('sumerasajid99@gmail.com', 'ADMIN')).toEqual({
+      ok: true,
+      role: 'ADMIN',
+    });
+    expect(resolveSignupRole('courtneydb93@gmail.com', 'MENTOR')).toEqual({
       ok: true,
       role: 'ADMIN',
     });
@@ -82,6 +88,7 @@ describe('platform admin emails', () => {
     expect(isPlatformAdminEmail('sumerasajid99@gmail.com')).toBe(true);
     expect(isPlatformAdminEmail('Laureen.Warikoru@uni-due.de')).toBe(true);
     expect(isPlatformAdminEmail('daniel.courtney@uni-due.de')).toBe(true);
+    expect(isPlatformAdminEmail('courtneydb93@gmail.com')).toBe(true);
     expect(isPlatformAdminEmail('mentor@example.com')).toBe(false);
   });
 
@@ -97,6 +104,7 @@ describe('role helpers', () => {
     expect(userHasAdminAccess({ role: 'ADMIN', email: 'anyone@example.com' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'laureen.warikoru@uni-due.de' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'daniel.courtney@uni-due.de' })).toBe(true);
+    expect(userHasAdminAccess({ role: 'MENTOR', email: 'courtneydb93@gmail.com' })).toBe(true);
     expect(userHasAdminAccess({ role: 'MENTOR', email: 'mentor@example.com' })).toBe(false);
     expect(userHasAdminAccess(null)).toBe(false);
   });
@@ -112,6 +120,7 @@ describe('portal navigation', () => {
   it('sends allowlisted admins to the admin portal even without an ADMIN role', () => {
     expect(getPostLoginHref({ role: 'MENTOR', email: 'sumerasajid99@gmail.com' })).toBe('/portal/admin');
     expect(getPostLoginHref({ role: 'MENTOR', email: 'daniel.courtney@uni-due.de' })).toBe('/portal/admin');
+    expect(getPostLoginHref({ role: 'MENTOR', email: 'courtneydb93@gmail.com' })).toBe('/portal/admin');
     expect(getPostLoginHref({ role: 'MENTOR', email: 'mentor@example.com' })).toBe('/portal');
     expect(getPortalNavItems({ role: 'STUDENT', email: 'laureen.warikoru@uni-due.de' })).toEqual([
       { href: '/portal/admin', key: 'admin', primary: true },

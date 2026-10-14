@@ -141,6 +141,10 @@ export type StoryReviewItem = {
 export type MySubmittedStory = {
   id: number;
   title: string;
+  summary: string;
+  empowermentMessage: string;
+  timeline: PublicApprovedStory['timeline'];
+  quotes: PublicApprovedStory['quotes'];
   status: string;
   submittedOn: string;
 };
@@ -233,6 +237,10 @@ export async function getStoriesSubmittedByUser(userId: number): Promise<MySubmi
       .select({
         id: stories.id,
         title: stories.title,
+        summary: stories.summary,
+        empowermentMessage: stories.empowermentMessage,
+        timeline: stories.timeline,
+        quotes: stories.quotes,
         status: stories.status,
         createdAt: stories.createdAt,
       })
@@ -243,6 +251,10 @@ export async function getStoriesSubmittedByUser(userId: number): Promise<MySubmi
     return rows.map((row) => ({
       id: row.id,
       title: row.title,
+      summary: row.summary,
+      empowermentMessage: row.empowermentMessage,
+      timeline: parseTimeline(row.timeline),
+      quotes: parseQuotes(row.quotes),
       status: row.status,
       submittedOn: formatSubmittedOn(row.createdAt),
     }));
@@ -314,6 +326,7 @@ function revalidateStoryPaths() {
   revalidatePath('/portal/admin');
   revalidatePath('/portal/admin/stories/review');
   revalidatePath('/portal/admin/stories/published');
+  revalidatePath('/portal');
   revalidatePath('/stories');
   revalidatePath('/story-tool');
 }

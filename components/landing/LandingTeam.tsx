@@ -37,6 +37,18 @@ const orgTranslations: Record<string, { de: string; en: string }> = {
   },
 };
 
+function memberRole(slug: string, fallback: string, isDe: boolean) {
+  const translated = featuredRoleTranslations[slug];
+  if (!translated) return fallback;
+  return isDe ? translated.de : translated.en;
+}
+
+function memberOrg(org: string, isDe: boolean) {
+  const translated = orgTranslations[org];
+  if (!translated) return org;
+  return isDe ? translated.de : translated.en;
+}
+
 export function LandingTeam() {
   const { isDe } = useLanguage();
   const featured = featuredSlugs.map((s) => getMemberBySlug(s)).filter(Boolean);
@@ -74,18 +86,10 @@ export function LandingTeam() {
                 />
                 <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{m.name}</h4>
                 <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">
-                  {featuredRoleTranslations[m.slug]
-                    ? isDe
-                      ? featuredRoleTranslations[m.slug].de
-                      : featuredRoleTranslations[m.slug].en
-                    : m.role}
+                  {memberRole(m.slug, m.role, isDe)}
                 </p>
                 <p className="line-clamp-4 text-[0.83rem] leading-relaxed text-[#6B5F8A]">
-                  {orgTranslations[m.org]
-                    ? isDe
-                      ? orgTranslations[m.org].de
-                      : orgTranslations[m.org].en
-                    : m.org}
+                  {memberOrg(m.org, isDe)}
                 </p>
                 <span className="mt-4 inline-block text-sm font-bold text-[#9152FF] group-hover:underline">{isDe ? 'Profil ansehen →' : 'View profile →'}</span>
               </Link>

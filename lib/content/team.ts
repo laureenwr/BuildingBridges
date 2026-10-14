@@ -14,7 +14,10 @@ export type TeamMember = {
   // Legacy support
   name?: string; // Computed from firstName + lastName
   room?: string; // Keep for backwards compatibility
+  former?: boolean;
 };
+
+export const formerMemberSlugs = ['esther-kipnis', 'susanne-birnkammer', 'dilara-yildirim'] as const;
 
 export const teamMembers: TeamMember[] = [
   {
@@ -37,6 +40,7 @@ export const teamMembers: TeamMember[] = [
     slug: 'esther-kipnis',
     firstName: 'Esther',
     lastName: 'Kipnis',
+    former: true,
     name: 'B.Sc. Esther Kipnis',
     degree: 'B.Sc. Psychologie mit Profil Klinische Psychologie und Psychotherapie',
     role: 'Studentische Hilfskraft im Teilprojekt 1',
@@ -70,6 +74,7 @@ export const teamMembers: TeamMember[] = [
     slug: 'susanne-birnkammer',
     firstName: 'Susanne',
     lastName: 'Birnkammer',
+    former: true,
     name: 'M.Sc. Susanne Birnkammer',
     degree: 'M.Sc.',
     role: 'Wissenschaftliche Mitarbeiterin, Doktorandin',
@@ -102,6 +107,7 @@ export const teamMembers: TeamMember[] = [
     slug: 'dilara-yildirim',
     firstName: 'Dilara',
     lastName: 'Yildirim',
+    former: true,
     name: 'Dilara Yildirim',
     degree: 'Im Studium B.A. Erziehung und Bildung in der Kindheit',
     role: 'Studentische Hilfskraft',
@@ -179,5 +185,11 @@ export const teamMembers: TeamMember[] = [
 
 export function getMemberBySlug(slug: string) {
   return teamMembers.find((m) => m.slug === slug) || null;
+}
+
+export function getFormerMembers() {
+  return formerMemberSlugs
+    .map((slug) => teamMembers.find((m) => m.slug === slug))
+    .filter((m): m is TeamMember => Boolean(m));
 }
 

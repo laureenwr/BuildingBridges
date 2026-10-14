@@ -25,6 +25,8 @@ export type { ApprovalTableProps, ApprovalUserRow } from './ApprovalTable';
 export { StoryReviewTable } from './StoryReviewTable';
 export type { StoryReviewTableProps, StoryReviewRow } from './StoryReviewTable';
 
+export { MyStoriesPanel } from './MyStoriesPanel';
+
 export { MentorMenteeDashboard } from './MentorMenteeDashboard';
 export type { MentorMenteeDashboardProps } from './MentorMenteeDashboard';
 

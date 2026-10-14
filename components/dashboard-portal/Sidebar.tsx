@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   PenLine,
   BookOpenCheck,
-  CalendarDays,
   UserPlus,
   FileSearch,
   Globe,
@@ -63,8 +62,7 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
   const userLinks = [
     { href: '/portal', label: isDe ? 'Start' : 'Home', icon: LayoutDashboard },
     { href: '/story-tool', label: isDe ? 'Story erstellen' : 'Create a story', icon: PenLine },
-    { href: '/stories', label: isDe ? 'Stories' : 'Stories', icon: BookOpenCheck },
-    { href: '/workshops', label: isDe ? 'Workshops' : 'Workshops', icon: CalendarDays },
+    { href: '/stories', label: isDe ? 'Community-Stories' : 'Community stories', icon: BookOpenCheck },
   ];
 
   const adminLinks = [

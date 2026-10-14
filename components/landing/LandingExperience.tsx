@@ -11,9 +11,10 @@ import { StorytellingSection } from '@/components/landing/StorytellingSection';
 import { useLandingLocale } from '@/lib/landing/locale';
 import { FundingBanner } from '@/components/partners/FundingBanner';
 
-const TP1_SLUGS = ['claudia-calvano', 'susanne-birnkammer', 'felicia-boma-lazaridou', 'esther-kipnis'];
-const TP2_SLUGS = ['celiana-kiefer', 'dilara-yildirim'];
+const TP1_SLUGS = ['claudia-calvano', 'felicia-boma-lazaridou'];
+const TP2_SLUGS = ['celiana-kiefer'];
 const TP3_SLUGS = ['hannes-rothe', 'elias-jelinek', 'laureen-warikoru'];
+const FORMER_SLUGS = ['esther-kipnis', 'susanne-birnkammer', 'dilara-yildirim'];
 
 function pickMembers(all: TeamMember[], slugs: string[]) {
   const map = new Map(all.map((m) => [m.slug, m]));
@@ -26,6 +27,7 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
   const tp1 = pickMembers(members, TP1_SLUGS);
   const tp2 = pickMembers(members, TP2_SLUGS);
   const tp3 = pickMembers(members, TP3_SLUGS);
+  const former = pickMembers(members, FORMER_SLUGS);
 
   const displayName = (m: TeamMember) => m.name ?? `${m.firstName} ${m.lastName}`;
 
@@ -216,6 +218,38 @@ export function LandingExperience({ members }: { members: TeamMember[] }) {
             members={tp3}
             displayName={displayName}
           />
+
+          {former.length > 0 ? (
+            <div className="mt-4 border-t border-[rgba(145,82,255,0.12)] pt-12">
+              <div className="mb-8">
+                <div className="mb-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#9152FF]">
+                  {t('Former members', 'Ehemalige Mitglieder')}
+                </div>
+                <h3 className="font-[family-name:var(--font-lora)] text-[1.3rem] font-bold text-[#1A1033]">
+                  {t('People who previously contributed to the project', 'Frühere Mitwirkende im Projektteam')}
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {former.map((m) => (
+                  <Link
+                    key={m.slug}
+                    href={`/team/${m.slug}`}
+                    className="overflow-hidden rounded-[24px] border-[1.5px] border-[rgba(145,82,255,0.1)] bg-[#FAF8FF] p-7 no-underline transition hover:-translate-y-1 hover:shadow-[0_6px_28px_rgba(145,82,255,0.1)]"
+                  >
+                    <div className="relative mb-4 h-[72px] w-[72px] overflow-hidden rounded-full border-[3px] border-[#EDE5FF] shadow-sm">
+                      <Image src={m.image} alt={displayName(m)} fill className="object-cover object-top" sizes="72px" />
+                    </div>
+                    <div className="mb-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[#6B5F8A]">
+                      {t('Former member', 'Ehemaliges Mitglied')}
+                    </div>
+                    <h4 className="mb-1 font-[family-name:var(--font-lora)] text-[1.05rem] font-bold text-[#1A1033]">{displayName(m)}</h4>
+                    <div className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">{m.role}</div>
+                    <p className="text-[0.83rem] leading-relaxed text-[#6B5F8A]">{m.org}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 

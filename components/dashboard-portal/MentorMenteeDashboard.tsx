@@ -2,10 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, CalendarRange, ShieldAlert } from 'lucide-react';
+import { Sparkles, CalendarRange, ShieldAlert } from 'lucide-react';
 import { ActionCard } from '@/components/dashboard-portal/ActionCard';
 import { EventCard } from '@/components/dashboard-portal/EventCard';
+import { MyStoriesPanel } from '@/components/dashboard-portal/MyStoriesPanel';
 import { getWorkshopFeed } from '@/components/workshops/workshop-data';
+import type { MySubmittedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 import { portalText } from '@/lib/portal/portal-copy';
 
@@ -13,25 +15,17 @@ export type MentorMenteeDashboardProps = {
   greetingName: string;
   pendingApproval: boolean;
   storiesAllowed: boolean;
-  storyCounts: { total: number; pending: number; approved: number };
-  myStories: { id: number; title: string; status: string; submittedOn: string }[];
+  myStories: MySubmittedStory[];
 };
 
 export function MentorMenteeDashboard({
   greetingName,
   pendingApproval,
   storiesAllowed,
-  storyCounts,
   myStories,
 }: MentorMenteeDashboardProps) {
   const { isDe, lang } = useLanguage();
   const events = getWorkshopFeed(lang).slice(0, 2);
-
-  const storyStatus = (status: string) => {
-    if (status === 'pending_review') return portalText(isDe, 'In review', 'In Prüfung');
-    if (status === 'approved') return portalText(isDe, 'Published', 'Veröffentlicht');
-    return status;
-  };
 
   return (
     <div className="space-y-8">
@@ -87,8 +81,8 @@ export function MentorMenteeDashboard({
           <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-[#4B4266] sm:text-[1.05rem]">
             {portalText(
               isDe,
-              'Create a story, read community stories, or check upcoming workshops.',
-              'Erstelle eine Story, lies Community-Stories oder schau dir kommende Workshops an.'
+              'Create a story, see your submissions, or check upcoming workshops.',
+              'Erstelle eine Story, sieh deine Einreichungen oder schau dir kommende Workshops an.'
             )}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -109,11 +103,10 @@ export function MentorMenteeDashboard({
               </span>
             )}
             <Link
-              href="/stories"
+              href="/workshops"
               className="inline-flex items-center justify-center rounded-full border border-[rgba(145,82,255,0.35)] bg-white/90 px-7 py-2.5 text-[0.9rem] font-semibold text-[#7339E0] shadow-sm backdrop-blur transition hover:bg-[#F5F0FF]"
             >
-              Stories
-              <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
+              Workshops
             </Link>
           </div>
         </div>
@@ -176,45 +169,7 @@ export function MentorMenteeDashboard({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[rgba(145,82,255,0.14)] bg-white p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
-          <h2 className="font-lora text-lg font-semibold text-[#1A1033]">Stories</h2>
-          <dl className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-emerald-50/90 px-4 py-3">
-              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-emerald-800/80">
-                {portalText(isDe, 'Published', 'Veröffentlicht')}
-              </dt>
-              <dd className="mt-1 font-lora text-2xl font-bold text-emerald-950">{storyCounts.approved}</dd>
-            </div>
-            <div className="rounded-xl bg-amber-50/90 px-4 py-3">
-              <dt className="text-[0.75rem] font-bold uppercase tracking-wide text-amber-900/80">
-                {portalText(isDe, 'In review', 'In Prüfung')}
-              </dt>
-              <dd className="mt-1 font-lora text-2xl font-bold text-amber-950">{storyCounts.pending}</dd>
-            </div>
-          </dl>
-          <div className="mt-5 space-y-2">
-            {myStories.length > 0 ? (
-              myStories.map((story) => (
-                <div key={story.id} className="rounded-xl bg-[#FAF8FF] px-3 py-2">
-                  <p className="text-[0.88rem] font-semibold text-[#1A1033]">{story.title}</p>
-                  <p className="text-[0.75rem] text-[#6B5F8A]">
-                    {storyStatus(story.status)} · {story.submittedOn}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-[0.85rem] text-[#6B5F8A]">
-                {portalText(isDe, 'You have not submitted a story yet.', 'Du hast noch keine Story eingereicht.')}
-              </p>
-            )}
-          </div>
-          <Link
-            href="/stories"
-            className="mt-5 inline-flex text-[0.9rem] font-semibold text-[#7339E0] underline-offset-4 hover:underline"
-          >
-            {portalText(isDe, 'Open published stories', 'Veröffentlichte Stories öffnen')}
-          </Link>
-        </div>
+        <MyStoriesPanel stories={myStories} storiesAllowed={storiesAllowed} />
       </section>
     </div>
   );
