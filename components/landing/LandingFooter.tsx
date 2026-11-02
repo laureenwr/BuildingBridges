@@ -19,7 +19,6 @@ export function LandingFooter() {
     platform: t('Platform', 'Plattform'),
     program: t('Program', 'Programm'),
     legal: t('Legal', 'Rechtliches'),
-    vision: t('Vision', 'Vision'),
     team: t('Team', 'Team'),
     partners: t('Partners', 'Partner'),
     contact: t('Contact', 'Kontakt'),
@@ -64,11 +63,6 @@ export function LandingFooter() {
               {L.about}
             </h4>
             <ul className="flex list-none flex-col gap-2">
-              <li>
-                <Link href="/vision" className="text-[0.875rem] text-[rgba(255,255,255,0.45)] hover:text-white">
-                  {L.vision}
-                </Link>
-              </li>
               <li>
                 <Link href="/team" className="text-[0.875rem] text-[rgba(255,255,255,0.45)] hover:text-white">
                   {L.team}
@@ -146,7 +140,7 @@ export function LandingFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/imprint" className="text-[0.875rem] text-[rgba(255,255,255,0.45)] hover:text-white">
+                <Link href="/accessibility" className="text-[0.875rem] text-[rgba(255,255,255,0.45)] hover:text-white">
                   {L.accessibility}
                 </Link>
               </li>

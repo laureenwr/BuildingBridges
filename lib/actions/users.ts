@@ -1,14 +1,16 @@
 'use server';
 
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { requireAdminUser } from '@/lib/auth/access';
+import { accountRemovalSuccessMessage } from '@/lib/auth/account-removal';
 import { db } from '@/lib/db/drizzle';
-import { sessions, users } from '@/lib/db/schema';
+import { sessions, stories, users } from '@/lib/db/schema';
 
 export type DeleteAccountResult = {
   type: 'success' | 'error';
   message: string;
+  storyCount?: number;
 };
 
 function parseUserId(value: FormDataEntryValue | null) {
@@ -43,6 +45,17 @@ export async function deleteRegisteredUserAction(formData: FormData): Promise<De
     return { type: 'error', message: 'That account could not be found or is already removed.' };
   }
 
+  let storyCount = 0;
+  try {
+    const storyRows = await db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(stories)
+      .where(eq(stories.userId, userId));
+    storyCount = Number(storyRows[0]?.n ?? 0);
+  } catch (error) {
+    console.error('Could not count stories before account removal:', error);
+  }
+
   await db
     .update(users)
     .set({
@@ -59,9 +72,13 @@ export async function deleteRegisteredUserAction(formData: FormData): Promise<De
 
   revalidatePath('/portal/admin');
   revalidatePath('/portal/admin/users/pending');
+  revalidatePath('/portal/admin/stories/review');
+  revalidatePath('/portal/admin/stories/published');
+  revalidatePath('/stories');
 
   return {
     type: 'success',
-    message: `Removed account ${target.email}. They can no longer sign in. Submitted stories were not deleted.`,
+    message: accountRemovalSuccessMessage(target.email, storyCount),
+    storyCount,
   };
 }

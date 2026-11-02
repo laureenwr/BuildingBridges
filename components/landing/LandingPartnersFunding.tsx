@@ -28,7 +28,7 @@ const partnersEn: PartnerCard[] = [
     name: 'SPI Foundation',
     role: 'Mentoring & Empowerment Program',
     body: 'Practice-oriented development of the MEP under MA Celiana Kiefer.',
-    href: '/partners',
+    href: 'https://www.stiftung-spi.de/',
     logo: '/Projektpartner Logos/Stiftung SPI Logo.png',
   },
   {
@@ -55,7 +55,7 @@ const partnersDe: PartnerCard[] = [
     name: 'Stiftung SPI',
     role: 'Mentoring- & Empowerment-Programm',
     body: 'Praxisnahe Entwicklung des MEP unter MA Celiana Kiefer.',
-    href: '/partners',
+    href: 'https://www.stiftung-spi.de/',
     logo: '/Projektpartner Logos/Stiftung SPI Logo.png',
   },
   {

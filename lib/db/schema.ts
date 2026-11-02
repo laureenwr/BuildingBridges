@@ -9,6 +9,7 @@ import {
   pgEnum,
   boolean,
   jsonb,
+  smallint,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import type { AdapterAccount } from "@auth/core/adapters";
@@ -154,6 +155,19 @@ export const stories = pgTable('stories', {
   rawConversation: jsonb('raw_conversation').$type<unknown[]>().notNull(),
   consentGiven: boolean('consent_given').notNull().default(false),
   status: text('status').notNull().default('pending_review'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Anonymous story-format ratings (no user id, IP, or session_id)
+export const storyFormatRatings = pgTable('story_format_ratings', {
+  id: serial('id').primaryKey(),
+  storyKey: text('story_key').notNull(),
+  format: text('format').notNull(),
+  recognition: smallint('recognition'),
+  lessAlone: smallint('less_alone'),
+  stronger: smallint('stronger'),
+  feltStory: smallint('felt_story'),
+  respect: smallint('respect'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 

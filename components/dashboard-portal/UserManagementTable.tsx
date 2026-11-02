@@ -50,12 +50,19 @@ export function UserManagementTable({
     setBusy(false);
     setPending(null);
     if (result.type === 'success') {
+      const storyCount = result.storyCount ?? 0;
+      const deStories =
+        storyCount <= 0
+          ? 'Mit diesem Konto waren keine eingereichten Stories verknüpft.'
+          : storyCount === 1
+            ? '1 eingereichte Story wurde mit ihrem aktuellen Prüf- oder Veröffentlichungsstatus behalten.'
+            : `${storyCount} eingereichte Stories wurden mit ihrem aktuellen Prüf- oder Veröffentlichungsstatus behalten.`;
       setStatus({
         type: 'success',
         message: portalText(
           isDe,
           result.message,
-          `Konto ${email} entfernt. Die Person kann sich nicht mehr anmelden. Eingereichte Stories wurden nicht gelöscht.`
+          `Konto ${email} entfernt. Die Person kann sich nicht mehr anmelden. ${deStories}`
         ),
       });
       router.refresh();
@@ -119,8 +126,8 @@ export function UserManagementTable({
           <p className="mt-2">
             {portalText(
               isDe,
-              'You are about to remove this account. They will no longer be able to sign in.',
-              'Du bist dabei, dieses Konto zu entfernen. Die Person kann sich danach nicht mehr anmelden.'
+              'You are about to remove this account. They will no longer be able to sign in. Submitted stories stay in the database with their current In review or Published status.',
+              'Du bist dabei, dieses Konto zu entfernen. Die Person kann sich danach nicht mehr anmelden. Eingereichte Stories bleiben in der Datenbank mit ihrem aktuellen Status In Prüfung oder Veröffentlicht.'
             )}
           </p>
           <ul className="mt-3 space-y-1 text-[#5C5275]">

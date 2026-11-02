@@ -133,6 +133,7 @@ export type StoryReviewItem = {
   quotes: PublicApprovedStory['quotes'];
   submitterName: string | null;
   submitterEmail: string | null;
+  submitterRemoved: boolean;
   consentGiven: boolean;
   status: string;
   submittedOn: string;
@@ -163,6 +164,7 @@ function mapReviewRow(row: {
   createdAt: Date;
   submitterName?: string | null;
   submitterEmail?: string | null;
+  submitterDeletedAt?: Date | string | null;
 }): StoryReviewItem {
   return {
     id: row.id,
@@ -175,6 +177,7 @@ function mapReviewRow(row: {
     quotes: parseQuotes(row.quotes),
     submitterName: row.submitterName ?? null,
     submitterEmail: row.submitterEmail ?? null,
+    submitterRemoved: Boolean(row.submitterDeletedAt),
     consentGiven: row.consentGiven,
     status: row.status,
     submittedOn: formatSubmittedOn(row.createdAt),
@@ -200,6 +203,7 @@ export async function getPendingStoriesForReview(): Promise<StoryReviewItem[]> {
         createdAt: stories.createdAt,
         submitterName: users.name,
         submitterEmail: users.email,
+        submitterDeletedAt: users.deletedAt,
       })
       .from(stories)
       .leftJoin(users, eq(stories.userId, users.id))

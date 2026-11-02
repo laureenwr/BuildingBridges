@@ -9,7 +9,6 @@ const footerColumns = [
   {
     titleKey: 'footer.about',
     links: [
-      { labelKey: 'footer.vision', href: '/vision' },
       { labelKey: 'footer.team', href: '/#team' },
       { labelKey: 'footer.partners', href: '/#partners' },
       { labelKey: 'footer.contact', href: '/contact' },
@@ -109,7 +108,9 @@ export function Footer() {
             <Link href="/privacy-policy" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
               {t('footer.privacy')}
             </Link>
-            <span className="text-[rgba(255,255,255,0.38)]">{t('footer.accessibility')}</span>
+            <Link href="/accessibility" className="text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.7)]">
+              {t('footer.accessibility')}
+            </Link>
           </div>
           <div className="flex gap-4">
             {socialLinks.map(({ Icon, href }) => (

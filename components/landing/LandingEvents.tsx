@@ -3,17 +3,23 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { UpcomingWorkshopAlert } from '@/components/workshops/UpcomingWorkshopAlert';
-import { getFeaturedWorkshop } from '@/components/workshops/workshop-data';
+import {
+  getEndedWorkshopSummaries,
+  getFeaturedWorkshop,
+  workshopHasEnded,
+} from '@/components/workshops/workshop-data';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
 type LocalizedText = { en: string; de: string };
 
-const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
+const pastWorkshops: { endsAt?: string; date: LocalizedText; title: LocalizedText }[] = [
   {
+    endsAt: '2026-09-21T20:00:00',
     date: { en: 'Monday, September 21, 2026 · 18:00–20:00 · Online', de: 'Montag, 21.09.2026 · 18:00–20:00 Uhr · Online' },
     title: { en: 'Paths after school', de: 'Wege nach der Schule' },
   },
   {
+    endsAt: '2026-07-31',
     date: { en: 'Friday, July 31, 2026 · Time TBD · 90 minutes · Zoom + Miro', de: 'Freitag, 31.07.2026 · Uhrzeit folgt · 90 Minuten · Zoom + Miro' },
     title: {
       en: 'Online workshop: Evaluating storytelling formats with mentors',
@@ -21,18 +27,22 @@ const pastWorkshops: { date: LocalizedText; title: LocalizedText }[] = [
     },
   },
   {
+    endsAt: '2025-12-18',
     date: { en: 'Thursday, December 18, 2025', de: 'Donnerstag, 18.12.2025' },
     title: { en: 'Perlen & Power, Johanna-Eck', de: 'Perlen & Power, Johanna-Eck' },
   },
   {
+    endsAt: '2025-10-08T16:00:00',
     date: { en: 'Wednesday, October 8, 2025 · 1:00–4:00 PM', de: 'Mittwoch, 08.10.2025 · 13:00–16:00 Uhr' },
     title: { en: 'Get-to-know meeting with Building Bridges', de: 'Kennenlerntreffen mit Building Bridges' },
   },
   {
+    endsAt: '2025-11-22',
     date: { en: 'Saturday, November 22, 2025', de: 'Samstag, 22.11.2025' },
     title: { en: 'Opening event', de: 'Eröffnungsveranstaltung' },
   },
   {
+    endsAt: '2025-06-22',
     date: { en: 'Friday, June 20–22, 2025', de: 'Freitag, 20.–22.06.2025' },
     title: { en: 'Basic Training Group I', de: 'Grundausbildung Gruppe I' },
   },
@@ -46,6 +56,18 @@ export function LandingEvents() {
   const { isDe, lang } = useLanguage();
   const [showPast, setShowPast] = useState(false);
   const featured = getFeaturedWorkshop(lang);
+  const pastList = [
+    ...pastWorkshops
+      .filter((workshop) => workshopHasEnded(workshop.endsAt))
+      .map((workshop) => ({
+        id: workshop.title.en,
+        date: pick(workshop.date, isDe),
+        title: pick(workshop.title, isDe),
+      })),
+    ...getEndedWorkshopSummaries(lang).filter(
+      (workshop) => !pastWorkshops.some((item) => item.title.en === workshop.title || item.title.de === workshop.title)
+    ),
+  ];
 
   return (
     <section id="events" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
@@ -145,16 +167,16 @@ export function LandingEvents() {
 
         {showPast && (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {pastWorkshops.map((c) => (
+            {pastList.map((c) => (
               <div
-                key={c.title.en}
+                key={c.id}
                 className="flex flex-col gap-2 rounded-[18px] border-[1.5px] border-[rgba(145,82,255,0.15)] bg-[#F5F0FF] p-5"
               >
                 <span className="inline-flex w-fit items-center gap-1 text-[0.69rem] font-bold uppercase tracking-[0.08em] text-[#6BAA8A]">
                   ✓ {isDe ? 'Abgeschlossen' : 'Completed'}
                 </span>
-                <p className="text-[0.8rem] font-medium text-[#6B5F8A]">{pick(c.date, isDe)}</p>
-                <p className="font-lora text-[0.98rem] font-bold text-[#666]">{pick(c.title, isDe)}</p>
+                <p className="text-[0.8rem] font-medium text-[#6B5F8A]">{c.date}</p>
+                <p className="font-lora text-[0.98rem] font-bold text-[#666]">{c.title}</p>
               </div>
             ))}
           </div>

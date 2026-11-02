@@ -5,32 +5,6 @@ import { useLanguage } from '@/lib/hooks/useLanguage';
 
 export function LandingContactTeaser() {
   const { isDe } = useLanguage();
-  const cards = [
-    {
-      number: '01',
-      badge: isDe ? 'TP1 · Projektleitung' : 'TP1 · Project Mgmt',
-      title: 'FU Berlin',
-      person: 'Univ.-Prof. Dr. Claudia Calvano',
-      address: 'Habelschwerdter Allee 45, 14195 Berlin',
-      email: 'claudia.calvano@fu-berlin.de',
-    },
-    {
-      number: '02',
-      badge: isDe ? 'TP2 · MEP' : 'TP2 · MEP',
-      title: isDe ? 'Stiftung SPI' : 'SPI Foundation',
-      person: 'M.A. Celiana Kiefer',
-      address: 'Grüntaler Str. 21, 13357 Berlin',
-      email: 'celiana.kiefer@lvs.stiftung-spi.de',
-    },
-    {
-      number: '03',
-      badge: isDe ? 'TP3 · Plattform' : 'TP3 · Platform',
-      title: isDe ? 'Universität Duisburg-Essen' : 'University of Duisburg-Essen',
-      person: 'Prof. Dr. Hannes Rothe',
-      address: isDe ? 'Fakultät für Informatik' : 'Faculty of Computer Science',
-      email: 'hannes.rothe@ris.uni-due.de',
-    },
-  ];
 
   return (
     <section
@@ -41,12 +15,9 @@ export function LandingContactTeaser() {
           backgroundColor: 'var(--purple-bg)',
           '--purple': '#7c3aed',
           '--purple-light': '#a78bfa',
-          '--purple-pale': '#ede9fe',
           '--purple-bg': '#f0ebff',
           '--navy': '#1a103c',
-          '--navy-mid': '#3b2f6e',
           '--text-body': '#4b4570',
-          '--text-muted': '#9490b5',
           '--border': '#e2daf8',
         } as React.CSSProperties
       }
@@ -71,40 +42,12 @@ export function LandingContactTeaser() {
           </h2>
           <p className="max-w-xl text-[0.98rem] leading-relaxed text-[var(--text-body)]">
             {isDe
-              ? 'Hast du Fragen zu Building Bridges? Kontaktiere den passenden Projektpartner direkt oder sende uns eine Nachricht über das Kontaktformular.'
-              : 'Have questions about Building Bridges? Reach out to the right project partner directly or send us a message via the contact form.'}
+              ? 'Hast du Fragen zu Building Bridges? Sende uns eine Nachricht über das Kontaktformular.'
+              : 'Have questions about Building Bridges? Send us a message via the contact form.'}
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {cards.map((card) => (
-            <article
-              key={card.number}
-              className="group relative flex h-full flex-col rounded-[22px] border border-[var(--border)] bg-white p-6 shadow-[0_8px_24px_rgba(124,58,237,0.08)] transition hover:-translate-y-1.5 hover:shadow-[0_16px_38px_rgba(124,58,237,0.14)]"
-            >
-              <div className="mb-4 flex items-start justify-between">
-                <span className="font-lora text-2xl italic text-[var(--navy-mid)]">{card.number}</span>
-                <span className="rounded-full border border-[var(--purple-pale)] bg-[var(--purple-pale)] px-3 py-1 text-[0.72rem] font-semibold text-[var(--purple)]">
-                  {card.badge}
-                </span>
-              </div>
-              <div className="mb-4 border-b border-[var(--border)]" />
-              <h3 className="font-lora text-xl font-bold text-[var(--navy)]">{card.title}</h3>
-              <p className="mt-3 text-[0.92rem] font-semibold text-[var(--text-body)]">{card.person}</p>
-              <p className="mt-1 text-[0.88rem] leading-relaxed text-[var(--text-body)]">{card.address}</p>
-              <a
-                href={`mailto:${card.email}`}
-                className="mt-3 inline-flex items-center gap-2 text-[0.88rem] font-semibold text-[var(--purple)] hover:underline"
-              >
-                <span aria-hidden>✉</span>
-                {card.email}
-              </a>
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] origin-left scale-x-0 rounded-b-[22px] bg-gradient-to-r from-[var(--purple)] to-[var(--purple-light)] transition-transform duration-300 group-hover:scale-x-100" />
-            </article>
-          ))}
-        </div>
-
-        <div className="relative mt-8 overflow-hidden rounded-[26px] border border-[var(--purple)]/20 bg-[var(--navy)] px-6 py-7 text-white shadow-[0_12px_34px_rgba(26,16,60,0.35)] sm:px-8 sm:py-8">
+        <div className="relative mt-10 overflow-hidden rounded-[26px] border border-[var(--purple)]/20 bg-[var(--navy)] px-6 py-7 text-white shadow-[0_12px_34px_rgba(26,16,60,0.35)] sm:px-8 sm:py-8">
           <span className="absolute left-0 top-0 h-full w-[2px] bg-[var(--purple)]" aria-hidden />
           <span className="absolute -right-8 -top-8 h-20 w-20 rounded-full border border-[var(--purple-light)]/30" aria-hidden />
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto] sm:items-center">

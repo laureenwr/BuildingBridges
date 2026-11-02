@@ -61,7 +61,6 @@ export function LandingNav() {
     home: t('Home', 'Start'),
     about: t('About', 'Über uns'),
     aboutProject: t('About the Project', 'Über das Projekt'),
-    vision: t('Vision & Goals', 'Vision & Ziele'),
     teamPartners: t('Team & Partners', 'Team & Partner'),
     program: t('Program', 'Programm'),
     workshops: t('Workshops & Events', 'Workshops & Veranstaltungen'),
@@ -100,13 +99,12 @@ export function LandingNav() {
           </li>
           <NavDrop label={L.about}>
             <NavDropLink href="/#about">{L.aboutProject}</NavDropLink>
-            <NavDropLink href="/vision">{L.vision}</NavDropLink>
             <NavDropLink href="/#team">{L.teamPartners}</NavDropLink>
           </NavDrop>
           <NavDrop label={L.program}>
             <NavDropLink href="/workshops">{L.workshops}</NavDropLink>
             <NavDropLink href="/workshops#research-activities">{L.researchAct}</NavDropLink>
-            <NavDropLink href="/workshops#project-timeline">{L.progress}</NavDropLink>
+            <NavDropLink href="/#project-progress">{L.progress}</NavDropLink>
           </NavDrop>
           <NavDrop label={L.platform}>
             <NavDropLink href="/#knowledge">{L.knowledge}</NavDropLink>
@@ -235,10 +233,9 @@ export function LandingNav() {
             ] as const),
             ['/#home', L.home],
             ['/#about', L.aboutProject],
-            ['/vision', L.vision],
             ['/#team', L.teamPartners],
             ['/workshops', L.workshops],
-            ['/workshops#project-timeline', L.progress],
+            ['/#project-progress', L.progress],
             ['/#knowledge', L.knowledge],
             ['/#storytelling', L.storyTool],
             ['/#partners', L.partners],

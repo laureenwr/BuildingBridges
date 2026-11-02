@@ -20,17 +20,9 @@ test.describe('Home Page', () => {
   test('should have working navigation', async ({ page }) => {
     await page.goto('/');
 
-    // Check for navigation links
-    await expect(page.getByRole('link', { name: /Vision/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Team/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Workshops/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Kontakt/i })).toBeVisible();
-  });
-
-  test('should navigate to Vision page', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('link', { name: /Vision/i }).first().click();
-    await expect(page).toHaveURL('/vision');
+    await expect(page.getByRole('link', { name: /Kontakt|Contact/i })).toBeVisible();
   });
 
   test('should display funding logos', async ({ page }) => {

@@ -71,7 +71,7 @@ const roleOverrides: Record<string, { de: string; en: string }> = {
   },
   'sumera-sajid': {
     de: 'Studentische Hilfskraft (TP3)',
-    en: 'Research Assistant (TP3)',
+    en: 'Student Assistant (TP3)',
   },
 };
 

@@ -10,7 +10,7 @@ const featuredSlugs = ['claudia-calvano', 'celiana-kiefer', 'hannes-rothe'] as c
 const featuredRoleTranslations: Record<string, { de: string; en: string }> = {
   'claudia-calvano': {
     de: 'Verbundleitung und Leitung Teilprojekt 1',
-    en: 'Consortium Lead & Lead of Subproject 1',
+    en: 'Consortium Lead and Head of Subproject 1',
   },
   'celiana-kiefer': {
     de: 'Teilprojektleitung von Teilprojekt 2 „Ment2Power" (Mentoringprogramm)',
@@ -33,7 +33,7 @@ const orgTranslations: Record<string, { de: string; en: string }> = {
   },
   'Stiftung SPI': {
     de: 'Stiftung SPI',
-    en: 'SPI Foundation',
+    en: 'Stiftung SPI',
   },
 };
 
@@ -79,12 +79,12 @@ export function LandingTeam() {
                 <div className="absolute left-0 right-0 top-0 z-[1] h-1 bg-gradient-to-r from-[#9152FF] to-[#B580FF]" />
                 <Image
                   src={m.image}
-                  alt={m.name ?? `${m.firstName} ${m.lastName}`}
+                  alt={`${m.firstName} ${m.lastName}`.trim()}
                   width={90}
                   height={90}
                   className="mb-4 h-[90px] w-[90px] rounded-full border-[3px] border-[#EDE5FF] object-cover object-top shadow-md"
                 />
-                <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{m.name}</h4>
+                <h4 className="font-lora text-[1.05rem] font-bold text-[#1A1033]">{`${m.firstName} ${m.lastName}`.trim()}</h4>
                 <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[0.07em] text-[#9152FF]">
                   {memberRole(m.slug, m.role, isDe)}
                 </p>

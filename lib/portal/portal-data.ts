@@ -1,4 +1,4 @@
-import { count, isNull, sql } from 'drizzle-orm';
+import { and, count, eq, isNull, sql } from 'drizzle-orm';
 import { requireAdminUser } from '@/lib/auth/access';
 import { db } from '@/lib/db/drizzle';
 import { stories, users } from '@/lib/db/schema';
@@ -185,6 +185,19 @@ export async function getUserCount(): Promise<number> {
     return Number(rows[0]?.n ?? 0);
   } catch (error) {
     console.error('Failed to load user count:', error);
+    return 0;
+  }
+}
+
+export async function getMentorCount(): Promise<number> {
+  try {
+    const rows = await db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(users)
+      .where(and(isNull(users.deletedAt), eq(users.role, 'MENTOR')));
+    return Number(rows[0]?.n ?? 0);
+  } catch (error) {
+    console.error('Failed to load mentor count:', error);
     return 0;
   }
 }

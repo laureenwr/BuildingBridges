@@ -26,7 +26,7 @@ export default function TermsOfServicePage() {
           <ul className="list-disc pl-6 mb-4">
             <li>{isDe ? 'Die Teilnahme ist freiwillig und kann jederzeit ohne Nachteile beendet werden' : 'Participation is voluntary and can be ended at any time without disadvantages'}</li>
             <li>{isDe ? 'Nutzer*innen entscheiden eigenverantwortlich über die geteilten Inhalte' : 'Users are responsible for what they choose to share'}</li>
-            <li>{isDe ? 'Die Plattform richtet sich an Mädchen und FLINTA of Color im Alter von 16-18 Jahren' : 'The platform is intended for girls and FLINTA of Color aged 16-18'}</li>
+            <li>{isDe ? 'Die Plattform richtet sich an Mädchen und FLINTA of Color' : 'The platform is intended for girls and FLINTA of Color'}</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '3. Anonymitaet & Inhalte' : '3. Anonymity & content'}</h3>
@@ -47,8 +47,8 @@ export default function TermsOfServicePage() {
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '5. Moderation & Unterstützung' : '5. Moderation & support'}</h3>
           <p>
             {isDe
-              ? 'Ein geschultes Moderationsteam überwacht die Inhalte und bietet bei emotional belastenden Situationen Unterstützung an.'
-              : 'A trained moderation team monitors content and provides support in emotionally challenging situations.'}
+              ? 'Ein geschultes Moderationsteam überwacht die Inhalte, um eine sichere und respektvolle Umgebung zu gewährleisten.'
+              : 'A trained moderation team monitors content to ensure a safe and respectful environment.'}
           </p>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">{isDe ? '6. Haftungsausschluss' : '6. Disclaimer'}</h3>

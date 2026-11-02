@@ -13,7 +13,9 @@ export type AdminPortalHomeProps = {
   storyRows: StoryReviewRow[];
   users: ApprovalUserRow[];
   userCount: number;
+  mentorCount: number;
   pendingStoryCount: number;
+  publishedStoryCount: number;
 };
 
 export function AdminPortalHome({
@@ -21,7 +23,9 @@ export function AdminPortalHome({
   storyRows,
   users,
   userCount,
+  mentorCount,
   pendingStoryCount,
+  publishedStoryCount,
 }: AdminPortalHomeProps) {
   const { isDe } = useLanguage();
 
@@ -45,34 +49,50 @@ export function AdminPortalHome({
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-3" aria-label={portalText(isDe, 'Key statistics', 'Kennzahlen')}>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label={portalText(isDe, 'Key statistics', 'Kennzahlen')}>
         <StatCard
-          title={portalText(isDe, 'Total Users', 'Nutzer:innen gesamt')}
+          href="/portal/admin/users/pending"
+          title={portalText(isDe, 'Total users', 'Nutzer:innen gesamt')}
           value={userCount}
           hint={portalText(
             isDe,
-            'Registered mentors, mentees, and admins.',
-            'Registrierte Mentor:innen, Mentees und Admins.'
+            'Registered mentors, participants, and admins.',
+            'Registrierte Mentor:innen, Teilnehmer:innen und Admins.'
           )}
         />
         <StatCard
-          title={portalText(isDe, 'Stories for review', 'Stories zur Prüfung')}
+          href="/portal/admin/users/pending"
+          title={portalText(isDe, 'Mentors', 'Mentor:innen')}
+          value={mentorCount}
+          hint={portalText(isDe, 'Accounts registered as mentors.', 'Konten, die als Mentor:in registriert sind.')}
+        />
+        <StatCard
+          href="/portal/admin/stories/review"
+          title={portalText(isDe, 'In review', 'In Prüfung')}
           value={pendingStoryCount}
           hint={portalText(
             isDe,
-            'Submissions waiting for moderator review.',
-            'Einreichungen, die auf eine Prüfung warten.'
+            'Submitted stories waiting for admin approval. Not public yet.',
+            'Eingereichte Stories, die auf Admin-Freigabe warten. Noch nicht öffentlich.'
           )}
         />
         <StatCard
-          title={portalText(isDe, 'In this queue', 'In dieser Liste')}
-          value={storyRows.length}
-          hint={portalText(isDe, 'Stories currently listed below.', 'Stories, die unten angezeigt werden.')}
+          href="/portal/admin/stories/published"
+          title={portalText(isDe, 'Published stories', 'Veröffentlichte Stories')}
+          value={publishedStoryCount}
+          hint={portalText(
+            isDe,
+            'Approved stories visible on the public site.',
+            'Freigegebene Stories, die auf der öffentlichen Seite sichtbar sind.'
+          )}
         />
       </section>
 
       <ApprovalTable rows={users} showActions={false} />
-      <StoryReviewTable rows={storyRows} />
+      <StoryReviewTable
+        rows={storyRows}
+        title={portalText(isDe, 'Stories in review', 'Stories in Prüfung')}
+      />
 
       <div className="rounded-2xl border border-[rgba(145,82,255,0.14)] bg-gradient-to-br from-white via-[#FAF8FF] to-emerald-50/30 p-6 shadow-[0_10px_36px_rgba(145,82,255,0.09)]">
         <h2 className="font-lora text-lg font-semibold text-[#1A1033]">
@@ -86,7 +106,7 @@ export function AdminPortalHome({
           )}
         </p>
         <Link
-          href="/stories"
+          href="/portal/admin/stories/published"
           className="mt-4 inline-flex text-[0.9rem] font-semibold text-[#7339E0] underline-offset-4 hover:underline"
         >
           {portalText(isDe, 'View published stories', 'Veröffentlichte Stories ansehen')}

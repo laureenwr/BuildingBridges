@@ -45,7 +45,7 @@ export default function PartnersPage() {
               <div className="text-gray-700">
                 <p className="font-semibold">Stiftung SPI</p>
                 <p>Leitung TP2; Entwicklung und Umsetzung Mentoring‑ & Empowerment‑Programm.</p>
-                <Link className="text-blue-700 hover:underline" href="https://stiftung-spi.de" target="_blank">Website</Link>
+                <Link className="text-blue-700 hover:underline" href="https://www.stiftung-spi.de/" target="_blank">Website</Link>
               </div>
             </article>
             <article className="flex flex-col md:flex-row items-center gap-6 bg-white border border-gray-200 rounded-2xl p-6">

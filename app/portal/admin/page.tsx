@@ -1,17 +1,24 @@
 import { AdminPortalHome } from '@/components/dashboard-portal/AdminPortalHome';
 import { requireAdminUser } from '@/lib/auth/access';
 import { getPendingStoriesForReview } from '@/lib/actions/stories';
-import { getRegisteredUsers, getStoryCounts, getUserCount, greetingFirstName } from '@/lib/portal/portal-data';
+import {
+  getMentorCount,
+  getRegisteredUsers,
+  getStoryCounts,
+  getUserCount,
+  greetingFirstName,
+} from '@/lib/portal/portal-data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPortalHomePage() {
   const user = await requireAdminUser();
 
-  const [storyRows, users, userCount, storyCounts] = await Promise.all([
+  const [storyRows, users, userCount, mentorCount, storyCounts] = await Promise.all([
     getPendingStoriesForReview(),
     getRegisteredUsers(50),
     getUserCount(),
+    getMentorCount(),
     getStoryCounts(),
   ]);
 
@@ -21,7 +28,9 @@ export default async function AdminPortalHomePage() {
       storyRows={storyRows}
       users={users}
       userCount={userCount}
+      mentorCount={mentorCount}
       pendingStoryCount={storyCounts.pending}
+      publishedStoryCount={storyCounts.approved}
     />
   );
 }

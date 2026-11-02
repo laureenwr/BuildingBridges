@@ -68,9 +68,8 @@ export function Sidebar({ variant, open, onClose, developmentPreviewBanner }: Si
   const adminLinks = [
     { href: '/portal/admin', label: isDe ? 'Überblick' : 'Overview', icon: LayoutDashboard },
     { href: '/portal/admin/users/pending', label: isDe ? 'Nutzer:innen' : 'Users', icon: UserPlus },
-    { href: '/portal/admin/stories/review', label: isDe ? 'Stories prüfen' : 'Review stories', icon: FileSearch },
+    { href: '/portal/admin/stories/review', label: isDe ? 'In Prüfung' : 'In review', icon: FileSearch },
     { href: '/portal/admin/stories/published', label: isDe ? 'Veröffentlicht' : 'Published stories', icon: Globe },
-    { href: '/story-tool', label: isDe ? 'Story erstellen' : 'Create a story', icon: PenLine },
   ];
 
   const links = variant === 'admin' ? adminLinks : userLinks;

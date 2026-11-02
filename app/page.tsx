@@ -7,6 +7,7 @@ import { LandingKnowledge } from '@/components/landing/LandingKnowledge';
 import { LandingStorytelling } from '@/components/landing/LandingStorytelling';
 import { LandingPartnersFunding } from '@/components/landing/LandingPartnersFunding';
 import { LandingEvents } from '@/components/landing/LandingEvents';
+import { LandingProjectProgress } from '@/components/landing/LandingProjectProgress';
 import { LandingRegister } from '@/components/landing/LandingRegister';
 import { LandingContactTeaser } from '@/components/landing/LandingContactTeaser';
 
@@ -22,6 +23,7 @@ export default function HomePage() {
       <LandingStorytelling />
       <LandingPartnersFunding />
       <LandingEvents />
+      <LandingProjectProgress />
       <LandingRegister />
       <LandingContactTeaser />
     </div>

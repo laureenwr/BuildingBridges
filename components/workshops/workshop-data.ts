@@ -52,7 +52,61 @@ type WorkshopSource = {
   image: string | L<string>;
   registrationUrl?: string;
   tags: L<string[]>;
+  /** Berlin local end (`YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ss`). Omit to keep the workshop upcoming. */
+  endsAt?: string;
 };
+
+const BERLIN_TIME_ZONE = 'Europe/Berlin';
+
+function formatBerlinLocal(date: Date): string {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: BERLIN_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  }).formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? '00';
+  let hour = get('hour');
+  if (hour === '24') hour = '00';
+  return `${get('year')}-${get('month')}-${get('day')}T${hour}:${get('minute')}:${get('second')}`;
+}
+
+/** Parse a Berlin wall-clock value. Date-only values end at 23:59:59 that day. */
+export function parseBerlinLocal(value: string): Date | null {
+  const trimmed = value.trim();
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  const dateTime = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(trimmed);
+  let local: string;
+  if (dateOnly) {
+    local = `${trimmed}T23:59:59`;
+  } else if (dateTime) {
+    local = `${dateTime[1]}-${dateTime[2]}-${dateTime[3]}T${dateTime[4]}:${dateTime[5]}:${dateTime[6] ?? '00'}`;
+  } else {
+    return null;
+  }
+
+  for (const offset of ['+02:00', '+01:00'] as const) {
+    const candidate = new Date(`${local}${offset}`);
+    if (Number.isNaN(candidate.getTime())) continue;
+    if (formatBerlinLocal(candidate) === local) return candidate;
+  }
+
+  const fallback = new Date(`${local}+01:00`);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
+}
+
+/** True only after the Berlin end time. Missing or unreadable dates stay upcoming. */
+export function workshopHasEnded(endsAt: string | undefined | null, now = new Date()): boolean {
+  if (!endsAt) return false;
+  const end = parseBerlinLocal(endsAt);
+  if (!end) return false;
+  return now.getTime() >= end.getTime();
+}
 
 const MODE_LABELS: Record<WorkshopItem['mode'], L<string>> = {
   Online: { en: 'Online', de: 'Online' },
@@ -101,10 +155,34 @@ function toWorkshopItem(source: WorkshopSource, lang: AppLanguage): WorkshopItem
   };
 }
 
-/** Set when a new upcoming workshop should be featured as “Next up”. */
+/** Set when a new upcoming workshop should be featured as “Next up”. Include `endsAt` so it archives itself. */
 const featuredSource: WorkshopSource | null = null;
 
 const feedSources: WorkshopSource[] = featuredSource ? [featuredSource] : [];
+
+function managedWorkshopSources(): WorkshopSource[] {
+  const seen = new Set<string>();
+  const sources: WorkshopSource[] = [];
+  for (const source of [featuredSource, ...feedSources]) {
+    if (!source || seen.has(source.id)) continue;
+    seen.add(source.id);
+    sources.push(source);
+  }
+  return sources;
+}
+
+function toArchiveFromWorkshop(source: WorkshopSource, lang: AppLanguage): ArchiveItem {
+  const workshop = toWorkshopItem(source, lang);
+  return {
+    id: source.id.startsWith('archive-') ? source.id : `archive-${source.id}`,
+    title: workshop.title,
+    type: workshop.categoryLabel,
+    date: workshop.date,
+    status: lang === 'de' ? 'Vergangener Workshop' : 'Past workshop',
+    image: workshop.image,
+    href: workshop.registrationUrl || workshop.image,
+  };
+}
 
 type ArchiveSource = {
   id: string;
@@ -249,7 +327,8 @@ const reflectionSources: { id: string; quote: L<string>; role: L<string> }[] = [
 ];
 
 export function getFeaturedWorkshop(lang: AppLanguage): WorkshopItem | null {
-  return featuredSource ? toWorkshopItem(featuredSource, lang) : null;
+  if (!featuredSource || workshopHasEnded(featuredSource.endsAt)) return null;
+  return toWorkshopItem(featuredSource, lang);
 }
 
 export type UpcomingWorkshopAlertData = {
@@ -264,8 +343,8 @@ export type UpcomingWorkshopAlertData = {
 
 /** Copy for the upcoming-workshop alert. Returns null when nothing is featured. */
 export function getUpcomingWorkshopAlert(lang: AppLanguage): UpcomingWorkshopAlertData | null {
-  if (!featuredSource) return null;
-  const w = toWorkshopItem(featuredSource, lang);
+  const w = getFeaturedWorkshop(lang);
+  if (!w) return null;
   if (lang === 'de') {
     return {
       badge: 'Neu im Kalender',
@@ -289,11 +368,26 @@ export function getUpcomingWorkshopAlert(lang: AppLanguage): UpcomingWorkshopAle
 }
 
 export function getWorkshopFeed(lang: AppLanguage): WorkshopItem[] {
-  return feedSources.map((s) => toWorkshopItem(s, lang));
+  return managedWorkshopSources()
+    .filter((source) => !workshopHasEnded(source.endsAt))
+    .map((source) => toWorkshopItem(source, lang));
+}
+
+export function getEndedWorkshopSummaries(lang: AppLanguage): { id: string; date: string; title: string }[] {
+  return managedWorkshopSources()
+    .filter((source) => workshopHasEnded(source.endsAt))
+    .map((source) => {
+      const workshop = toWorkshopItem(source, lang);
+      return {
+        id: source.id,
+        date: `${workshop.date} · ${workshop.time}`,
+        title: workshop.title,
+      };
+    });
 }
 
 export function getArchiveItems(lang: AppLanguage): ArchiveItem[] {
-  return archiveSources.map((s) => ({
+  const existing = archiveSources.map((s) => ({
     id: s.id,
     title: pick(s.title, lang),
     type: pick(s.type, lang),
@@ -302,6 +396,12 @@ export function getArchiveItems(lang: AppLanguage): ArchiveItem[] {
     image: pickMaybeLocalized(s.image, lang),
     href: pickMaybeLocalized(s.href, lang),
   }));
+  const existingIds = new Set(existing.map((item) => item.id));
+  const autoArchived = managedWorkshopSources()
+    .filter((source) => workshopHasEnded(source.endsAt))
+    .map((source) => toArchiveFromWorkshop(source, lang))
+    .filter((item) => !existingIds.has(item.id));
+  return [...autoArchived, ...existing];
 }
 
 export function getReflections(lang: AppLanguage): ReflectionItem[] {

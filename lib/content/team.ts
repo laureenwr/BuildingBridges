@@ -17,7 +17,7 @@ export type TeamMember = {
   former?: boolean;
 };
 
-export const formerMemberSlugs = ['esther-kipnis', 'susanne-birnkammer', 'dilara-yildirim'] as const;
+export const formerMemberSlugs = ['esther-kipnis', 'susanne-birnkammer', 'elias-jelinek'] as const;
 
 export const teamMembers: TeamMember[] = [
   {
@@ -107,7 +107,6 @@ export const teamMembers: TeamMember[] = [
     slug: 'dilara-yildirim',
     firstName: 'Dilara',
     lastName: 'Yildirim',
-    former: true,
     name: 'Dilara Yildirim',
     degree: 'Im Studium B.A. Erziehung und Bildung in der Kindheit',
     role: 'Studentische Hilfskraft',
@@ -180,6 +179,34 @@ export const teamMembers: TeamMember[] = [
     links: [
       { label: 'Profile', url: 'https://www.ris.uni-due.de/über-uns/personen/detailansicht/laureen-warikoru/#research' },
     ],
+  },
+  {
+    slug: 'katharina-froehlich',
+    firstName: 'Katharina',
+    lastName: 'Fröhlich',
+    name: 'Katharina Fröhlich',
+    role: '',
+    org: '',
+    image: '/images/placeholder-user.svg',
+  },
+  {
+    slug: 'may',
+    firstName: 'May',
+    lastName: '',
+    name: 'May',
+    role: '',
+    org: '',
+    image: '/images/placeholder-user.svg',
+  },
+  {
+    slug: 'elias-jelinek',
+    firstName: 'Elias',
+    lastName: 'Jelinek',
+    name: 'Elias Jelinek',
+    former: true,
+    role: '',
+    org: 'Universität Duisburg-Essen',
+    image: '/images/placeholder-user.svg',
   },
 ];
 

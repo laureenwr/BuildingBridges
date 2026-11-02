@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { userHasAdminAccess } from '@/lib/auth/admin-emails';
+import { allowSignupPost } from '@/lib/auth/signup-http-limit';
 import { getPostLoginHref } from '@/lib/nav/dashboard-href';
 
 // Define protected paths by role
@@ -32,7 +33,6 @@ const publicPaths = [
   '/team',
   '/workshops',
   '/activity',
-  '/vision',
   '/roadmap',
   '/imprint',
   '/glossary',
@@ -43,7 +43,8 @@ const publicPaths = [
   '/privacy-policy',
   '/api/webhooks/stripe',
   '/onboarding',
-  '/design-system'
+  '/design-system',
+  '/accessibility',
 ];
 
 const isPublicPath = (path: string) => {
@@ -77,6 +78,20 @@ const isStudentOnlyPath = (path: string) => {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === '/vision' || pathname === '/vision/') {
+    return NextResponse.redirect(new URL('/', request.url), 308);
+  }
+
+  if (pathname === '/sign-up' && request.method === 'POST') {
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      'anonymous';
+    if (!allowSignupPost(ip)) {
+      return NextResponse.redirect(new URL('/sign-up?error=too-many-signups', request.url));
+    }
+  }
   
   // Direct server-side redirect for mentors path
   if (pathname === '/dashboard/mentors' || pathname === '/dashboard/mentors/') {

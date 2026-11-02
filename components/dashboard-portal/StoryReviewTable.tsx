@@ -152,6 +152,9 @@ export function StoryReviewTable({
                       {row.submitterEmail && row.submitterName ? ` · ${row.submitterEmail}` : ''}
                       {' · '}
                       {row.submittedOn}
+                      {row.submitterRemoved
+                        ? ` · ${portalText(isDe, 'Account removed — story kept', 'Konto entfernt — Story bleibt')}`
+                        : ''}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <span className="rounded-full bg-[#FAF8FF] px-2.5 py-1 text-[0.72rem] font-semibold text-[#7339E0] ring-1 ring-[rgba(145,82,255,0.16)]">

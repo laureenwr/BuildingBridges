@@ -683,6 +683,9 @@ export async function signUpAction(formData: FormData) {
   if (!captcha.ok) {
     redirect('/sign-up?error=captcha');
   }
+  if (captcha.skipped && process.env.NODE_ENV === 'production') {
+    console.warn('Signup CAPTCHA skipped because Turnstile keys are not configured.');
+  }
 
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');

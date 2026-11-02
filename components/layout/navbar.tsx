@@ -97,13 +97,12 @@ export function Navbar() {
           </li>
           <NavDrop label={t('nav.about', { defaultValue: 'About' })} href="/#about">
             <NavDropLink href="/#about">{t('nav.aboutProject', { defaultValue: 'About the Project' })}</NavDropLink>
-            <NavDropLink href="/vision">{t('nav.vision', { defaultValue: 'Vision & Goals' })}</NavDropLink>
             <NavDropLink href="/#team">{t('nav.teamPartners', { defaultValue: 'Team & Partners' })}</NavDropLink>
           </NavDrop>
           <NavDrop label={t('nav.program', { defaultValue: 'Program' })} href="/#program">
             <NavDropLink href="/#events">{t('nav.workshopsEvents', { defaultValue: 'Workshops & Events' })}</NavDropLink>
             <NavDropLink href="/#events">{t('nav.researchActivities', { defaultValue: 'Research Activities' })}</NavDropLink>
-            <NavDropLink href="/#events">{t('nav.projectProgress', { defaultValue: 'Project Progress' })}</NavDropLink>
+            <NavDropLink href="/#project-progress">{t('nav.projectProgress', { defaultValue: 'Project Progress' })}</NavDropLink>
           </NavDrop>
           <NavDrop label={t('nav.platform', { defaultValue: 'Platform' })} href="/#knowledge">
             <NavDropLink href="/#knowledge">{t('nav.knowledgeResources', { defaultValue: 'Knowledge & Resources' })}</NavDropLink>
@@ -242,7 +241,6 @@ export function Navbar() {
               [t('nav.home'), '/#home'],
               [t('nav.aboutProject'), '/#about'],
               [t('nav.team'), '/#team'],
-              [t('nav.vision'), '/vision'],
               [t('nav.knowledgeResources'), '/#knowledge'],
               [t('nav.storyTool'), '/story-tool'],
               [t('nav.workshopsEvents'), '/#events'],
