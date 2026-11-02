@@ -4,10 +4,15 @@ import { Mic } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useVoiceDraft } from '@/components/landing/useVoiceDraft';
 
+type InterviewSource = 'ai' | 'scripted';
+
 type InterviewMessage = {
   role: 'assistant' | 'user';
   content: string;
+  source?: InterviewSource;
 };
+
+const showInterviewSource = process.env.NODE_ENV === 'development';
 
 export type InterviewAnswer = {
   question: string;
@@ -20,6 +25,38 @@ type ChatProps = {
   onAnswersChange: (answers: InterviewAnswer[]) => void;
   onReady: () => void;
 };
+
+function replaceLastUser(messages: InterviewMessage[], text: string) {
+  const next = [...messages];
+  for (let index = next.length - 1; index >= 0; index -= 1) {
+    if (next[index]?.role === 'user') {
+      next[index] = { ...next[index], role: 'user', content: text };
+      return next;
+    }
+  }
+  return next;
+}
+
+function transcriptFromMessages(messages: InterviewMessage[]) {
+  const lines: string[] = [];
+  let pendingQuestion = '';
+  const answers: string[] = [];
+  for (const message of messages) {
+    if (message.role === 'assistant') {
+      pendingQuestion = message.content;
+      continue;
+    }
+    const text = message.content.trim();
+    if (!text) continue;
+    lines.push(`Interviewer: ${pendingQuestion || '…'}`);
+    lines.push(`Interviewee: ${text}`);
+    lines.push('');
+    answers.push(text);
+    pendingQuestion = '';
+  }
+  if (answers.length === 0) return '';
+  return `${lines.join('\n').trim()}\n\n---\n\n${answers.join('\n\n')}`;
+}
 
 export function answersFromInterview(messages: InterviewMessage[]): InterviewAnswer[] {
   const answers: InterviewAnswer[] = [];
@@ -45,8 +82,11 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
   const { recording, transcribing, voiceError, toggleListening } = useVoiceDraft(
     draft,
     setDraft,
@@ -60,6 +100,16 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
     });
   };
 
+  const apiMessages = (items: InterviewMessage[]) =>
+    items.map((message) => ({ role: message.role, content: message.content }));
+
+  const keepReplyEditable = (action: 'start' | 'reply' | 'skip' | 'finish', nextMessages: InterviewMessage[]) => {
+    if (action !== 'reply') return;
+    const last = nextMessages[nextMessages.length - 1];
+    if (last?.role !== 'user') return;
+    setDraft(last.content);
+  };
+
   const sendTurn = async (action: 'start' | 'reply' | 'skip' | 'finish', nextMessages: InterviewMessage[]) => {
     setBusy(true);
     setError(null);
@@ -70,31 +120,60 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
         body: JSON.stringify({
           locale: isDe ? 'de' : 'en',
           action,
-          messages: nextMessages,
+          messages: apiMessages(nextMessages),
         }),
       });
       const result = (await response.json()) as {
         success?: boolean;
         reply?: string;
         done?: boolean;
+        paused?: boolean;
         transcript?: string;
+        source?: InterviewSource;
         message?: string;
       };
+      if (response.status === 429) {
+        keepReplyEditable(action, nextMessages);
+        if (action === 'reply') setMessages(nextMessages.slice(0, -1));
+        setError(
+          result.message ||
+            L(
+              'You have sent many messages this hour. Please wait a little, then try again. Your draft is still saved.',
+              'Du hast in dieser Stunde viele Nachrichten geschickt. Warte ein wenig und versuche es dann erneut. Dein Entwurf bleibt gespeichert.'
+            )
+        );
+        return;
+      }
       if (!response.ok || !result.success || !result.reply) {
-        throw new Error(result.message || 'Interview request failed');
+        throw new Error('Interview request failed');
       }
 
-      const withReply = [...nextMessages, { role: 'assistant' as const, content: result.reply }];
+      const withReply = [
+        ...nextMessages,
+        {
+          role: 'assistant' as const,
+          content: result.reply,
+          ...(showInterviewSource && result.source ? { source: result.source } : {}),
+        },
+      ];
       setMessages(withReply);
       onAnswersChange(answersFromInterview(withReply));
       if (result.transcript) onTranscriptChange(result.transcript);
-      if (result.done) {
+      if (result.paused) {
+        setPaused(true);
+        setDone(false);
+        keepReplyEditable(action, nextMessages);
+      } else if (result.done) {
+        setPaused(false);
         setDone(true);
         if (result.transcript) onTranscriptChange(result.transcript);
+      } else {
+        setPaused(false);
       }
       scrollToEnd();
-    } catch (err) {
-      console.error(err);
+    } catch {
+      keepReplyEditable(action, nextMessages);
+      if (action === 'reply') setMessages(nextMessages.slice(0, -1));
       setError(
         L(
           'The interview could not continue right now. You can try again or paste a transcript instead.',
@@ -110,14 +189,30 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
     if (!consented || busy) return;
     setStarted(true);
     setDone(false);
+    setPaused(false);
     setMessages([]);
     onAnswersChange([]);
     void sendTurn('start', []);
   };
 
+  const savePausedEdit = (text: string) => {
+    const next = replaceLastUser(messagesRef.current, text);
+    messagesRef.current = next;
+    setMessages(next);
+    onAnswersChange(answersFromInterview(next));
+    onTranscriptChange(transcriptFromMessages(next));
+    return next;
+  };
+
   const sendReply = () => {
     const text = draft.trim();
     if (!text || busy || done) return;
+    if (paused) {
+      const next = savePausedEdit(text);
+      setDraft('');
+      void sendTurn('reply', next);
+      return;
+    }
     const next = [...messages, { role: 'user' as const, content: text }];
     setDraft('');
     setMessages(next);
@@ -181,6 +276,14 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
             }
           >
             {message.content}
+            {showInterviewSource && message.role === 'assistant' && message.source ? (
+              <span
+                data-interview-source="dev"
+                className="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.08em] text-white/40"
+              >
+                {message.source === 'ai' ? L('AI', 'KI') : L('Fallback', 'Ersatz')}
+              </span>
+            ) : null}
           </div>
         ))}
         {busy ? (
@@ -191,6 +294,15 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
       {error || voiceError ? (
         <p className="mt-3 rounded-xl bg-rose-400/10 px-3 py-2 text-[0.8rem] font-semibold text-rose-200 ring-1 ring-rose-300/25">
           {error || voiceError}
+        </p>
+      ) : null}
+
+      {paused && !done ? (
+        <p className="mt-3 text-[0.82rem] leading-relaxed text-white/70">
+          {L(
+            'The story is paused. Your draft is still saved here. You can edit it, go back, or leave. Nothing has been submitted or deleted.',
+            'Die Story ist pausiert. Dein Entwurf bleibt hier gespeichert. Du kannst ihn bearbeiten, zurückgehen oder gehen. Es wurde nichts eingereicht oder gelöscht.'
+          )}
         </p>
       ) : null}
 
@@ -214,12 +326,33 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
         <div className="mt-4">
           <div className="relative">
             <textarea
-              className="min-h-[88px] w-full resize-y rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 pr-14 font-primary text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 focus:border-[rgba(145,82,255,0.5)]"
+              className={`min-h-[88px] w-full resize-y rounded-xl border bg-white/[0.04] px-4 py-3 pr-14 font-primary text-[0.88rem] leading-relaxed text-white outline-none placeholder:text-white/20 ${
+                recording
+                  ? 'cursor-not-allowed border-[#E24B4A]/50 focus:border-[#E24B4A]/50'
+                  : 'border-white/10 focus:border-[rgba(145,82,255,0.5)]'
+              }`}
               placeholder={L('Type or speak your answer…', 'Tippe oder sprich deine Antwort…')}
               value={draft}
+              readOnly={recording}
               disabled={busy || transcribing}
-              onChange={(event) => setDraft(event.target.value)}
+              aria-readonly={recording}
+              aria-describedby="voice-edit-hint"
+              title={
+                recording
+                  ? L('Stop recording before editing your text.', 'Beende die Aufnahme, bevor du den Text bearbeitest.')
+                  : undefined
+              }
+              onChange={(event) => {
+                if (recording) return;
+                const value = event.target.value;
+                setDraft(value);
+                if (paused && value.trim()) savePausedEdit(value);
+              }}
               onKeyDown={(event) => {
+                if (recording) {
+                  event.preventDefault();
+                  return;
+                }
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault();
                   sendReply();
@@ -231,6 +364,7 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
               onClick={toggleListening}
               disabled={busy || transcribing}
               aria-pressed={recording}
+              aria-describedby="voice-edit-hint"
               aria-label={
                 recording
                   ? L('Stop recording', 'Aufnahme beenden')
@@ -245,15 +379,33 @@ export function AiInterviewChat({ isDe, onTranscriptChange, onAnswersChange, onR
               <Mic className="h-4 w-4" />
             </button>
           </div>
-          <p className="mt-2 text-[0.75rem] text-white/40">
+          <p
+            id="voice-edit-hint"
+            className={`mt-2 text-[0.75rem] ${recording ? 'font-medium text-[#FFC078]' : 'text-white/40'}`}
+          >
             {transcribing
               ? L('Turning your voice into text…', 'Deine Stimme wird in Text umgewandelt…')
               : recording
-                ? L('Listening. Tap the microphone to stop.', 'Ich höre zu. Tippe auf das Mikrofon zum Stoppen.')
-                : L('Tap the microphone to speak. You can edit the text before sending.', 'Tippe auf das Mikrofon zum Sprechen. Du kannst den Text vor dem Senden noch ändern.')}
+                ? L(
+                    'Listening. Stop recording before editing your text.',
+                    'Ich höre zu. Beende die Aufnahme, bevor du den Text bearbeitest.'
+                  )
+                : L(
+                    'Tap the microphone to speak. Stop recording before editing your text.',
+                    'Tippe auf das Mikrofon zum Sprechen. Beende die Aufnahme, bevor du den Text bearbeitest.'
+                  )}
           </p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
+              {paused ? (
+                <button
+                  type="button"
+                  onClick={onReady}
+                  className="rounded-full border border-[rgba(145,82,255,0.35)] px-3 py-1.5 text-[0.78rem] text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)]"
+                >
+                  {L('Next → Configure', 'Weiter → Konfigurieren')}
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={skipQuestion}

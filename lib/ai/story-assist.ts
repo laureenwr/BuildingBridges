@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { openStoryAiClient } from '@/lib/ai/story-ai-client';
 
 export type StoryAssistAction = 'grammar' | 'titles' | 'story-title' | 'draft';
 export type StoryDraftCategory = 'mentor' | 'participant' | 'awareness';
@@ -9,12 +9,21 @@ export type StoryAssistResult = {
   title?: string;
   category?: StoryDraftCategory;
   draft?: string;
-  source: 'openai';
+  source: 'ai';
 };
 
 const MAX_TEXT_CHARS = 4000;
 const MAX_DRAFT_CHARS = 12000;
+const ASSIST_TIMEOUT_MS = 30_000;
+const ASSIST_TEMPERATURE = 0.3;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 30;
 const STORY_CATEGORIES: StoryDraftCategory[] = ['mentor', 'participant', 'awareness'];
+
+const rateBuckets = new Map<string, { count: number; windowStart: number }>();
+
+export const STORY_ASSIST_UNAVAILABLE =
+  'AI help is not available right now. You can keep editing yourself.';
 
 export function classifyStoryAssistError(error: unknown): {
   status: number;
@@ -22,42 +31,37 @@ export function classifyStoryAssistError(error: unknown): {
   message: string;
 } {
   if (error instanceof Error && error.message === 'missing-key') {
-    return { status: 503, code: 'missing-key', message: 'AI writing help is not configured yet.' };
+    return {
+      status: 503,
+      code: 'missing-key',
+      message: 'AI writing help is not set up yet. You can keep editing yourself.',
+    };
   }
   if (error instanceof Error && error.message === 'empty') {
     return { status: 400, code: 'empty', message: 'Add some text first.' };
   }
 
-  const rec = error && typeof error === 'object' ? (error as { status?: number; code?: unknown; type?: unknown }) : {};
-  const code = String(rec.code || '');
-  const type = String(rec.type || '');
-  if (code === 'credit_balance_exhausted' || type === 'insufficient_quota') {
-    return {
-      status: 503,
-      code: 'no-credits',
-      message: 'The OpenAI account has no remaining credits. Add credits, then try AI help again.',
-    };
-  }
-  if (rec.status === 401 || code === 'invalid_api_key') {
-    return {
-      status: 503,
-      code: 'invalid-key',
-      message: 'The OpenAI key is not accepted. Check OPENAI_API_KEY, then try again.',
-    };
-  }
-
   return {
-    status: 500,
+    status: 503,
     code: 'unavailable',
-    message: 'AI help is not available right now. You can keep editing yourself.',
+    message: STORY_ASSIST_UNAVAILABLE,
   };
 }
 
-function requireOpenAi() {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('missing-key');
+export function resetStoryAssistRateLimitForTests() {
+  rateBuckets.clear();
+}
+
+export function consumeStoryAssistRateLimit(userId: string, now = Date.now()): { status: 200 | 429 } {
+  const key = String(userId);
+  const bucket = rateBuckets.get(key);
+  if (!bucket || now - bucket.windowStart >= RATE_LIMIT_WINDOW_MS) {
+    rateBuckets.set(key, { count: 1, windowStart: now });
+    return { status: 200 };
   }
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  if (bucket.count >= RATE_LIMIT_MAX) return { status: 429 };
+  bucket.count += 1;
+  return { status: 200 };
 }
 
 function clipText(value: string, max = MAX_TEXT_CHARS) {
@@ -78,75 +82,100 @@ function asStringArray(value: unknown, max = 3) {
     .slice(0, max);
 }
 
+export function parseStoryAssistContent(raw: string): Record<string, unknown> | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const unfenced = trimmed
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  const candidates = [unfenced];
+  const objectMatch = unfenced.match(/\{[\s\S]*\}/);
+  if (objectMatch?.[0] && objectMatch[0] !== unfenced) candidates.push(objectMatch[0]);
+  const arrayMatch = unfenced.match(/\[[\s\S]*\]/);
+  if (arrayMatch?.[0] && arrayMatch[0] !== unfenced) candidates.push(arrayMatch[0]);
+
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate) as unknown;
+      if (Array.isArray(parsed)) return { titles: parsed };
+      if (parsed && typeof parsed === 'object') return parsed as Record<string, unknown>;
+    } catch {
+      // Try the next candidate.
+    }
+  }
+  return null;
+}
+
 export async function assistStoryDraft(input: {
   locale: 'en' | 'de';
   action: StoryAssistAction;
   text: string;
   currentLabel?: string;
 }): Promise<StoryAssistResult> {
-  const openai = requireOpenAi();
-  const locale = input.locale === 'de' ? 'de' : 'en';
-  const language = locale === 'de' ? 'German' : 'English';
+  const ai = openStoryAiClient(ASSIST_TIMEOUT_MS);
+  if (!ai) throw new Error('missing-key');
+
   const text = clipText(input.text, input.action === 'draft' ? MAX_DRAFT_CHARS : MAX_TEXT_CHARS);
-  if (!text) {
-    throw new Error('empty');
-  }
+  if (!text) throw new Error('empty');
 
   const currentLabel = input.currentLabel?.trim().slice(0, 80) ?? '';
-
   const prompts = {
     draft: {
-      system: `You turn a Building Bridges interview transcript into an editable first draft.
+      system: `You turn a Building Bridges story into an editable first draft.
 Rules:
-- Read the COMPLETE transcript. Do not use only the first line or first sentences.
-- Reply in ${language} only.
-- title: 3 to 10 words, based on the whole account. Do not invent places, names, or events.
+- Use only what the person wrote. Never invent facts, names, or feelings.
+- Keep their own words and meaning.
+- Write in the language of their text. If the text is German, use "du", never "Sie".
+- Write in the first person.
+- Read the COMPLETE text. Do not use only the first line.
+- title: 3 to 10 words, from the whole account.
 - category: exactly one of mentor, participant, awareness.
   mentor = a role-model / mentoring path; participant = a personal programme or school experience; awareness = a wider empowerment or structural issue.
-- draft: a coherent first-person narrative in the speaker's voice, covering the main arc of the full transcript.
-- Keep facts. Do not add drama, morals, or details that are not in the transcript.
+- draft: a coherent first-person narrative in the speaker's voice.
 - This is a DRAFT for the storyteller and a human reviewer. It must not be treated as published.
-- Return JSON only: {"title":"...","category":"mentor|participant|awareness","draft":"..."}`,
-      user: `Full interview transcript:\n\n${text}`,
+- Return only this JSON object: {"title":"...","category":"mentor|participant|awareness","draft":"..."}`,
+      user: `The person's text:\n\n${text}`,
+      maxTokens: 2200,
     },
     grammar: {
       system: `You help Building Bridges storytellers with light grammar fixes.
 Rules:
-- Reply in ${language} only.
+- Write in the language of their text. If the text is German, use "du", never "Sie".
 - Fix grammar, spelling, and punctuation only.
 - Keep the speaker's voice, meaning, and facts. Do not invent or remove events.
 - Do not make the text more formal, dramatic, or "literary".
-- Return JSON only: {"text":"corrected chapter"}`,
+- Return only this JSON object: {"text":"corrected chapter"}`,
       user: `Correct this chapter:\n\n${text}`,
+      maxTokens: 900,
     },
     titles: {
       system: `You suggest short chapter titles for Building Bridges stories.
 Rules:
-- Reply in ${language} only.
-- Suggest 3 titles, 2 to 6 words each.
-- Use only what is in the chapter. Do not invent places, names, or events.
-- No quotation marks, no numbering.
-- Return JSON only: {"titles":["...", "...", "..."]}`,
+- Give exactly 3 short, plain titles in the language of the person's text.
+- Use only what they wrote. Do not invent facts, names, or feelings.
+- 2 to 6 words each. No quotation marks and no numbering.
+- Return only this JSON object: {"titles":["...", "...", "..."]}`,
       user: `${currentLabel ? `Current title: ${currentLabel}\n\n` : ''}Chapter:\n\n${text}`,
+      maxTokens: 220,
     },
     'story-title': {
       system: `You suggest a story title for Building Bridges.
 Rules:
-- Reply in ${language} only.
-- Suggest 3 titles, 3 to 8 words each.
-- Use only what is in the text. Do not invent facts.
-- No quotation marks, no numbering.
-- Return JSON only: {"titles":["...", "...", "..."]}`,
-      user: `Story draft:\n\n${text}`,
+- Give exactly 3 short, plain titles in the language of the person's text.
+- Use only what they wrote. Do not invent facts, names, or feelings.
+- 3 to 8 words each. No quotation marks and no numbering.
+- Return only this JSON object: {"titles":["...", "...", "..."]}`,
+      user: `The person's text:\n\n${text}`,
+      maxTokens: 220,
     },
   } as const;
 
   const prompt = prompts[input.action];
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: input.action === 'grammar' ? 0.2 : input.action === 'draft' ? 0.4 : 0.5,
-    max_tokens: input.action === 'draft' ? 2200 : input.action === 'grammar' ? 900 : 220,
-    response_format: { type: 'json_object' },
+  const response = await ai.client.chat.completions.create({
+    model: ai.model,
+    temperature: ASSIST_TEMPERATURE,
+    max_tokens: prompt.maxTokens,
     messages: [
       { role: 'system', content: prompt.system },
       { role: 'user', content: prompt.user },
@@ -154,33 +183,24 @@ Rules:
   });
 
   const content = response.choices[0]?.message?.content;
-  if (!content) {
-    throw new Error('empty-response');
-  }
-
-  const parsed = JSON.parse(content) as {
-    text?: unknown;
-    titles?: unknown;
-    title?: unknown;
-    category?: unknown;
-    draft?: unknown;
-  };
+  const parsed = content ? parseStoryAssistContent(content) : null;
+  if (!parsed) throw new Error('unreadable');
 
   if (input.action === 'draft') {
     const title = typeof parsed.title === 'string' ? parsed.title.trim() : '';
     const draft = typeof parsed.draft === 'string' ? parsed.draft.trim() : '';
     const category = parseCategory(parsed.category);
-    if (!title || !draft || !category) throw new Error('empty-response');
-    return { title, category, draft, source: 'openai' };
+    if (!title || !draft || !category) throw new Error('unreadable');
+    return { title, category, draft, source: 'ai' };
   }
 
   if (input.action === 'grammar') {
     const next = typeof parsed.text === 'string' ? parsed.text.trim() : '';
-    if (!next) throw new Error('empty-response');
-    return { text: next, source: 'openai' };
+    if (!next) throw new Error('unreadable');
+    return { text: next, source: 'ai' };
   }
 
   const titles = asStringArray(parsed.titles);
-  if (titles.length === 0) throw new Error('empty-response');
-  return { titles, source: 'openai' };
+  if (titles.length === 0) throw new Error('unreadable');
+  return { titles, source: 'ai' };
 }

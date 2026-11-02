@@ -1,4 +1,6 @@
-import OpenAI from 'openai';
+import { openStoryAiClient } from '@/lib/ai/story-ai-client';
+import { storyInterviewSystemPrompt } from '@/lib/ai/story-interview-prompt';
+import { matchesStoryDanger, storyDangerReply } from '@/lib/ai/story-interview-safety';
 
 export type InterviewMessage = {
   role: 'assistant' | 'user';
@@ -10,8 +12,9 @@ export type InterviewAction = 'start' | 'reply' | 'skip' | 'finish';
 export type InterviewTurnResult = {
   reply: string;
   done: boolean;
+  paused?: boolean;
   transcript: string;
-  source: 'openai' | 'scripted';
+  source: 'ai' | 'scripted';
 };
 
 export type InterviewReplyKind = 'decline' | 'stop' | 'yes' | 'topic' | 'content';
@@ -19,6 +22,12 @@ export type InterviewReplyKind = 'decline' | 'stop' | 'yes' | 'topic' | 'content
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_CHARS = 2000;
 const MIN_ANSWERS_TO_FINISH = 2;
+const AI_TIMEOUT_MS = 20_000;
+const AI_MAX_TOKENS = 280;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 30;
+
+const rateBuckets = new Map<string, { count: number; windowStart: number }>();
 
 const SCRIPT = {
   en: {
@@ -69,6 +78,106 @@ const SCRIPT = {
 
 function getCopy(locale: 'en' | 'de') {
   return SCRIPT[locale];
+}
+
+function logInterviewFallback() {
+  console.error('Story interview fallback used');
+}
+
+function devLogAiCall(details: {
+  status: number | null;
+  errorType: string | null;
+  replyEmpty: boolean;
+  parseFailed: boolean;
+  ms: number;
+}) {
+  if (process.env.NODE_ENV !== 'development') return;
+  const status = details.status === null ? 'none' : String(details.status);
+  const errorType = details.errorType ?? 'none';
+  console.error(
+    `Story interview AI call: status=${status} errorType=${errorType} replyEmpty=${details.replyEmpty} parseFailed=${details.parseFailed} ms=${details.ms}`
+  );
+}
+
+function safeErrorToken(value: unknown) {
+  return typeof value === 'string' && /^[A-Za-z0-9_.:-]{1,80}$/.test(value) ? value : null;
+}
+
+function aiCallErrorFacts(error: unknown) {
+  if (!error || typeof error !== 'object') return { status: null as number | null, errorType: 'unknown' };
+  const record = error as {
+    status?: unknown;
+    name?: unknown;
+    type?: unknown;
+    code?: unknown;
+    error?: { type?: unknown; code?: unknown };
+  };
+  const status = typeof record.status === 'number' ? record.status : null;
+  const errorType =
+    safeErrorToken(record.name) ||
+    safeErrorToken(record.code) ||
+    safeErrorToken(record.type) ||
+    safeErrorToken(record.error?.code) ||
+    safeErrorToken(record.error?.type) ||
+    'unknown';
+  return { status, errorType };
+}
+
+function inspectAiReply(raw: string | null | undefined) {
+  const text = raw?.trim() ?? '';
+  if (!text) return { replyEmpty: true, parseFailed: false };
+  const unfenced = text
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  if (!unfenced) return { replyEmpty: true, parseFailed: false };
+  try {
+    const parsed = JSON.parse(unfenced) as { reply?: unknown };
+    const reply =
+      parsed && typeof parsed === 'object' && typeof parsed.reply === 'string' ? parsed.reply.trim() : '';
+    return { replyEmpty: false, parseFailed: !reply };
+  } catch {
+    return { replyEmpty: false, parseFailed: true };
+  }
+}
+
+export function parseInterviewModelContent(raw: string): { reply: string; done: boolean } | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  const unfenced = trimmed
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  try {
+    const parsed = JSON.parse(unfenced) as { reply?: unknown; done?: unknown };
+    if (parsed && typeof parsed === 'object') {
+      const reply = typeof parsed.reply === 'string' ? parsed.reply.trim() : '';
+      if (reply) return { reply, done: Boolean(parsed.done) };
+    }
+  } catch {
+    // The model returned plain text. Use it as the reply.
+  }
+
+  if (!unfenced) return null;
+  return { reply: unfenced, done: false };
+}
+
+export function resetStoryInterviewRateLimitForTests() {
+  rateBuckets.clear();
+}
+
+export function consumeStoryInterviewRateLimit(userId: string, now = Date.now()): { status: 200 | 429 } {
+  const key = String(userId);
+  const bucket = rateBuckets.get(key);
+  if (!bucket || now - bucket.windowStart >= RATE_LIMIT_WINDOW_MS) {
+    rateBuckets.set(key, { count: 1, windowStart: now });
+    return { status: 200 };
+  }
+  if (bucket.count >= RATE_LIMIT_MAX) return { status: 429 };
+  bucket.count += 1;
+  return { status: 200 };
 }
 
 export function sanitizeInterviewMessages(raw: unknown): InterviewMessage[] {
@@ -123,7 +232,7 @@ export function classifyInterviewReply(text: string): InterviewReplyKind {
   if (!value) return 'content';
 
   if (
-    /\b(stop|stopp|i('?m| am) done|ich bin fertig|aufhören|nicht weiter|end (the )?interview)\b/.test(
+    /\b(stop|stopp|i('?m| am) done|ich bin fertig|nicht weitermachen|möchte nicht weitermachen|moechte nicht weitermachen|aufhören|nicht weiter|end (the )?interview)\b/.test(
       value
     )
   ) {
@@ -162,6 +271,15 @@ export function classifyInterviewReply(text: string): InterviewReplyKind {
   return 'content';
 }
 
+function countsAsScriptedAnswer(text: string) {
+  const kind = classifyInterviewReply(text);
+  return kind === 'content' || kind === 'topic';
+}
+
+function countScriptedAnswers(messages: InterviewMessage[]) {
+  return messages.filter((message) => message.role === 'user' && countsAsScriptedAnswer(message.content)).length;
+}
+
 function declineCount(messages: InterviewMessage[]) {
   return messages.filter(
     (message) =>
@@ -177,15 +295,35 @@ function userWantsToStop(messages: InterviewMessage[]) {
   return last === 'decline' && declineCount(messages) >= 2;
 }
 
+function countLanguageMarks(text: string, pattern: RegExp) {
+  return text.match(pattern)?.length ?? 0;
+}
+
+export function localeFromLatestMessage(pageLocale: 'en' | 'de', text: string): 'en' | 'de' {
+  const value = text.trim().toLowerCase();
+  if (!value) return pageLocale;
+  if (/[äöüß]/.test(value)) return 'de';
+  const german = countLanguageMarks(
+    value,
+    /\b(ich|nicht|möchte|moechte|kein|keine|nichts|aufhören|aufhoeren|weitermachen|bitte|danke|und|eine|einen|ist|sind|mein|meine|für|fuer|dass|schon|auch|oder|hier|nein|nee|ja|fertig|stopp|wir|du|dir|dich)\b/g
+  );
+  const english = countLanguageMarks(
+    value,
+    /\b(i|i'm|im|don't|dont|not|stop|done|want|share|please|yes|no|nothing|the|and|was|were|my|me)\b/g
+  );
+  if (german > english) return 'de';
+  if (english > german) return 'en';
+  return pageLocale;
+}
+
 export function scriptedInterviewTurn(
   locale: 'en' | 'de',
   action: InterviewAction,
   messages: InterviewMessage[]
 ): InterviewTurnResult {
-  const copy = getCopy(locale);
+  const copy = getCopy(localeFromLatestMessage(locale, lastUserText(messages)));
   const answers = countUserAnswers(messages);
-  const asked = messages.filter((message) => message.role === 'assistant').length;
-  const nextQuestion = copy.questions[Math.min(asked, copy.questions.length - 1)];
+  const answered = countScriptedAnswers(messages);
   const transcript = buildInterviewTranscript(messages);
   const lastKind = classifyInterviewReply(lastUserText(messages));
 
@@ -208,21 +346,20 @@ export function scriptedInterviewTurn(
     return { reply: copy.closing, done: true, transcript, source: 'scripted' };
   }
 
-  if (action === 'reply' || action === 'skip') {
-    if (lastKind === 'stop' || userWantsToStop(messages)) {
-      return { reply: copy.declinedClose, done: true, transcript, source: 'scripted' };
-    }
-
-    if (lastKind === 'decline') {
-      return { reply: copy.declinedOffer, done: false, transcript, source: 'scripted' };
-    }
-
-    if (lastKind === 'yes' && asked <= 1) {
-      return { reply: copy.whichKind, done: false, transcript, source: 'scripted' };
-    }
+  if (lastKind === 'stop' || userWantsToStop(messages)) {
+    return { reply: copy.declinedClose, done: true, transcript, source: 'scripted' };
   }
 
-  if (asked >= copy.questions.length) {
+  if (action === 'reply' && lastKind === 'decline') {
+    return { reply: copy.declinedOffer, done: false, transcript, source: 'scripted' };
+  }
+
+  if (action === 'reply' && lastKind === 'yes' && answered === 0) {
+    return { reply: copy.whichKind, done: false, transcript, source: 'scripted' };
+  }
+
+  const nextIndex = action === 'skip' ? answered + 1 : answered;
+  if (nextIndex >= copy.questions.length) {
     return {
       reply: copy.closing,
       done: true,
@@ -233,41 +370,24 @@ export function scriptedInterviewTurn(
 
   const prefix = action === 'skip' ? `${copy.skipAck} ` : '';
   return {
-    reply: `${prefix}${nextQuestion}`,
+    reply: `${prefix}${copy.questions[nextIndex]}`,
     done: false,
     transcript,
     source: 'scripted',
   };
 }
 
-async function openaiTurn(
+async function aiTurn(
   locale: 'en' | 'de',
   action: InterviewAction,
   messages: InterviewMessage[]
 ): Promise<InterviewTurnResult | null> {
-  if (!process.env.OPENAI_API_KEY) return null;
+  const ai = openStoryAiClient(AI_TIMEOUT_MS);
+  if (!ai) return null;
 
   const copy = getCopy(locale);
-  const language = locale === 'de' ? 'German' : 'English';
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const lastKind = classifyInterviewReply(lastUserText(messages));
-
-  const system = `You are a careful story interviewer for Building Bridges, a mentoring project for girls and FLINTA* of Colour.
-
-Rules:
-- Speak ${language} only.
-- Ask one short question at a time.
-- Listen to the user's last answer. Do not ignore it.
-- If they say no, they do not want to share, or they refuse the topic, do NOT ask the next generic question. Acknowledge that, offer a different topic, or end the interview.
-- If they say yes without choosing a topic, ask whether they want an experience, a mentoring story, or something about mental health and empowerment.
-- If they choose a topic, ask a follow-up that matches that topic.
-- Be warm, trauma-aware, and never push. If they skip or hesitate, accept it.
-- Do not give advice, diagnoses, or interpretations.
-- Do not invent facts about their life.
-- Never ask for full names, addresses, school names, or other identifying details.
-- After about 4–6 answered questions, or if they say they are done or do not want to share, wrap up and set done=true.
-
-Return JSON only: {"reply":"your next message","done":false}`;
+  const openai = ai.client;
 
   const history = messages.map((message) => ({
     role: message.role,
@@ -295,38 +415,54 @@ Return JSON only: {"reply":"your next message","done":false}`;
     });
   }
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0.5,
-    max_tokens: 280,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: system },
-      ...history,
-    ],
-  });
+  const startedAt = Date.now();
+  let response;
+  try {
+    response = await openai.chat.completions.create({
+      model: ai.model,
+      temperature: 0.3,
+      max_tokens: AI_MAX_TOKENS,
+      messages: [{ role: 'system', content: storyInterviewSystemPrompt(locale) }, ...history],
+    });
+  } catch (error) {
+    const facts = aiCallErrorFacts(error);
+    devLogAiCall({
+      status: facts.status,
+      errorType: facts.errorType,
+      replyEmpty: true,
+      parseFailed: false,
+      ms: Date.now() - startedAt,
+    });
+    throw error;
+  }
 
   const content = response.choices[0]?.message?.content;
-  if (!content) return null;
+  const inspected = inspectAiReply(content);
+  devLogAiCall({
+    status: 200,
+    errorType: null,
+    replyEmpty: inspected.replyEmpty,
+    parseFailed: inspected.parseFailed,
+    ms: Date.now() - startedAt,
+  });
+  if (!content?.trim()) return null;
 
-  const parsed = JSON.parse(content) as { reply?: unknown; done?: unknown };
-  const reply = typeof parsed.reply === 'string' && parsed.reply.trim() ? parsed.reply.trim() : '';
-  if (!reply) return null;
+  const parsed = parseInterviewModelContent(content);
+  if (!parsed) return null;
 
-  const answers = countUserAnswers(messages);
+  const answerCount = countUserAnswers(messages);
   const declined = lastKind === 'decline' || lastKind === 'stop' || userWantsToStop(messages);
-  const modelWantsDone = Boolean(parsed.done);
   const done =
     action === 'finish'
-      ? answers >= MIN_ANSWERS_TO_FINISH || declined
-      : (modelWantsDone || lastKind === 'stop' || userWantsToStop(messages)) &&
-        (answers >= MIN_ANSWERS_TO_FINISH || declined);
+      ? answerCount >= MIN_ANSWERS_TO_FINISH || declined
+      : (parsed.done || lastKind === 'stop' || userWantsToStop(messages)) &&
+        (answerCount >= MIN_ANSWERS_TO_FINISH || declined);
 
   return {
-    reply: done && (action === 'finish' || lastKind === 'stop') ? copy.declinedClose : reply,
+    reply: done && (action === 'finish' || lastKind === 'stop') ? copy.declinedClose : parsed.reply,
     done,
     transcript: buildInterviewTranscript(messages),
-    source: 'openai',
+    source: 'ai',
   };
 }
 
@@ -335,34 +471,55 @@ export async function conductStoryInterview(input: {
   action: InterviewAction;
   messages: InterviewMessage[];
 }): Promise<InterviewTurnResult> {
-  const locale = input.locale === 'de' ? 'de' : 'en';
+  const pageLocale = input.locale === 'de' ? 'de' : 'en';
   const action = input.action;
   const messages = sanitizeInterviewMessages(input.messages);
+  const lastText = lastUserText(messages);
+  const locale = localeFromLatestMessage(pageLocale, lastText);
+
+  if (matchesStoryDanger(lastText)) {
+    return {
+      reply: storyDangerReply(locale),
+      done: false,
+      paused: true,
+      transcript: buildInterviewTranscript(messages),
+      source: 'scripted',
+    };
+  }
+
+  if (classifyInterviewReply(lastText) === 'stop' || userWantsToStop(messages)) {
+    return scriptedInterviewTurn(locale, action === 'start' ? 'reply' : action, messages);
+  }
 
   if (action === 'finish') {
     const scripted = scriptedInterviewTurn(locale, action, messages);
+    if (scripted.done) return scripted;
     try {
-      const live = await openaiTurn(locale, action, messages);
+      const live = await aiTurn(locale, action, messages);
       if (live) {
         return {
           ...live,
-          done: scripted.done,
+          done: false,
           transcript: scripted.transcript,
-          reply: scripted.done ? scripted.reply : live.reply,
+          reply: live.reply,
         };
       }
-    } catch (error) {
-      console.error('Story interview finish fallback:', error);
+    } catch {
+      logInterviewFallback();
+      return scripted;
     }
+    logInterviewFallback();
     return scripted;
   }
 
   try {
-    const live = await openaiTurn(locale, action, messages);
+    const live = await aiTurn(locale, action, messages);
     if (live) return live;
-  } catch (error) {
-    console.error('Story interview OpenAI fallback:', error);
+  } catch {
+    logInterviewFallback();
+    return scriptedInterviewTurn(locale, action, messages);
   }
 
+  logInterviewFallback();
   return scriptedInterviewTurn(locale, action, messages);
 }

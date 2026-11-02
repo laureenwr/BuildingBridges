@@ -37,12 +37,25 @@ function pickRecorderMime() {
   return types.find((type) => MediaRecorder.isTypeSupported(type)) ?? '';
 }
 
-function joinDraft(base: string, spoken: string) {
+export function joinDraft(base: string, spoken: string) {
   const prefix = base.trim();
   const next = spoken.trim();
   if (!prefix) return next;
   if (!next) return prefix;
   return `${prefix} ${next}`;
+}
+
+export function liveVoiceDraft(
+  ownsDraft: boolean,
+  base: string,
+  spoken: string,
+  sessionFinal: string,
+  interim: string
+) {
+  if (!ownsDraft) return null;
+  const live = joinDraft(joinDraft(spoken, sessionFinal), interim);
+  if (!live && !spoken) return null;
+  return joinDraft(base, live);
 }
 
 export function useVoiceDraft(
@@ -59,6 +72,7 @@ export function useVoiceDraft(
   const spokenRef = useRef('');
   const sessionFinalRef = useRef('');
   const keepListeningRef = useRef(false);
+  const speechOwnsDraftRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -71,6 +85,7 @@ export function useVoiceDraft(
   useEffect(() => {
     return () => {
       keepListeningRef.current = false;
+      speechOwnsDraftRef.current = false;
       recognitionRef.current?.abort();
       if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
       streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -147,6 +162,7 @@ export function useVoiceDraft(
     recognition.interimResults = true;
 
     recognition.onresult = (event) => {
+      if (!speechOwnsDraftRef.current) return;
       let sessionFinal = '';
       let interim = '';
       for (let i = 0; i < event.results.length; i += 1) {
@@ -155,9 +171,15 @@ export function useVoiceDraft(
         else interim += piece;
       }
       sessionFinalRef.current = sessionFinal.trim();
-      const live = joinDraft(joinDraft(spokenRef.current, sessionFinal), interim);
-      if (live || spokenRef.current) {
-        setDraft(joinDraft(baseRef.current, live));
+      const nextDraft = liveVoiceDraft(
+        speechOwnsDraftRef.current,
+        baseRef.current,
+        spokenRef.current,
+        sessionFinalRef.current,
+        interim
+      );
+      if (nextDraft !== null) {
+        setDraft(nextDraft);
         setVoiceError(null);
       }
     };
@@ -186,6 +208,10 @@ export function useVoiceDraft(
 
     recognition.onend = () => {
       recognitionRef.current = null;
+      if (!speechOwnsDraftRef.current) {
+        setRecording(false);
+        return;
+      }
       spokenRef.current = joinDraft(spokenRef.current, sessionFinalRef.current);
       sessionFinalRef.current = '';
       if (spokenRef.current) {
@@ -194,6 +220,7 @@ export function useVoiceDraft(
       if (keepListeningRef.current) {
         startBrowserSpeech();
       } else {
+        speechOwnsDraftRef.current = false;
         setRecording(false);
       }
     };
@@ -226,6 +253,7 @@ export function useVoiceDraft(
     recorder.onstop = () => {
       const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' });
       recorderRef.current = null;
+      speechOwnsDraftRef.current = false;
       stopTracks();
       setRecording(false);
       void transcribeRecording(blob);
@@ -236,6 +264,12 @@ export function useVoiceDraft(
 
   const stopListening = () => {
     keepListeningRef.current = false;
+    speechOwnsDraftRef.current = false;
+    spokenRef.current = joinDraft(spokenRef.current, sessionFinalRef.current);
+    sessionFinalRef.current = '';
+    if (spokenRef.current) {
+      setDraft(joinDraft(baseRef.current, spokenRef.current));
+    }
     recognitionRef.current?.stop();
     recognitionRef.current = null;
     const recorder = recorderRef.current;
@@ -250,6 +284,7 @@ export function useVoiceDraft(
   const startListening = async () => {
     if (disabled || recording || transcribing) return;
     setVoiceError(null);
+    speechOwnsDraftRef.current = true;
     baseRef.current = draftRef.current.trim();
     spokenRef.current = '';
     sessionFinalRef.current = '';
@@ -266,6 +301,7 @@ export function useVoiceDraft(
       if (started) setRecording(true);
     } catch {
       keepListeningRef.current = false;
+      speechOwnsDraftRef.current = false;
       stopTracks();
       setRecording(false);
       setVoiceError(
