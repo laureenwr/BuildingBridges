@@ -49,10 +49,22 @@ describe('role helpers', () => {
     expect(userCanSubmitStories(null)).toBe(false);
   });
 
-  it('refuses unauthorized Admin signup instead of creating an Admin account', () => {
+  it('saves public signup as STUDENT and admin-list emails as ADMIN', () => {
     expect(resolveSignupRole('mentor@example.com', 'ADMIN')).toEqual({
-      ok: false,
-      code: 'admin-restricted',
+      ok: true,
+      role: 'STUDENT',
+    });
+    expect(resolveSignupRole('mentor@example.com', 'MENTOR')).toEqual({
+      ok: true,
+      role: 'STUDENT',
+    });
+    expect(resolveSignupRole('mentee@example.com', 'STUDENT')).toEqual({
+      ok: true,
+      role: 'STUDENT',
+    });
+    expect(resolveSignupRole('mentee@example.com', 'not-a-role')).toEqual({
+      ok: true,
+      role: 'STUDENT',
     });
     expect(resolveSignupRole('sumerasajid99@gmail.com', 'ADMIN')).toEqual({
       ok: true,
@@ -61,14 +73,6 @@ describe('role helpers', () => {
     expect(resolveSignupRole('courtneydb93@gmail.com', 'MENTOR')).toEqual({
       ok: true,
       role: 'ADMIN',
-    });
-    expect(resolveSignupRole('mentor@example.com', 'MENTOR')).toEqual({
-      ok: true,
-      role: 'MENTOR',
-    });
-    expect(resolveSignupRole('mentee@example.com', 'STUDENT')).toEqual({
-      ok: true,
-      role: 'STUDENT',
     });
   });
 });

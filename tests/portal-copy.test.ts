@@ -10,8 +10,10 @@ describe('portal language copy', () => {
   it('localizes portal roles from stored English labels', () => {
     expect(portalRoleLabel(true, 'Mentor')).toBe('Mentor:in');
     expect(portalRoleLabel(true, 'MENTOR')).toBe('Mentor:in');
-    expect(portalRoleLabel(true, 'Mentee')).toBe('Mentee');
+    expect(portalRoleLabel(true, 'Mentee')).toBe('Teilnehmer:in');
+    expect(portalRoleLabel(false, 'Mentee')).toBe('Participant');
     expect(portalRoleLabel(false, 'Participant')).toBe('Participant');
+    expect(portalRoleLabel(false, 'STUDENT')).toBe('Participant');
     expect(portalRoleLabel(true, 'STUDENT')).toBe('Teilnehmer:in');
   });
 });

@@ -9,7 +9,7 @@ import { DashboardDevelopmentPreviewBanner } from '@/components/dashboard-portal
 export type DashboardLayoutProps = {
   variant: 'user' | 'admin';
   /** Shown near the avatar in the header */
-  roleLabel: 'Mentee' | 'Mentor' | 'Admin';
+  roleLabel: 'Participant' | 'Mentor' | 'Admin';
   userName: string;
   children: React.ReactNode;
   /** // TEMP: Dashboard preview mode (remove before production) */

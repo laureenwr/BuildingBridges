@@ -85,21 +85,14 @@ const signUpSchema = z.object({
       (password) => /[0-9]/.test(password),
       "Password must contain at least one number"
     ),
-  role: z.enum(['ADMIN', 'STUDENT', 'MENTOR']).default('STUDENT'),
+  role: z.string().optional(),
   inviteId: z.string().optional(),
 });
 
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   try {
     const { email, password, inviteId, role: requestedRole } = data;
-    const assigned = resolveSignupRole(email, requestedRole);
-    if (!assigned.ok) {
-      return {
-        error:
-          'Admin registration is restricted to authorized project administrators. Please register as a Mentor or contact the project team if you need administrative access.',
-      };
-    }
-    const role = assigned.role;
+    const role = resolveSignupRole(email, requestedRole).role;
 
     // Check for existing user with detailed error message
     const existingUser = await db
@@ -689,10 +682,6 @@ export async function signUpAction(formData: FormData) {
 
   if (!email || !password) {
     redirect('/sign-up?error=missing-credentials');
-  }
-
-  if (!assigned.ok) {
-    redirect('/sign-up?error=admin-restricted');
   }
 
   const role = assigned.role;

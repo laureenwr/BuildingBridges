@@ -9,6 +9,8 @@ import {
 import { matchesStoryDanger } from '@/lib/ai/story-interview-safety';
 
 export const runtime = 'nodejs';
+// Hobby allows 60 seconds. The platform default is 10, which cuts off a 10–20 second interview reply.
+export const maxDuration = 60;
 
 const ACTIONS: InterviewAction[] = ['start', 'reply', 'skip', 'finish'];
 

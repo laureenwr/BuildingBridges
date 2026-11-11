@@ -19,7 +19,7 @@ export default async function StoryToolPage() {
   ]);
 
   return (
-    <div className="relative min-h-[calc(100dvh-70px)] overflow-hidden bg-[#1A1033] px-6 py-16 text-white sm:px-10 sm:py-20">
+    <div className="relative min-h-[calc(100dvh-70px)] overflow-hidden bg-[#1A1033] px-6 pb-16 pt-3 text-white sm:px-10 sm:pb-20 sm:pt-4">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(145,82,255,0.18)_0%,transparent_70%),radial-gradient(ellipse_40%_60%_at_10%_80%,rgba(107,170,138,0.12)_0%,transparent_70%)]"
         aria-hidden

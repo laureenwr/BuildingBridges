@@ -17,7 +17,7 @@ import { signOut } from 'next-auth/react';
 import { setStoredLanguage } from '@/lib/i18n/language';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 
-type RoleLabel = 'Mentee' | 'Mentor' | 'Admin';
+type RoleLabel = 'Participant' | 'Mentor' | 'Admin';
 
 export type TopNavProps = {
   userName: string;
@@ -98,7 +98,7 @@ export function TopNav({
                   : 'border-[rgba(145,82,255,0.2)] bg-[#F5F0FF] text-[#7339E0]'
               )}
             >
-              {isAdmin ? 'Admin' : roleLabel === 'Mentor' ? (isDe ? 'Mentor:in' : 'Mentor') : isDe ? 'Mentee' : 'Mentee'}
+              {isAdmin ? 'Admin' : roleLabel === 'Mentor' ? (isDe ? 'Mentor:in' : 'Mentor') : isDe ? 'Teilnehmer:in' : 'Participant'}
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -125,7 +125,7 @@ export function TopNav({
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{userName}</p>
                     <p className="text-muted-foreground text-xs">
-                      {isAdmin ? 'Admin' : roleLabel === 'Mentor' ? (isDe ? 'Mentor:in' : 'Mentor') : isDe ? 'Mentee' : 'Mentee'}
+                      {isAdmin ? 'Admin' : roleLabel === 'Mentor' ? (isDe ? 'Mentor:in' : 'Mentor') : isDe ? 'Teilnehmer:in' : 'Participant'}
                     </p>
                   </div>
                 </DropdownMenuLabel>

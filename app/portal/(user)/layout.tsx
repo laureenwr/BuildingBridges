@@ -9,7 +9,7 @@ export default async function UserPortalLayout({ children }: { children: React.R
     (user.email?.includes('@') ? user.email.split('@')[0]!.replace(/\./g, ' ') : null) ||
     'Community member';
 
-  const roleLabel = user.role === 'ADMIN' ? 'Admin' : user.role === 'MENTOR' ? 'Mentor' : 'Mentee';
+  const roleLabel = user.role === 'ADMIN' ? 'Admin' : user.role === 'MENTOR' ? 'Mentor' : 'Participant';
 
   return (
     <DashboardLayout variant="user" userName={userName} roleLabel={roleLabel}>

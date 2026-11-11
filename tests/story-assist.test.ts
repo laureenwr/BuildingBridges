@@ -16,10 +16,12 @@ vi.mock('openai', () => {
 
 import {
   assistStoryDraft,
+  authorizeStructureRun,
   classifyStoryAssistError,
   consumeStoryAssistRateLimit,
   parseStoryAssistContent,
   resetStoryAssistRateLimitForTests,
+  structureTranscriptPiece,
 } from '@/lib/ai/story-assist';
 
 function useUniversityTestSettings() {
@@ -143,6 +145,36 @@ describe('story assist', () => {
     expect(classified.message.toLowerCase()).not.toContain('openai');
     expect(classified.message.toLowerCase()).not.toContain('credit');
     expect(classified.code).toBe('unavailable');
+  });
+
+  it('counts a whole structure run as one hourly request', async () => {
+    useUniversityTestSettings();
+    createMock.mockResolvedValue({
+      choices: [{ message: { content: '---CHAPTER---\nTITLE: Moon\nTEXT:\nI flew to the moon.\n' } }],
+    });
+    const started = authorizeStructureRun('user-structure', undefined, 1_700_000_000_000);
+    expect(started.ok).toBe(true);
+    if (!started.ok) return;
+    for (let call = 0; call < 5; call += 1) {
+      expect(authorizeStructureRun('user-structure', started.runId, 1_700_000_000_000).ok).toBe(true);
+    }
+    expect(authorizeStructureRun('user-structure', started.runId, 1_700_000_000_000).ok).toBe(false);
+    for (let count = 0; count < 29; count += 1) {
+      expect(consumeStoryAssistRateLimit('user-structure', 1_700_000_000_000).status).toBe(200);
+    }
+    expect(consumeStoryAssistRateLimit('user-structure', 1_700_000_000_000).status).toBe(429);
+
+    const piece = await structureTranscriptPiece({
+      mode: 'chapters',
+      text: 'I grew up near the river.',
+      partNumber: 1,
+    });
+    expect(piece.chapters.map((chapter) => chapter.text).join('\n')).toContain('near the river');
+    expect(piece.chapters.map((chapter) => chapter.text).join('\n')).not.toContain('moon');
+    const request = createMock.mock.calls[0]?.[0] as { response_format?: unknown; messages?: { content: string }[] };
+    expect(request.response_format).toBeUndefined();
+    expect(request.messages?.[0]?.content).toMatch(/own words/i);
+    expect(request.messages?.[0]?.content).toMatch(/Interviewer:/);
   });
 
   it('returns 429 after 30 requests in an hour for one signed-in user', () => {

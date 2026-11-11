@@ -8,7 +8,9 @@ export type StoryToolDraft = {
   storyTitle: string;
   chapters: { id: string; label: string; icon: string; text: string; quote: string }[];
   storyType: 'mentor' | 'participant' | 'awareness';
+  storySummary: string;
   consentGiven: boolean;
+  subjectConsent: boolean;
   sessionId: string;
 };
 
@@ -61,7 +63,9 @@ export function parseStoryToolDraft(raw: string | null): StoryToolDraft | null {
         parsed.storyType === 'participant' || parsed.storyType === 'awareness'
           ? parsed.storyType
           : 'mentor',
+      storySummary: typeof parsed.storySummary === 'string' ? parsed.storySummary : '',
       consentGiven: parsed.consentGiven === true,
+      subjectConsent: parsed.subjectConsent === true,
       sessionId: typeof parsed.sessionId === 'string' ? parsed.sessionId : '',
     };
   } catch {

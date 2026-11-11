@@ -95,7 +95,7 @@ function formatJoinedOn(value: Date | string | null) {
 function roleLabel(role: string) {
   if (role === 'ADMIN') return 'Admin';
   if (role === 'MENTOR') return 'Mentor';
-  return 'Mentee';
+  return 'Participant';
 }
 
 function asAccountRole(value: string): ManagedAccountRow['role'] {

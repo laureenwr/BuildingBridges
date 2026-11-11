@@ -1,80 +1,65 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { AiStoryTool } from './AiStoryTool';
 import { CommunityStories } from './CommunityStories';
 import { mapApprovedStoryToCommunityStory } from '@/lib/content/communityStories';
 import type { PublicApprovedStory } from '@/lib/actions/stories';
 import { useLanguage } from '@/lib/hooks/useLanguage';
-import { cn } from '@/lib/utils';
 
-const STEP_COLORS = [
+const BRIDGE_STEPS = [
   {
-    ring: 'border-[#4EE1D6] text-[#4EE1D6]',
-    glow: 'shadow-[0_0_0_6px_rgba(78,225,214,0.22)]',
-    fill: 'bg-[#4EE1D6] text-[#10261F]',
+    en: 'Collect',
+    de: 'Sammeln',
+    enDetail: 'Talk with the guide, or paste a transcript you already have.',
+    deDetail: 'Sprich mit der Anleitung, oder füge ein Transkript ein, das du schon hast.',
   },
   {
-    ring: 'border-[#B580FF] text-[#B580FF]',
-    glow: 'shadow-[0_0_0_6px_rgba(181,128,255,0.22)]',
-    fill: 'bg-[#B580FF] text-white',
+    en: 'Details',
+    de: 'Details',
+    enDetail: 'Give your story a title and say what kind of story it is.',
+    deDetail: 'Gib deiner Geschichte einen Titel und sag, welche Art von Geschichte es ist.',
   },
   {
-    ring: 'border-[#FF8FB1] text-[#FF8FB1]',
-    glow: 'shadow-[0_0_0_6px_rgba(255,143,177,0.22)]',
-    fill: 'bg-[#FF8FB1] text-[#2A1020]',
+    en: 'Chapters',
+    de: 'Kapitel',
+    enDetail: 'Shape the chapters and edit the wording yourself.',
+    deDetail: 'Forme die Kapitel und bearbeite die Formulierungen selbst.',
   },
   {
-    ring: 'border-[#FFC078] text-[#FFC078]',
-    glow: 'shadow-[0_0_0_6px_rgba(255,192,120,0.22)]',
-    fill: 'bg-[#FFC078] text-[#2A1A08]',
-  },
-  {
-    ring: 'border-[#7FB1FF] text-[#7FB1FF]',
-    glow: 'shadow-[0_0_0_6px_rgba(127,177,255,0.22)]',
-    fill: 'bg-[#7FB1FF] text-[#10203A]',
+    en: 'Review',
+    de: 'Prüfen',
+    enDetail: 'A person reads it before anything is published.',
+    deDetail: 'Ein Mensch liest sie, bevor etwas veröffentlicht wird.',
   },
 ] as const;
 
-function ToggleChip({
-  label,
-  initialOn = false,
-  variant = 'purple',
-}: {
-  label: string;
-  initialOn?: boolean;
-  variant?: 'purple' | 'teal';
-}) {
-  const [on, setOn] = useState(initialOn);
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      onClick={() => setOn(!on)}
-      className={cn(
-        'flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 transition',
-        'border-white/[0.09] bg-white/[0.04] hover:border-white/18 hover:bg-white/[0.07]',
-        on ? 'text-white/80' : 'text-white/60'
-      )}
-    >
-      <span
-        className={cn(
-          'relative h-[15px] w-[26px] shrink-0 rounded-full',
-          on ? (variant === 'teal' ? 'bg-[#4EE1D6]' : 'bg-[#B580FF]') : 'bg-white/15'
-        )}
-      >
-        <span
-          className={cn(
-            'absolute top-0.5 h-[11px] w-[11px] rounded-full',
-            on ? 'right-0.5' : 'left-0.5',
-            on ? (variant === 'teal' ? 'bg-[#10261F]' : 'bg-white') : 'bg-white/70'
-          )}
-        />
-      </span>
-      <span className="whitespace-nowrap text-[11px] font-medium">{label}</span>
-    </button>
-  );
+const BRIDGE_REACH = [0.14, 0.4, 0.66, 0.9] as const;
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => setReduced(media.matches);
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
+  return reduced;
+}
+
+function scrollToSection(id: string, moveFocus: boolean) {
+  return (event: MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const top = target.getBoundingClientRect().top + window.scrollY - 78;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' });
+    if (!moveFocus) return;
+    if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+    target.focus({ preventScroll: true });
+  };
 }
 
 export function StoryToolPageContent({
@@ -85,201 +70,166 @@ export function StoryToolPageContent({
   canCreateStories?: boolean;
 }) {
   const { isDe } = useLanguage();
+  const reducedMotion = usePrefersReducedMotion();
   const [activeStep, setActiveStep] = useState(0);
+  const [bridgePaused, setBridgePaused] = useState(false);
 
-  const scrollAi = () => document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth' });
-  const scrollStories = () =>
-    document.getElementById('community-stories')?.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    if (bridgePaused || reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setActiveStep((current) => (current + 1) % BRIDGE_STEPS.length);
+    }, 3500);
+    return () => window.clearInterval(timer);
+  }, [bridgePaused, reducedMotion]);
 
-  const steps = isDe
-    ? [
-        {
-          t: 'Story-Typ wählen',
-          d: 'Eine Erfahrung, eine Mentoring-Geschichte oder eine Awareness-Geschichte. Alle sind gültig.',
-        },
-        {
-          t: 'Kontext setzen',
-          d: 'Wo, wann und für wen. Ein paar Details reichen, um die Geschichte zu verankern.',
-        },
-        {
-          t: 'Erfahrung teilen',
-          d: 'Schreibe in eigenen Worten, füge ein Interview ein oder starte mit einem Impuls. Teile nur, was sich richtig anfühlt.',
-        },
-        {
-          t: 'Empowerment-Botschaft hinzufügen',
-          d: 'Was sollen andere mitnehmen? Eine Hoffnung, eine Lehre oder ein Aufruf, zusammenzubleiben.',
-        },
-        {
-          t: 'Veröffentlichung wählen',
-          d: 'Privat halten, mit Peers teilen oder veröffentlichen, wenn du bereit bist. Nichts geht live, solange du nicht entscheidest.',
-        },
-      ]
-    : [
-        {
-          t: 'Choose your story type',
-          d: 'An experience, a mentoring story or an awareness story. All are valid.',
-        },
-        {
-          t: 'Set the context',
-          d: 'Where, when, and who this is for. A few details are enough to ground the story.',
-        },
-        {
-          t: 'Share your experience',
-          d: 'Write it in your own words, paste an interview, or speak from a prompt. Share only what feels right.',
-        },
-        {
-          t: 'Add your empowerment message',
-          d: 'What do you want others to take away? A hope, a lesson, or a call to stay together.',
-        },
-        {
-          t: 'Choose how to publish',
-          d: 'Keep it private, share with peers, or publish when you are ready. Nothing goes live unless you decide.',
-        },
-      ];
+  const chooseStep = (index: number) => {
+    setBridgePaused(true);
+    setActiveStep(index);
+  };
 
-  const current = steps[activeStep];
-  const currentColor = STEP_COLORS[activeStep];
+  const promises = isDe
+    ? 'Du entscheidest, was du teilst. · Nichts wird ohne menschliche Prüfung veröffentlicht. · Du kannst jederzeit aufhören.'
+    : 'You choose what to share. · Nothing is published without human review. · You can stop at any time.';
 
   return (
     <>
       <section
         id="story-tool-preview"
-        className="relative -mx-6 mb-4 scroll-mt-24 overflow-hidden bg-[radial-gradient(120%_160%_at_12%_-15%,#2E1E4D_0%,#1A1129_42%,#100A1C_100%)] px-5 py-10 sm:-mx-10 sm:px-10 sm:py-12"
+        aria-labelledby="story-tool-intro-title"
+        className="relative -mx-6 mb-1 scroll-mt-24 border-b border-white/10 px-5 py-3 sm:-mx-10 sm:px-8 sm:py-4"
       >
-        <div
-          className="pointer-events-none absolute -right-20 -top-[120px] h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle,rgba(181,128,255,0.30)_0%,rgba(181,128,255,0)_70%)] blur-[10px]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-[140px] left-[10%] h-[320px] w-[320px] rounded-full bg-[radial-gradient(circle,rgba(255,143,177,0.16)_0%,rgba(255,143,177,0)_70%)] blur-[10px]"
-          aria-hidden
-        />
-
-        <div className="relative z-[1] mx-auto flex max-w-[820px] flex-col items-center text-center">
-          <p
-            id="story-tool-notice"
-            role="status"
-            className="mb-5 max-w-[640px] text-[11px] leading-relaxed text-white/45"
-          >
-            <span className="font-bold uppercase tracking-[0.14em] text-amber-200/90">
-              {isDe ? 'In Entwicklung' : 'Under development'}
-            </span>
-            <span className="mx-1.5 text-white/25">·</span>
-            {isDe
-              ? 'Die Vorschau ist verfügbar. Der KI-Story-Generator läuft im Beispielmodus.'
-              : 'The preview is available. The AI story generator runs in sample mode.'}
-          </p>
-
-          <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#C9A2FF]">
-            {isDe ? 'Story-Werkzeug · TP3' : 'Story Creation Tool · TP3'}
-          </p>
-
-          <h1 className="font-lora text-[clamp(1.7rem,3.4vw,2.25rem)] font-bold leading-[1.18] text-white">
-            {isDe ? (
-              <>
-                Wandle deine Erfahrung in{' '}
-                <em className="not-italic text-[#B580FF]">eine Geschichte</em>
-              </>
-            ) : (
-              <>
-                Turn your experience into{' '}
-                <em className="not-italic text-[#B580FF]">a story</em>
-              </>
-            )}
-          </h1>
-
-          <p className="mt-3 max-w-[640px] text-[14px] leading-[1.55] text-white/60">
-            {isDe
-              ? 'Schreibe sie, füge ein Interview ein oder starte mit einem Impuls. Du entscheidest, was du teilst – und nichts wird veröffentlicht, solange du nicht zustimmst.'
-              : 'Write it, paste an interview, or start from a prompt. You choose what to share, and nothing is published unless you decide.'}
-          </p>
-
-          <p className="mt-7 text-[12.5px] text-white/50">
-            {isDe
-              ? 'Fünf Schritte, keiner ist Pflicht. Tippe einen Schritt an, um zu sehen, was dazugehört.'
-              : 'Five steps, none required. Tap a step to see what it involves.'}
-          </p>
-
-          <div
-            className="mt-4 flex max-w-[680px] flex-wrap items-center justify-center gap-x-2 gap-y-2.5"
-            role="tablist"
-            aria-label={isDe ? 'Story-Schritte' : 'Story steps'}
-          >
-            {steps.map((step, idx) => {
-              const color = STEP_COLORS[idx];
-              const selected = idx === activeStep;
-              return (
-                <button
-                  key={step.t}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  aria-controls="story-step-detail"
-                  id={`story-step-${idx + 1}`}
-                  onClick={() => setActiveStep(idx)}
-                  className={cn(
-                    'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-left transition duration-[180ms]',
-                    selected
-                      ? 'border-white/20 bg-white/[0.08] text-white'
-                      : 'border-white/[0.08] bg-white/[0.03] text-white/70 hover:border-white/16 hover:bg-white/[0.06] hover:text-white'
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold',
-                      selected ? `${color.fill} border-transparent ${color.glow}` : `bg-[#1A1129] ${color.ring}`
-                    )}
-                  >
-                    {idx + 1}
-                  </span>
-                  <span className="text-[12.5px] font-medium leading-none">{step.t}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            id="story-step-detail"
-            role="tabpanel"
-            aria-labelledby={`story-step-${activeStep + 1}`}
-            className="mt-6 w-full max-w-[680px] rounded-2xl border border-white/10 bg-white/[0.045] px-6 py-5 text-left sm:px-7 sm:py-6"
-          >
-            <p className={cn('text-[10.5px] font-bold uppercase tracking-[0.14em]', currentColor.ring.split(' ')[1])}>
-              {isDe ? `Schritt ${activeStep + 1} von 5` : `Step ${activeStep + 1} of 5`}
+        <div className="grid items-center gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-8">
+          <div className="min-w-0">
+            <p className="mb-1.5 flex flex-wrap items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-[#B580FF]">
+              {isDe ? 'Story-Werkzeug' : 'Story creation tool'}
+              <span
+                id="story-tool-notice"
+                role="status"
+                className="rounded-full border border-amber-200/40 px-2 py-0.5 text-[11px] font-semibold normal-case tracking-normal text-amber-200"
+              >
+                {isDe ? 'In Entwicklung' : 'In development'}
+              </span>
             </p>
-            <h2 className="mt-1.5 font-lora text-[1.15rem] font-bold leading-snug text-white sm:text-[1.25rem]">
-              {current.t}
-            </h2>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-white/65">{current.d}</p>
-          </div>
-
-          <div className="mt-7 flex flex-col items-center gap-3">
-            <p className="text-[12px] font-medium text-white/45">
-              {isDe ? 'Optionale Helfer' : 'Optional helpers'}
+            <h1
+              id="story-tool-intro-title"
+              className="font-lora text-[clamp(1.25rem,2vw,1.7rem)] font-bold leading-tight text-white"
+            >
+              {isDe ? (
+                <>
+                  Wandle deine Erfahrung in <em className="not-italic text-[#B580FF]">eine Geschichte</em>
+                </>
+              ) : (
+                <>
+                  Turn your experience into <em className="not-italic text-[#B580FF]">a story</em>
+                </>
+              )}
+            </h1>
+            <p className="mt-1.5 max-w-[46ch] text-sm leading-snug text-white/80">
+              {isDe
+                ? 'Starte mit einem Gespräch oder einem Transkript und forme die Kapitel selbst.'
+                : 'Start from a conversation or a transcript, then shape the chapters yourself.'}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <ToggleChip label={isDe ? 'KI-Unterstützung' : 'AI assistance'} initialOn />
-              <ToggleChip label={isDe ? 'Peer-Feedback' : 'Peer feedback'} />
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a
+                href="#ai-story-tool"
+                onClick={scrollToSection('ai-story-tool', true)}
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#7339E0] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#8150EA] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EDE5FF]"
+              >
+                {isDe ? 'Geschichte starten' : 'Start your story'}
+              </a>
+              <a
+                href="#community-stories"
+                onClick={scrollToSection('community-stories', false)}
+                className="inline-flex min-h-11 items-center justify-center text-sm font-bold text-[#EDE5FF] underline decoration-white/40 underline-offset-4 hover:text-white hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EDE5FF]"
+              >
+                {isDe ? 'Veröffentlichte Geschichten lesen' : 'Read published stories'}
+              </a>
             </div>
           </div>
 
-          <div className="mt-6 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-            <button
-              type="button"
-              onClick={scrollAi}
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#B580FF] px-5 py-2.5 text-[13px] font-bold text-white transition hover:-translate-y-px hover:brightness-110"
+          <div
+            className="min-w-0"
+            role="group"
+            aria-label={
+              isDe
+                ? 'Eine Brücke mit vier Steinen, einer für jeden Schritt'
+                : 'A bridge with four stones, one for each step'
+            }
+          >
+            <div className="relative">
+              <svg
+                viewBox="0 0 400 72"
+                className="pointer-events-none absolute inset-x-0 top-0 h-16 w-full"
+                aria-hidden
+              >
+                <path
+                  d="M20 58 Q200 6 380 58"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.22)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M20 58 Q200 6 380 58"
+                  fill="none"
+                  stroke="#B580FF"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  pathLength={1}
+                  strokeDasharray="1"
+                  strokeDashoffset={1 - BRIDGE_REACH[activeStep]}
+                  style={{ transition: reducedMotion ? 'none' : 'stroke-dashoffset 0.7s ease' }}
+                />
+              </svg>
+              <div className="relative grid grid-cols-4">
+                {BRIDGE_STEPS.map((step, index) => {
+                  const reached = index <= activeStep;
+                  const selected = index === activeStep;
+                  const name = isDe ? step.de : step.en;
+                  return (
+                    <button
+                      key={step.en}
+                      type="button"
+                      className={`flex min-w-0 flex-col items-center gap-1 rounded-lg px-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EDE5FF] ${
+                        index === 0 || index === 3 ? 'pt-6' : 'pt-0'
+                      }`}
+                      aria-current={selected ? 'step' : undefined}
+                      aria-pressed={selected}
+                      aria-label={isDe ? `Schritt ${index + 1}, ${name}` : `Step ${index + 1}, ${name}`}
+                      onClick={() => chooseStep(index)}
+                      onMouseEnter={() => chooseStep(index)}
+                      onFocus={() => chooseStep(index)}
+                    >
+                      <span
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold text-white ${
+                          reached
+                            ? 'border-[#9152FF] bg-[#7339E0]'
+                            : 'border-[#B580FF] bg-[#1A1033]'
+                        } ${selected ? 'ring-2 ring-[#EDE5FF] ring-offset-2 ring-offset-[#1A1033]' : ''}`}
+                      >
+                        {index + 1}
+                      </span>
+                      <span
+                        className={`max-w-full truncate text-[11px] font-semibold leading-none sm:text-xs ${
+                          selected ? 'text-white' : 'text-[#EDE5FF]'
+                        }`}
+                      >
+                        {name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <p
+              className="mt-1.5 min-h-10 text-center text-sm leading-snug text-white/85"
+              aria-live="polite"
             >
-              {isDe ? 'KI-Story-Generator ausprobieren' : 'Try the AI story generator'}
-            </button>
-            <button
-              type="button"
-              onClick={scrollStories}
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/[0.05] px-5 py-2.5 text-[13px] font-bold text-white/90 transition hover:-translate-y-px hover:border-white/25 hover:bg-white/[0.08]"
-            >
-              {isDe ? 'Veröffentlichte Stories lesen' : 'Read published stories'}
-            </button>
+              {isDe ? BRIDGE_STEPS[activeStep].deDetail : BRIDGE_STEPS[activeStep].enDetail}
+            </p>
           </div>
         </div>
+        <p className="mt-2 text-[13px] leading-snug text-white/80">{promises}</p>
       </section>
 
       {canCreateStories ? (
@@ -287,7 +237,8 @@ export function StoryToolPageContent({
       ) : (
         <section
           id="ai-story-tool"
-          className="scroll-mt-24 rounded-[28px] border border-white/10 bg-white/[0.05] px-6 py-10 sm:px-10"
+          tabIndex={-1}
+          className="scroll-mt-24 rounded-[28px] border border-white/10 bg-white/[0.05] px-6 py-10 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EDE5FF] sm:px-10"
         >
           <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-[#C9A2FF]">
             {isDe ? 'Anmeldung nötig' : 'Sign in required'}
@@ -311,7 +262,9 @@ export function StoryToolPageContent({
         </section>
       )}
 
-      <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />
+      <div className="mt-8 overflow-hidden rounded-[28px]">
+        <CommunityStories extraStories={approvedStories.map(mapApprovedStoryToCommunityStory)} />
+      </div>
     </>
   );
 }

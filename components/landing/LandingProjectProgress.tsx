@@ -45,8 +45,6 @@ export function LandingProjectProgress() {
     today: isDe ? 'Heute' : 'Today',
     done: isDe ? 'Abgeschlossen' : 'Done',
     upcoming: isDe ? 'Demnächst' : 'Coming up',
-    here: (n: number) =>
-      isDe ? `Wir sind hier · Monat ${n} von 12` : `We are here · Month ${n} of 12`,
     phases: [
       {
         phase: isDe ? 'Phase 1' : 'Phase 1',
@@ -77,13 +75,8 @@ export function LandingProjectProgress() {
 
   const rows = copy.phases.map((phase, index) => {
     const status = phaseStatus(month, PHASES[index].startMonth, PHASES[index].endMonth);
-    const pill =
-      status === 'done'
-        ? copy.done
-        : status === 'current'
-          ? copy.here(Math.floor(month - PHASES[index].startMonth) + 1)
-          : copy.upcoming;
-    return { ...phase, status, pill };
+    const pill = status === 'done' ? copy.done : status === 'upcoming' ? copy.upcoming : '';
+    return { ...phase, status, pill, showPeriod: index !== 2 };
   });
 
   const currentIndex = rows.findIndex((row) => row.status === 'current');
@@ -207,18 +200,21 @@ export function LandingProjectProgress() {
                       )}
                     >
                       <span>{row.phase}</span>
-                      <span
-                        className={cn(
-                          'rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold',
-                          row.status === 'current' && 'bg-amber-400 text-[#1A1033]',
-                          row.status === 'done' && 'bg-[#F5F0FF] text-[#7339E0]',
-                          row.status === 'upcoming' && 'bg-[#F2EEFF] text-[#6B5F8A]'
-                        )}
-                      >
-                        {row.pill}
-                      </span>
+                      {row.pill ? (
+                        <span
+                          className={cn(
+                            'rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold',
+                            row.status === 'done' && 'bg-[#F5F0FF] text-[#7339E0]',
+                            row.status === 'upcoming' && 'bg-[#F2EEFF] text-[#6B5F8A]'
+                          )}
+                        >
+                          {row.pill}
+                        </span>
+                      ) : null}
                     </div>
-                    <p className="mb-1 font-primary text-[0.8rem] text-[#6B5F8A]">{row.period}</p>
+                    {row.showPeriod ? (
+                      <p className="mb-1 font-primary text-[0.8rem] text-[#6B5F8A]">{row.period}</p>
+                    ) : null}
                     <h3 className="mb-1 font-lora text-base font-bold text-[#1A1033]">{row.heading}</h3>
                     <p className="font-primary text-[0.82rem] leading-relaxed text-[#6B5F8A]">{row.body}</p>
                   </button>
@@ -229,7 +225,7 @@ export function LandingProjectProgress() {
                     type="button"
                     data-timeline-dot
                     aria-pressed={isActive}
-                    aria-label={`${row.phase}, ${row.heading}, ${row.pill}`}
+                    aria-label={[row.phase, row.heading, row.pill].filter(Boolean).join(', ')}
                     onClick={() => setActive(index)}
                     className={cn(
                       'relative h-7 w-7 rounded-full border-[3px] shadow-[0_0_0_4px_#fff,0_8px_14px_rgba(26,16,51,0.12)] transition duration-200 motion-reduce:transition-none',

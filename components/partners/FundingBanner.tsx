@@ -12,7 +12,7 @@ type Logo = {
 
 const DEFAULT_FUNDING_TEXT =
   'Das Projekt Building Bridges wird im Rahmen des Programms „Integration durch Bildung" durch das Bundesministerium für Bildung, Familie, Senioren, Frauen und Jugend und die Europäische Union über den Europäischen Sozialfonds Plus (ESF Plus) gefördert.';
-const DEFAULT_PARTNERS_LOGO = '/workshops/updated/Partners%20Logo.jpg';
+const DEFAULT_PARTNERS_LOGO = '/workshops/updated/funding-strip.png';
 
 export function FundingBanner({
   heading = 'Gefördert durch',
@@ -44,8 +44,10 @@ export function FundingBanner({
                   <Image
                     src={combinedLogoSrc}
                     alt="Building Bridges funding and partner logos"
-                    width={1200}
-                    height={190}
+                    width={1920}
+                    height={178}
+                    quality={100}
+                    unoptimized
                     className="h-auto w-full object-contain"
                     priority={false}
                   />

@@ -1,6 +1,15 @@
+import { randomUUID } from 'crypto';
 import { openStoryAiClient } from '@/lib/ai/story-ai-client';
+import {
+  STRUCTURE_CHAPTER_PROMPT,
+  STRUCTURE_SUMMARY_PROMPT,
+  chaptersFromModelReply,
+  clampSummary,
+  parseStructureSummary,
+  type StructureChapter,
+} from '@/lib/ai/story-structure';
 
-export type StoryAssistAction = 'grammar' | 'titles' | 'story-title' | 'draft';
+export type StoryAssistAction = 'grammar' | 'titles' | 'story-title' | 'draft' | 'structure';
 export type StoryDraftCategory = 'mentor' | 'participant' | 'awareness';
 
 export type StoryAssistResult = {
@@ -9,6 +18,8 @@ export type StoryAssistResult = {
   title?: string;
   category?: StoryDraftCategory;
   draft?: string;
+  summary?: string;
+  chapters?: StructureChapter[];
   source: 'ai';
 };
 
@@ -18,9 +29,12 @@ const ASSIST_TIMEOUT_MS = 30_000;
 const ASSIST_TEMPERATURE = 0.3;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 30;
+const STRUCTURE_RUN_REQUESTS = 6;
+const STRUCTURE_RUN_MS = 15 * 60 * 1000;
 const STORY_CATEGORIES: StoryDraftCategory[] = ['mentor', 'participant', 'awareness'];
 
 const rateBuckets = new Map<string, { count: number; windowStart: number }>();
+const structureRuns = new Map<string, { userId: string; remaining: number; expires: number }>();
 
 export const STORY_ASSIST_UNAVAILABLE =
   'AI help is not available right now. You can keep editing yourself.';
@@ -50,6 +64,34 @@ export function classifyStoryAssistError(error: unknown): {
 
 export function resetStoryAssistRateLimitForTests() {
   rateBuckets.clear();
+  structureRuns.clear();
+}
+
+/** The first call of a structure run counts as one hourly request. Later calls in that run do not. */
+export function authorizeStructureRun(
+  userId: string,
+  runId: string | undefined,
+  now = Date.now()
+): { ok: true; runId: string } | { ok: false; reason: 'hourly' | 'run' } {
+  const existingId = runId?.trim() ?? '';
+  if (existingId) {
+    const run = structureRuns.get(existingId);
+    if (!run || run.userId !== String(userId) || now > run.expires || run.remaining <= 0) {
+      return { ok: false, reason: 'run' };
+    }
+    run.remaining -= 1;
+    return { ok: true, runId: existingId };
+  }
+
+  const limit = consumeStoryAssistRateLimit(userId, now);
+  if (limit.status === 429) return { ok: false, reason: 'hourly' };
+  const created = randomUUID();
+  structureRuns.set(created, {
+    userId: String(userId),
+    remaining: STRUCTURE_RUN_REQUESTS - 1,
+    expires: now + STRUCTURE_RUN_MS,
+  });
+  return { ok: true, runId: created };
 }
 
 export function consumeStoryAssistRateLimit(userId: string, now = Date.now()): { status: 200 | 429 } {
@@ -109,7 +151,7 @@ export function parseStoryAssistContent(raw: string): Record<string, unknown> | 
 
 export async function assistStoryDraft(input: {
   locale: 'en' | 'de';
-  action: StoryAssistAction;
+  action: Exclude<StoryAssistAction, 'structure'>;
   text: string;
   currentLabel?: string;
 }): Promise<StoryAssistResult> {
@@ -134,7 +176,8 @@ Rules:
   mentor = a role-model / mentoring path; participant = a personal programme or school experience; awareness = a wider empowerment or structural issue.
 - draft: a coherent first-person narrative in the speaker's voice.
 - This is a DRAFT for the storyteller and a human reviewer. It must not be treated as published.
-- Return only this JSON object: {"title":"...","category":"mentor|participant|awareness","draft":"..."}`,
+- summary: at most 2 sentences and at most 240 characters, in the language of the text. If it is German and addresses the reader, use "du", never "Sie".
+- Return only this JSON object: {"title":"...","category":"mentor|participant|awareness","draft":"...","summary":"..."}`,
       user: `The person's text:\n\n${text}`,
       maxTokens: 2200,
     },
@@ -191,7 +234,8 @@ Rules:
     const draft = typeof parsed.draft === 'string' ? parsed.draft.trim() : '';
     const category = parseCategory(parsed.category);
     if (!title || !draft || !category) throw new Error('unreadable');
-    return { title, category, draft, source: 'ai' };
+    const summary = typeof parsed.summary === 'string' ? clampSummary(parsed.summary) : '';
+    return { title, category, draft, ...(summary ? { summary } : {}), source: 'ai' };
   }
 
   if (input.action === 'grammar') {
@@ -203,4 +247,37 @@ Rules:
   const titles = asStringArray(parsed.titles);
   if (titles.length === 0) throw new Error('unreadable');
   return { titles, source: 'ai' };
+}
+
+export async function structureTranscriptPiece(input: {
+  mode: 'chapters' | 'summary';
+  text: string;
+  partNumber: number;
+}): Promise<{ chapters: StructureChapter[]; summary: string }> {
+  const ai = openStoryAiClient(ASSIST_TIMEOUT_MS);
+  if (!ai) throw new Error('missing-key');
+  const text = input.text.trim();
+  if (!text) throw new Error('empty');
+
+  const response = await ai.client.chat.completions.create({
+    model: ai.model,
+    temperature: 0.2,
+    max_tokens: input.mode === 'summary' ? 180 : 3500,
+    messages: [
+      {
+        role: 'system',
+        content: input.mode === 'summary' ? STRUCTURE_SUMMARY_PROMPT : STRUCTURE_CHAPTER_PROMPT,
+      },
+      { role: 'user', content: text },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content ?? '';
+  if (input.mode === 'summary') {
+    return { chapters: [], summary: clampSummary(parseStructureSummary(content)) };
+  }
+  return {
+    chapters: chaptersFromModelReply(text, content, input.partNumber),
+    summary: '',
+  };
 }

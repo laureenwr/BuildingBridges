@@ -24,24 +24,14 @@ export function isPlatformAdminEmail(email?: string | null) {
 
 export type SignupAccountRole = 'ADMIN' | 'STUDENT' | 'MENTOR';
 
-export type SignupRoleResult =
-  | { ok: true; role: SignupAccountRole }
-  | { ok: false; code: 'admin-restricted' };
+export type SignupRoleResult = { ok: true; role: SignupAccountRole };
 
-/** Server-side signup role assignment. Unauthorized Admin requests are refused, not remapped. */
-export function resolveSignupRole(email: string, requestedRole?: string | null): SignupRoleResult {
+/** Posted role is ignored. Admin-list emails become ADMIN. Everyone else is STUDENT. */
+export function resolveSignupRole(email: string, _requestedRole?: string | null): SignupRoleResult {
   if (isPlatformAdminEmail(email)) {
     return { ok: true, role: 'ADMIN' };
   }
-
-  const requested = String(requestedRole ?? '').trim().toUpperCase();
-  if (requested === 'ADMIN') {
-    return { ok: false, code: 'admin-restricted' };
-  }
-  if (requested === 'STUDENT') {
-    return { ok: true, role: 'STUDENT' };
-  }
-  return { ok: true, role: 'MENTOR' };
+  return { ok: true, role: 'STUDENT' };
 }
 
 export function userHasAdminAccess<T extends { role?: string | null; email?: string | null }>(

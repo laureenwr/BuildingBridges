@@ -132,6 +132,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1.2rem;
   margin-bottom: 2.5rem;
+  align-items: start;
 }
 
 @media (max-width: 800px) {
@@ -272,6 +273,10 @@
 }
 
 .community-stories .sbc-teaser {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
   font-size: 0.82rem;
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.5);

@@ -8,8 +8,14 @@ export function portalRoleLabel(isDe: boolean, role: string) {
   if (value === 'MENTOR' || role === 'Mentor' || role === 'Mentor:in') {
     return isDe ? 'Mentor:in' : 'Mentor';
   }
-  if (value === 'STUDENT' || role === 'Participant' || role === 'Teilnehmer:in') {
+  if (
+    value === 'STUDENT' ||
+    value === 'MENTEE' ||
+    role === 'Participant' ||
+    role === 'Teilnehmer:in' ||
+    role === 'Mentee'
+  ) {
     return isDe ? 'Teilnehmer:in' : 'Participant';
   }
-  return isDe ? 'Mentee' : 'Mentee';
+  return isDe ? 'Teilnehmer:in' : 'Participant';
 }

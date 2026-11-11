@@ -5,6 +5,14 @@ import { AiInterviewChat, type InterviewAnswer } from '@/components/landing/AiIn
 import { submitStoryToolStory } from '@/lib/actions/story-tool';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 import {
+  clampSummary,
+  failedPartChapter,
+  missingSpeakerShare,
+  splitTranscriptParts,
+  summaryFromChapter,
+  summaryPromptText,
+} from '@/lib/ai/story-structure';
+import {
   clearStoryToolDraft,
   loadStoryToolDraft,
   saveStoryToolDraft,
@@ -40,6 +48,35 @@ async function requestStoryAssist(input: {
     title?: string;
     category?: StoryKind;
     draft?: string;
+    summary?: string;
+    chapters?: { title: string; text: string; fallback?: boolean }[];
+    runId?: string;
+    message?: string;
+    code?: string;
+  };
+}
+
+async function requestStructure(
+  input: {
+    locale: 'en' | 'de';
+    mode: 'chapters' | 'summary';
+    text: string;
+    runId?: string;
+    partNumber?: number;
+  },
+  signal: AbortSignal
+) {
+  const response = await fetch('/api/story-assist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'structure', ...input }),
+    signal,
+  });
+  return (await response.json()) as {
+    success?: boolean;
+    chapters?: { title: string; text: string }[];
+    summary?: string;
+    runId?: string;
     message?: string;
     code?: string;
   };
@@ -130,7 +167,14 @@ export function AiStoryTool() {
   const [format, setFormat] = useState<PreviewFormat>('immersive');
   const [litRow, setLitRow] = useState<number | null>(null);
   const [albumIndex, setAlbumIndex] = useState(0);
+  const [storySummary, setStorySummary] = useState('');
   const [consentGiven, setConsentGiven] = useState(false);
+  const [subjectConsent, setSubjectConsent] = useState(false);
+  const [structureBusy, setStructureBusy] = useState(false);
+  const [structureProgress, setStructureProgress] = useState('');
+  const [structureError, setStructureError] = useState<string | null>(null);
+  const [structureCoverageWarning, setStructureCoverageWarning] = useState(false);
+  const [structureLeftOutQuestions, setStructureLeftOutQuestions] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [assistByChapter, setAssistByChapter] = useState<Record<string, ChapterAssist>>({});
@@ -143,6 +187,8 @@ export function AiStoryTool() {
   const [draftHydrated, setDraftHydrated] = useState(false);
   const sessionIdRef = useRef('');
   const lastSourceKeyRef = useRef('');
+  const chaptersTouchedRef = useRef(false);
+  const structureAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const draft = loadStoryToolDraft();
@@ -152,9 +198,12 @@ export function AiStoryTool() {
       setTranscript(draft.transcript);
       setAnswers(draft.answers);
       setStoryTitle(draft.storyTitle);
+      setStorySummary(draft.storySummary);
       setChapters(draft.chapters);
+      if (draft.chapters.length > 0) chaptersTouchedRef.current = true;
       setStoryType(draft.storyType);
       setConsentGiven(draft.consentGiven);
+      setSubjectConsent(draft.subjectConsent);
       if (draft.sessionId) sessionIdRef.current = draft.sessionId;
     }
     setDraftHydrated(true);
@@ -172,9 +221,11 @@ export function AiStoryTool() {
       transcript,
       answers,
       storyTitle,
+      storySummary,
       chapters,
       storyType,
       consentGiven,
+      subjectConsent,
       sessionId: sessionIdRef.current,
     });
   }, [
@@ -184,6 +235,8 @@ export function AiStoryTool() {
     consentGiven,
     draftHydrated,
     step,
+    storySummary,
+    subjectConsent,
     storyTitle,
     storyType,
     submissionStatus?.type,
@@ -241,7 +294,7 @@ export function AiStoryTool() {
         window.alert(L('Please add a title for this story.', 'Bitte gib dieser Story einen Titel.'));
         return;
       }
-      if (next === 3 && lastSourceKeyRef.current !== sourceKey) {
+      if (next === 3 && !chaptersTouchedRef.current && lastSourceKeyRef.current !== sourceKey) {
         setChapters(buildChaptersFromSource());
         lastSourceKeyRef.current = sourceKey;
       }
@@ -261,19 +314,27 @@ export function AiStoryTool() {
     document.getElementById('ai-story-tool')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const markChaptersTouched = () => {
+    chaptersTouchedRef.current = true;
+  };
+
   const updateChapter = (id: string, patch: Partial<Chapter>) => {
+    markChaptersTouched();
     setChapters((current) => current.map((chapter) => (chapter.id === id ? { ...chapter, ...patch } : chapter)));
   };
 
   const addChapter = () => {
+    markChaptersTouched();
     setChapters((current) => [...current, makeChapter({}, current.length)]);
   };
 
   const removeChapter = (id: string) => {
+    markChaptersTouched();
     setChapters((current) => (current.length <= 1 ? current : current.filter((chapter) => chapter.id !== id)));
   };
 
   const moveChapter = (id: string, direction: -1 | 1) => {
+    markChaptersTouched();
     setChapters((current) => {
       const index = current.findIndex((chapter) => chapter.id === id);
       const next = index + direction;
@@ -382,16 +443,7 @@ export function AiStoryTool() {
       }
       setStoryTitle(result.title);
       setStoryType(result.category);
-      setChapters([
-        makeChapter(
-          {
-            label: L('First draft', 'Erster Entwurf'),
-            text: result.draft,
-          },
-          0
-        ),
-      ]);
-      lastSourceKeyRef.current = sourceKey;
+      setStorySummary(clampSummary(result.summary || summaryFromChapter(result.draft || '')));
       setDraftReady(true);
     } catch {
       setDraftError(L('AI help is not available right now.', 'KI-Hilfe ist gerade nicht verfügbar.'));
@@ -401,6 +453,7 @@ export function AiStoryTool() {
   };
 
   const mergeWithPrevious = (id: string) => {
+    markChaptersTouched();
     setChapters((current) => {
       const index = current.findIndex((chapter) => chapter.id === id);
       if (index <= 0) return current;
@@ -415,16 +468,179 @@ export function AiStoryTool() {
     });
   };
 
+  const structureTranscript = async () => {
+    const source = transcript.trim();
+    if (source.length < 10) {
+      setStructureError(
+        L(
+          'Paste a transcript first. You can still split it into chapters yourself.',
+          'Füge zuerst ein Transkript ein. Du kannst es auch selbst in Kapitel teilen.'
+        )
+      );
+      return;
+    }
+    if (chaptersTouchedRef.current && chapters.some((chapter) => chapter.text.trim())) {
+      const replace = window.confirm(
+        L(
+          'Replace the chapters you already edited with a new structure?',
+          'Die Kapitel, die du schon bearbeitet hast, durch eine neue Gliederung ersetzen?'
+        )
+      );
+      if (!replace) return;
+    }
+
+    const parts = splitTranscriptParts(source);
+    const controller = new AbortController();
+    structureAbortRef.current = controller;
+    setStructureBusy(true);
+    setStructureError(null);
+    setStructureCoverageWarning(false);
+    setStructureLeftOutQuestions(false);
+    const startedAt = Date.now();
+    const collected: { title: string; text: string }[] = [];
+    let runId = '';
+    let failedPart = false;
+
+    try {
+      for (let index = 0; index < parts.length; index += 1) {
+        if (controller.signal.aborted) return;
+        setStructureProgress(
+          L(`Part ${index + 1} of ${parts.length}...`, `Teil ${index + 1} von ${parts.length}...`)
+        );
+        try {
+          const result = await requestStructure(
+            {
+              locale: isDe ? 'de' : 'en',
+              mode: 'chapters',
+              text: parts[index],
+              runId: runId || undefined,
+              partNumber: index + 1,
+            },
+            controller.signal
+          );
+          if (controller.signal.aborted) return;
+          if (!result.success || !result.chapters?.length) {
+            if (index === 0 && !result.runId) {
+              setStructureError(
+                L(
+                  'Structuring is not available right now. You can still split the text into chapters yourself.',
+                  'Das Gliedern ist gerade nicht möglich. Du kannst den Text trotzdem selbst in Kapitel teilen.'
+                )
+              );
+              return;
+            }
+            failedPart = true;
+            collected.push(failedPartChapter(index + 1, parts[index]));
+            continue;
+          }
+          runId = result.runId || runId;
+          collected.push(...result.chapters);
+        } catch (error) {
+          if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) return;
+          if (index === 0 && collected.length === 0 && !runId) {
+            setStructureError(
+              L(
+                'Structuring is not available right now. You can still split the text into chapters yourself.',
+                'Das Gliedern ist gerade nicht möglich. Du kannst den Text trotzdem selbst in Kapitel teilen.'
+              )
+            );
+            return;
+          }
+          failedPart = true;
+          collected.push(failedPartChapter(index + 1, parts[index]));
+        }
+      }
+
+      if (controller.signal.aborted) return;
+      if (runId && collected.length > 0) {
+        setStructureProgress(L('Writing a short summary...', 'Kurze Zusammenfassung wird geschrieben...'));
+        try {
+          const summaryResult = await requestStructure(
+            {
+              locale: isDe ? 'de' : 'en',
+              mode: 'summary',
+              text: summaryPromptText(collected),
+              runId,
+            },
+            controller.signal
+          );
+          if (summaryResult.success && summaryResult.summary) {
+            setStorySummary(clampSummary(summaryResult.summary));
+          } else {
+            setStorySummary(summaryFromChapter(collected[0]?.text ?? ''));
+          }
+        } catch (error) {
+          if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) return;
+          setStorySummary(summaryFromChapter(collected[0]?.text ?? ''));
+        }
+      }
+
+      const nextChapters = collected.map((chapter, index) =>
+        makeChapter({ label: chapter.title, text: chapter.text }, index)
+      );
+      setChapters(nextChapters);
+      chaptersTouchedRef.current = true;
+      lastSourceKeyRef.current = sourceKey;
+      setStructureLeftOutQuestions(true);
+      const missing = missingSpeakerShare(
+        source,
+        nextChapters.map((chapter) => chapter.text)
+      );
+      if (missing > 0.15) {
+        setStructureCoverageWarning(true);
+        setStep(1);
+      } else {
+        setStep(3);
+      }
+      if (failedPart) {
+        setStructureError(
+          L(
+            'One part could not be structured, so it was kept in full. You can still split that part yourself.',
+            'Ein Teil konnte nicht gegliedert werden und bleibt deshalb vollständig erhalten. Du kannst diesen Teil selbst teilen.'
+          )
+        );
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.info(
+          `Story structure: parts=${parts.length} chapters=${nextChapters.length} ms=${Date.now() - startedAt}`
+        );
+      }
+    } finally {
+      if (structureAbortRef.current === controller) structureAbortRef.current = null;
+      setStructureBusy(false);
+      setStructureProgress('');
+    }
+  };
+
+  const cancelStructure = () => {
+    structureAbortRef.current?.abort();
+    setStructureError(
+      L(
+        'Stopped. You can still split the text into chapters yourself.',
+        'Angehalten. Du kannst den Text trotzdem selbst in Kapitel teilen.'
+      )
+    );
+  };
+
   const resetCollectedStory = () => {
+    structureAbortRef.current?.abort();
     setTranscript('');
     setAnswers([]);
     setChapters([]);
+    chaptersTouchedRef.current = false;
     setAssistByChapter({});
     setTitleSuggestions([]);
     setTitleError(null);
     setDraftError(null);
     setDraftReady(false);
+    setStorySummary('');
+    setStructureError(null);
+    setStructureCoverageWarning(false);
+    setStructureLeftOutQuestions(false);
+    setStructureBusy(false);
+    setStructureProgress('');
     setConsentGiven(false);
+    setSubjectConsent(false);
     setSubmissionStatus(null);
     sessionIdRef.current = '';
     lastSourceKeyRef.current = '';
@@ -434,12 +650,12 @@ export function AiStoryTool() {
   const handleSubmitForReview = useCallback(() => {
     if (isSubmitting || submissionStatus?.type === 'success') return;
 
-    if (!consentGiven) {
+    if (!consentGiven || !subjectConsent) {
       setSubmissionStatus({
         type: 'error',
         message: L(
-          'Please confirm consent before submitting this story for review.',
-          'Bitte bestätige die Zustimmung, bevor du diese Story zur Prüfung einreichst.'
+          'Please confirm both consent boxes before submitting this story for review.',
+          'Bitte bestätige beide Zustimmungskästchen, bevor du diese Story zur Prüfung einreichst.'
         ),
       });
       return;
@@ -459,7 +675,7 @@ export function AiStoryTool() {
       return;
     }
 
-    const summary = readyChapters[0].text.trim();
+    const summary = clampSummary(storySummary) || summaryFromChapter(readyChapters[0].text);
     const empowermentMessage = readyChapters[readyChapters.length - 1].text.trim();
     const trimmedTranscript = transcript.trim() || readyChapters.map((chapter) => chapter.text.trim()).join('\n\n');
 
@@ -520,9 +736,11 @@ export function AiStoryTool() {
             transcript,
             answers,
             storyTitle,
+            storySummary,
             chapters,
             storyType,
             consentGiven: true,
+            subjectConsent: true,
             sessionId: sessionIdRef.current,
           });
           setSubmissionStatus({
@@ -538,9 +756,11 @@ export function AiStoryTool() {
             transcript,
             answers,
             storyTitle,
+            storySummary,
             chapters,
             storyType,
             consentGiven: true,
+            subjectConsent: true,
             sessionId: sessionIdRef.current,
           });
           setSubmissionStatus({
@@ -555,7 +775,7 @@ export function AiStoryTool() {
           setIsSubmitting(false);
         });
     });
-  }, [answers, chapters, collectMode, consentGiven, isDe, isSubmitting, storyTitle, storyType, submissionStatus?.type, transcript]);
+  }, [answers, chapters, collectMode, consentGiven, isDe, isSubmitting, storySummary, storyTitle, storyType, subjectConsent, submissionStatus?.type, transcript]);
 
   return (
     <div className="ai-gen-wrapper mt-20 border-t border-white/10 pt-16" id="ai-story-tool">
@@ -673,6 +893,12 @@ export function AiStoryTool() {
                     sessionIdRef.current = '';
                   }}
                 />
+                <p className="mt-2 text-[0.76rem] text-white/45">
+                  {L(
+                    'Do not use the real names of other people.',
+                    'Bitte schreib keine echten Namen von anderen Menschen.'
+                  )}
+                </p>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[0.73rem] text-white/25">{charLabel}</span>
                   <button
@@ -683,6 +909,44 @@ export function AiStoryTool() {
                     {L('Clear', 'Leeren')}
                   </button>
                 </div>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => void structureTranscript()}
+                    disabled={structureBusy}
+                    className="rounded-full border border-[rgba(145,82,255,0.35)] px-4 py-2 text-[0.82rem] font-semibold text-[#B580FF] hover:bg-[rgba(145,82,255,0.1)] disabled:opacity-50"
+                  >
+                    {structureBusy
+                      ? structureProgress || L('Structuring...', 'Wird gegliedert...')
+                      : L('Structure my transcript', 'Transkript gliedern')}
+                  </button>
+                  {structureBusy ? (
+                    <button
+                      type="button"
+                      onClick={cancelStructure}
+                      className="rounded-full border border-white/15 px-3 py-2 text-[0.78rem] text-white/60 hover:text-white"
+                    >
+                      {L('Cancel', 'Abbrechen')}
+                    </button>
+                  ) : null}
+                </div>
+                {structureCoverageWarning ? (
+                  <p className="mt-3 text-[0.8rem] text-amber-100">
+                    {L(
+                      'Some parts of your text were not placed in chapters. Please check.',
+                      'Einige Teile deines Textes wurden nicht in Kapitel eingeordnet. Bitte prüfe das.'
+                    )}
+                  </p>
+                ) : null}
+                {structureLeftOutQuestions ? (
+                  <p className="mt-2 text-[0.78rem] text-white/55">
+                    {L(
+                      'Questions from the interviewer were left out. Please check that nothing important is missing.',
+                      'Fragen der interviewenden Person wurden weggelassen. Bitte prüfe, ob nichts Wichtiges fehlt.'
+                    )}
+                  </p>
+                ) : null}
+                {structureError ? <p className="mt-2 text-[0.78rem] text-rose-200/80">{structureError}</p> : null}
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
                   <span className="text-[0.76rem] text-white/20">{L('Supports any language', 'Unterstützt jede Sprache')}</span>
                   <button
@@ -704,8 +968,8 @@ export function AiStoryTool() {
             <h4 className="font-lora text-xl font-semibold text-white">{L('Title and story type', 'Titel und Story-Typ')}</h4>
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
               {L(
-                'Give the story a name and say whose story it is. Optional AI can draft a title, type, and first-person text from the full interview. You can edit everything. Nothing is published until an admin reviews it.',
-                'Gib der Story einen Namen und sage, wessen Geschichte es ist. Optional kann die KI aus dem ganzen Interview einen Titel, Typ und Ich-Entwurf vorschlagen. Du kannst alles ändern. Nichts wird veröffentlicht, bevor eine Admin-Person prüft.'
+                'Give the story a name and say whose story it is. Optional AI can fill the title, the type, and a short summary. It will not replace your chapters.',
+                'Gib der Story einen Namen und sage, wessen Geschichte es ist. Optional kann die KI Titel, Typ und eine kurze Zusammenfassung ausfüllen. Deine Kapitel werden nicht ersetzt.'
               )}
             </p>
             <label className="mb-3 block">
@@ -781,8 +1045,8 @@ export function AiStoryTool() {
               {draftReady && !draftError ? (
                 <p className="mt-2 text-[0.78rem] text-[#C9A6FF]">
                   {L(
-                    'Draft ready. Title and type are filled in. Open the next step to edit the narrative. This stays a draft until an admin approves it.',
-                    'Entwurf bereit. Titel und Typ sind ausgefüllt. Im nächsten Schritt kannst du den Text bearbeiten. Das bleibt ein Entwurf, bis eine Admin-Person zustimmt.'
+                    'Title, story type, and the short summary are filled in. Your chapters were not replaced.',
+                    'Titel, Story-Typ und die kurze Zusammenfassung sind ausgefüllt. Deine Kapitel wurden nicht ersetzt.'
                   )}
                 </p>
               ) : null}
@@ -810,14 +1074,30 @@ export function AiStoryTool() {
           <div className="p-8">
             <p className="mb-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-[#B580FF]">{L('Step 3', 'Schritt 3')}</p>
             <h4 className="font-lora text-xl font-semibold text-white">{L('Shape the chapters', 'Kapitel formen')}</h4>
+            {structureCoverageWarning ? (
+              <p className="mt-3 text-[0.8rem] text-amber-100">
+                {L(
+                  'Some parts of your text were not placed in chapters. Please check.',
+                  'Einige Teile deines Textes wurden nicht in Kapitel eingeordnet. Bitte prüfe das.'
+                )}
+              </p>
+            ) : null}
+            {structureLeftOutQuestions ? (
+              <p className="mt-2 text-[0.78rem] text-white/55">
+                {L(
+                  'Questions from the interviewer were left out. Please check that nothing important is missing.',
+                  'Fragen der interviewenden Person wurden weggelassen. Bitte prüfe, ob nichts Wichtiges fehlt.'
+                )}
+              </p>
+            ) : null}
             <p className="mb-6 mt-1 text-[0.84rem] text-white/45">
               {L(
                 collectMode === 'interview'
-                  ? 'Each answer is one chapter. Rename, edit, merge, or delete. Optional AI can fix grammar or suggest names. You choose what to keep.'
-                  : 'Your paste starts as one chapter. Split it yourself. Optional AI can fix grammar or suggest names. You choose what to keep.',
+                  ? 'Each answer is one chapter. Rename, edit, merge, or delete. Optional AI can fix grammar or suggest names. You choose what to keep. Review every chapter before you submit.'
+                  : 'Rename, edit, merge, or delete. If structuring was unavailable, the paste stays as one chapter and you can split it yourself. Review every chapter before you submit.',
                 collectMode === 'interview'
-                  ? 'Jede Antwort ist ein Kapitel. Benenne um, bearbeite, führe zusammen oder lösche. Optional kann KI Grammatik korrigieren oder Namen vorschlagen. Du entscheidest, was bleibt.'
-                  : 'Dein eingefügter Text startet als ein Kapitel. Teile ihn selbst. Optional kann KI Grammatik korrigieren oder Namen vorschlagen. Du entscheidest, was bleibt.'
+                  ? 'Jede Antwort ist ein Kapitel. Benenne um, bearbeite, führe zusammen oder lösche. Optional kann KI Grammatik korrigieren oder Namen vorschlagen. Du entscheidest, was bleibt. Prüfe jedes Kapitel, bevor du einreichst.'
+                  : 'Benenne um, bearbeite, führe zusammen oder lösche. Wenn das Gliedern nicht möglich war, bleibt der Text ein Kapitel und du kannst ihn selbst teilen. Prüfe jedes Kapitel, bevor du einreichst.'
               )}
             </p>
 
@@ -1263,6 +1543,24 @@ export function AiStoryTool() {
                   {L(
                     'I confirm that I have consent to submit this story for human review by Building Bridges. I understand it will not be published automatically.',
                     'Ich bestätige, dass ich die Zustimmung habe, diese Story zur menschlichen Prüfung durch Building Bridges einzureichen. Mir ist bewusst, dass sie nicht automatisch veröffentlicht wird.'
+                  )}
+                </span>
+              </label>
+              <label className="mt-4 flex cursor-pointer items-start gap-3 text-[0.82rem] leading-relaxed text-white/65 hover:text-white/80">
+                <input
+                  type="checkbox"
+                  checked={subjectConsent}
+                  onChange={(event) => {
+                    setSubjectConsent(event.target.checked);
+                    setSubmissionStatus(null);
+                  }}
+                  disabled={submissionStatus?.type === 'success'}
+                  className="mt-1 accent-[#9152FF]"
+                />
+                <span>
+                  {L(
+                    'I confirm that the person whose story this is has agreed to its publication.',
+                    'Ich bestätige, dass die Person, um deren Geschichte es geht, der Veröffentlichung zugestimmt hat.'
                   )}
                 </span>
               </label>

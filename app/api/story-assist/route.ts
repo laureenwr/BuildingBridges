@@ -2,15 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireApiStorySubmitter } from '@/lib/auth/access';
 import {
   assistStoryDraft,
+  authorizeStructureRun,
   classifyStoryAssistError,
   consumeStoryAssistRateLimit,
+  structureTranscriptPiece,
   type StoryAssistAction,
 } from '@/lib/ai/story-assist';
 
 export const runtime = 'nodejs';
+// Hobby allows 60 seconds. Each structure part and each draft call has its own 30 second timeout inside that.
 export const maxDuration = 60;
 
-const ACTIONS: StoryAssistAction[] = ['grammar', 'titles', 'story-title', 'draft'];
+const ACTIONS: StoryAssistAction[] = ['grammar', 'titles', 'story-title', 'draft', 'structure'];
 
 function rateLimitMessage(locale: 'en' | 'de') {
   return locale === 'de'
@@ -45,6 +48,9 @@ export async function POST(request: NextRequest) {
       action?: unknown;
       text?: unknown;
       currentLabel?: unknown;
+      mode?: unknown;
+      runId?: unknown;
+      partNumber?: unknown;
     };
 
     locale = body.locale === 'de' ? 'de' : 'en';
@@ -59,6 +65,23 @@ export async function POST(request: NextRequest) {
     }
     if (!text.trim()) {
       return NextResponse.json({ success: false, message: 'Add some text first.' }, { status: 400 });
+    }
+
+    if (action === 'structure') {
+      const mode = body.mode === 'summary' ? 'summary' : 'chapters';
+      const partNumber =
+        typeof body.partNumber === 'number' && body.partNumber >= 1 && body.partNumber <= 5
+          ? Math.floor(body.partNumber)
+          : 1;
+      const run = authorizeStructureRun(
+        String(auth.user.id),
+        typeof body.runId === 'string' ? body.runId : undefined
+      );
+      if (!run.ok) {
+        return NextResponse.json({ success: false, message: rateLimitMessage(locale) }, { status: 429 });
+      }
+      const result = await structureTranscriptPiece({ mode, text, partNumber });
+      return NextResponse.json({ success: true, runId: run.runId, ...result, source: 'ai' as const });
     }
 
     const limit = consumeStoryAssistRateLimit(String(auth.user.id));

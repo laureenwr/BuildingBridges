@@ -104,7 +104,22 @@ export function PersonProfile({ m }: { m: TeamMember }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           <Card className="p-6 md:col-span-1">
             <div className="w-full aspect-square relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-              <Image src={m.image} alt={m.name || `${m.firstName} ${m.lastName}`} fill className="object-cover" />
+              <Image
+                src={m.image}
+                alt={
+                  m.slug === 'may-khodaygan'
+                    ? isDe
+                      ? 'Porträt von May Khodaygan'
+                      : 'Portrait of May Khodaygan'
+                    : m.name || `${m.firstName} ${m.lastName}`
+                }
+                fill
+                className={
+                  m.slug === 'may-khodaygan'
+                    ? 'origin-[center_22%] scale-[1.85] object-cover'
+                    : 'object-cover'
+                }
+              />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">{m.name || `${m.firstName} ${m.lastName}`}</h1>
             {m.degree && <p className="text-sm text-gray-500 mb-2">{m.degree}</p>}

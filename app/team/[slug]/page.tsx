@@ -1,14 +1,21 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getMemberBySlug, teamMembers } from '@/lib/content/team';
 import { PersonProfile } from '@/components/team/PersonProfile';
 import type { Metadata } from 'next';
 
+const legacySlugs: Record<string, string> = {
+  may: 'may-khodaygan',
+};
+
 export async function generateStaticParams() {
-  return teamMembers.map((m) => ({ slug: m.slug }));
+  return [
+    ...teamMembers.map((m) => ({ slug: m.slug })),
+    ...Object.keys(legacySlugs).map((slug) => ({ slug })),
+  ];
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const member = getMemberBySlug(params.slug);
+  const member = getMemberBySlug(legacySlugs[params.slug] ?? params.slug);
   if (!member) return { title: 'Team Member Not Found' };
 
   const name = member.name || `${member.firstName} ${member.lastName}`;
@@ -19,6 +26,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default function PersonPage({ params }: { params: { slug: string } }) {
+  const target = legacySlugs[params.slug];
+  if (target) redirect(`/team/${target}`);
+
   const member = getMemberBySlug(params.slug);
 
   if (!member) {

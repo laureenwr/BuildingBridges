@@ -65,7 +65,7 @@ export default function TeamPage() {
   const bySlug = new Map(teamMembers.map((m) => [m.slug, m] as const));
 
   const TP1 = ['claudia-calvano', 'felicia-boma-lazaridou', 'katharina-froehlich'];
-  const TP2 = ['celiana-kiefer', 'dilara-yildirim', 'may'];
+  const TP2 = ['celiana-kiefer', 'dilara-yildirim', 'may-khodaygan'];
   const TP3 = ['hannes-rothe', 'daniel-courtney', 'laureen-warikoru', 'sumera-sajid'];
   const FORMER = ['esther-kipnis', 'susanne-birnkammer', 'elias-jelinek'];
   const keepDirectoryTitles = new Set(['esther-kipnis', 'susanne-birnkammer']);
@@ -95,9 +95,19 @@ export default function TeamPage() {
                 <div className="w-full h-80 md:h-96 relative mb-4 bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
                   <Image
                     src={member.image}
-                    alt={displayName}
+                    alt={
+                      member.slug === 'may-khodaygan'
+                        ? isDe
+                          ? 'Porträt von May Khodaygan'
+                          : 'Portrait of May Khodaygan'
+                        : displayName
+                    }
                     fill
-                    className="object-cover"
+                    className={
+                      member.slug === 'may-khodaygan'
+                        ? 'origin-[center_18%] scale-[1.7] object-cover'
+                        : 'object-cover'
+                    }
                   />
                 </div>
                 {member.former ? (

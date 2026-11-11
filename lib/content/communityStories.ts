@@ -924,7 +924,13 @@ export function mapApprovedStoryToCommunityStory(story: {
     };
   });
 
-  if (story.empowermentMessage) {
+  const sameWords = (left: string, right: string) =>
+    left.replace(/\s+/g, ' ').trim() === right.replace(/\s+/g, ' ').trim();
+  const empowerment = story.empowermentMessage.trim();
+  const empowermentRepeatsStory =
+    sameWords(empowerment, story.summary) ||
+    chaptersSource.some((chapter) => sameWords(chapter.text, empowerment));
+  if (empowerment && !empowermentRepeatsStory) {
     chapters.push({
       num: String(chapters.length + 1).padStart(2, '0'),
       label: 'Empowerment',

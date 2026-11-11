@@ -7,13 +7,109 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Heart, Globe, BookOpen } from 'lucide-react';
+import { AlertCircle, Heart, Globe, BookOpen, Info } from 'lucide-react';
 import { signUpAction } from './actions';
 import { signIn as nextAuthSignIn } from 'next-auth/react';
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useLanguage } from '@/lib/hooks/useLanguage';
 import { safeAuthRedirect } from '@/lib/nav/dashboard-href';
 import { TurnstileField } from '@/components/auth/TurnstileField';
+
+function AdminAccessHint({ isDe }: { isDe: boolean }) {
+  const tipId = useId();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const pointerKind = useRef('mouse');
+  const [open, setOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setDismissed(true);
+      setOpen(false);
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (wrapRef.current?.contains(event.target as Node)) return;
+      setDismissed(false);
+      setOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative shrink-0"
+      onMouseEnter={() => {
+        setDismissed(false);
+        setOpen(true);
+      }}
+      onMouseLeave={() => {
+        if (wrapRef.current?.contains(document.activeElement)) return;
+        setOpen(false);
+      }}
+      onBlur={(event) => {
+        if (event.currentTarget.contains(event.relatedTarget as Node)) return;
+        setDismissed(false);
+        setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-purple-700 hover:bg-purple-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+        aria-label={isDe ? 'Zum Admin-Zugang' : 'About admin access'}
+        aria-expanded={open}
+        aria-controls={tipId}
+        onPointerDown={(event) => {
+          pointerKind.current = event.pointerType;
+        }}
+        onClick={() => {
+          if (pointerKind.current === 'touch' || pointerKind.current === 'pen') {
+            setDismissed(false);
+            setOpen((current) => !current);
+            return;
+          }
+          setDismissed(false);
+          setOpen(true);
+        }}
+        onFocus={() => {
+          if (!dismissed) setOpen(true);
+        }}
+      >
+        <Info className="h-5 w-5" aria-hidden />
+      </button>
+      {open ? (
+        <div
+          id={tipId}
+          className="absolute bottom-full right-0 z-30 mb-2 w-64 rounded-lg border border-gray-200 bg-white p-3 text-left text-sm leading-snug text-gray-800 shadow-sm"
+        >
+          {isDe ? (
+            <>
+              Projektteam? Der Admin-Zugang wird vom Team eingerichtet.{' '}
+              <Link href="/contact" className="font-semibold text-purple-700 underline underline-offset-2">
+                Schreib uns.
+              </Link>
+            </>
+          ) : (
+            <>
+              Project team? Admin access is set up by the team.{' '}
+              <Link href="/contact" className="font-semibold text-purple-700 underline underline-offset-2">
+                Contact us.
+              </Link>
+            </>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
   const { isDe } = useLanguage();
@@ -29,7 +125,6 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
     password?: string;
   }>({});
   const signupStartedAtRef = useRef(String(Date.now()));
-  const [signupRole, setSignupRole] = useState<'MENTOR' | 'STUDENT' | 'ADMIN'>('MENTOR');
 
   const getErrorMessage = (errorCode: string | null) => {
     switch (errorCode) {
@@ -63,8 +158,8 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
           : 'Your password must include at least one number.';
       case 'admin-restricted':
         return isDe
-          ? 'Die Admin-Registrierung ist auf autorisierte Projekt-Administratorinnen beschränkt. Bitte registriere dich als Mentorin oder kontaktiere das Projektteam, wenn du administrativen Zugang benötigst.'
-          : 'Admin registration is restricted to authorized project administrators. Please register as a Mentor or contact the project team if you need administrative access.';
+          ? 'Projektteam? Der Admin-Zugang wird vom Team eingerichtet.'
+          : 'Project team? Admin access is set up by the team.';
       case 'blocked-email':
         return isDe
           ? 'Bitte nutze eine dauerhafte E-Mail-Adresse, keine Wegwerf-Adresse.'
@@ -106,16 +201,6 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
     passwordHintSignup: isDe
       ? 'Passwort muss mindestens 8 Zeichen, einen Großbuchstaben und eine Zahl enthalten'
       : 'Password must be at least 8 characters and include one uppercase letter and one number',
-    roleLabel: isDe ? 'Kontoart' : 'Account type',
-    roleMentor: isDe ? 'Mentorin' : 'Mentor',
-    roleParticipant: isDe ? 'Teilnehmerin' : 'Participant',
-    roleAdmin: isDe ? 'Admin' : 'Admin',
-    roleHint: isDe
-      ? 'Admin-Konten sind auf das Projektteam beschränkt. Unbefugte Admin-Anfragen werden nicht angelegt.'
-      : 'Admin accounts are limited to the project team. Unauthorized Admin requests are not created.',
-    participantDeveloping: isDe
-      ? 'Das Teilnehmerinnen-Portal wird noch entwickelt. Zurzeit gibt es nur das Mentorinnen-Portal und das Admin-Portal. Bitte registriere dich als Mentorin, wenn du die Plattform jetzt nutzen möchtest.'
-      : 'The participant portal is still being developed. For now we only have the Mentor portal and the Admin portal. Please register as a Mentor if you want to use the platform now.',
     submitSignin: isDe ? 'Anmelden' : 'Sign in',
     submitSignup: isDe ? 'Konto erstellen' : 'Create account',
     forgotPassword: isDe ? 'Passwort vergessen?' : 'Forgot password?',
@@ -312,51 +397,17 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
                 )}
               </div>
 
-              {mode === 'signup' ? (
-                <fieldset className="space-y-3">
-                  <legend className="text-gray-700 font-medium">{t.roleLabel}</legend>
-                  <div className="space-y-2">
-                    {(
-                      [
-                        ['MENTOR', t.roleMentor],
-                        ['STUDENT', t.roleParticipant],
-                        ['ADMIN', t.roleAdmin],
-                      ] as const
-                    ).map(([value, label]) => (
-                      <label key={value} className="flex cursor-pointer items-start gap-2 text-sm text-gray-700">
-                        <input
-                          type="radio"
-                          name="role"
-                          value={value}
-                          checked={signupRole === value}
-                          onChange={() => setSignupRole(value)}
-                          className="mt-0.5 accent-purple-600"
-                        />
-                        <span>{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {signupRole === 'STUDENT' ? (
-                    <div
-                      className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
-                      role="status"
-                    >
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden />
-                      <p>{t.participantDeveloping}</p>
-                    </div>
-                  ) : null}
-                  <p className="text-xs text-gray-500">{t.roleHint}</p>
-                </fieldset>
-              ) : null}
-
               {mode === 'signup' ? <TurnstileField language={isDe ? 'de' : 'en'} /> : null}
 
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg py-3 font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
-              >
-                {mode === 'signin' ? t.submitSignin : t.submitSignup}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="submit"
+                  className="min-w-0 flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg py-3 font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  {mode === 'signin' ? t.submitSignin : t.submitSignup}
+                </Button>
+                {mode === 'signup' ? <AdminAccessHint isDe={isDe} /> : null}
+              </div>
             </form>
 
             <div className="mt-4 text-center">

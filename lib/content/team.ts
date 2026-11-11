@@ -190,13 +190,15 @@ export const teamMembers: TeamMember[] = [
     image: '/images/placeholder-user.svg',
   },
   {
-    slug: 'may',
+    // TODO: May's German bio is still missing. Show the English bio on the German page until a translation is provided.
+    slug: 'may-khodaygan',
     firstName: 'May',
-    lastName: '',
-    name: 'May',
-    role: '',
-    org: '',
-    image: '/images/placeholder-user.svg',
+    lastName: 'Khodaygan',
+    name: 'May Khodaygan',
+    role: 'Research Associate',
+    org: 'Stiftung SPI',
+    bio: 'With a background spanning literary studies and early childhood education, their work bridges literary research and pedagogy, with a particular focus on empowering young girls and FLINTA* of color through mentoring and educational support.',
+    image: '/Team/may-khodaygan.jpg',
   },
   {
     slug: 'elias-jelinek',
